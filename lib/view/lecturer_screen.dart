@@ -1,3 +1,4 @@
+import 'package:bsuir_schedule/domain/model/lecturer.dart';
 import 'package:bsuir_schedule/domain/view_model/lecturer_screen_view_model.dart';
 import 'package:bsuir_schedule/domain/view_model/root_screen_view_model.dart';
 import 'package:flutter/material.dart';
@@ -37,16 +38,7 @@ class _LecturerScreenBodyState extends State<_LecturerScreenBody> {
               viewModel.fetchData(Provider.of<RootScreenViewModel>(context).db),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
-              return ListView.builder(
-                physics: const BouncingScrollPhysics(),
-                itemCount: viewModel.lecturers.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(
-                        '${viewModel.lecturers[index].firstName} ${viewModel.lecturers[index].middleName} ${viewModel.lecturers[index].lastName}'),
-                  );
-                },
-              );
+              return getBody(viewModel);
             } else {
               return const Center(
                 child: CircularProgressIndicator(),
@@ -56,5 +48,62 @@ class _LecturerScreenBodyState extends State<_LecturerScreenBody> {
         );
       },
     ));
+  }
+
+  ListView getBody(LecturerScreenViewModel viewModel) {
+    final List<Lecturer> starredLecturers = viewModel.starredLecturers;
+    final List<Lecturer> lecturers = viewModel.lecturers;
+
+    List<Widget> children = [
+      const SizedBox(height: 16),
+      if (starredLecturers.isNotEmpty) ...[
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16),
+          child: Text(
+            'Избранные',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        ...starredLecturers.map((e) => ListTile(
+              title: Text('${e.firstName} ${e.middleName} ${e.lastName}'),
+            )),
+        const SizedBox(height: 16),
+      ],
+      const Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16),
+        child: Text(
+          'Все',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+      const SizedBox(height: 8),
+      ...lecturers.map((e) => GestureDetector(
+            onTap: () => _onTap(e),
+            child: ListTile(
+              title: Text('${e.firstName} ${e.middleName} ${e.lastName}'),
+            ),
+          ))
+    ];
+
+    return ListView.builder(
+      physics: const BouncingScrollPhysics(),
+      itemCount: children.length,
+      itemBuilder: (context, index) {
+        return children[index];
+      },
+    );
+  }
+
+  void _onTap(Lecturer group) {
+    Provider.of<LecturerScreenViewModel>(context, listen: false)
+        .addStarredLecturer(
+            Provider.of<RootScreenViewModel>(context, listen: false).db, group);
   }
 }

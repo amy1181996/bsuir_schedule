@@ -1,3 +1,4 @@
+import 'package:bsuir_schedule/domain/model/group.dart';
 import 'package:bsuir_schedule/domain/view_model/group_screen_view_model.dart';
 import 'package:bsuir_schedule/domain/view_model/root_screen_view_model.dart';
 import 'package:flutter/material.dart';
@@ -37,15 +38,7 @@ class _GroupScreenBodyState extends State<_GroupScreenBody> {
               viewModel.fetchData(Provider.of<RootScreenViewModel>(context).db),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
-              return ListView.builder(
-                physics: const BouncingScrollPhysics(),
-                itemCount: viewModel.groups.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(viewModel.groups[index].name),
-                  );
-                },
-              );
+              return getBody(viewModel);
             } else {
               return const Center(
                 child: CircularProgressIndicator(),
@@ -55,5 +48,61 @@ class _GroupScreenBodyState extends State<_GroupScreenBody> {
         );
       },
     ));
+  }
+
+  ListView getBody(GroupScreenViewModel viewModel) {
+    final List<Group> starredGroups = viewModel.starredGroups;
+    final List<Group> groups = viewModel.groups;
+
+    List<Widget> children = [
+      const SizedBox(height: 16),
+      if (starredGroups.isNotEmpty) ...[
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16),
+          child: Text(
+            'Избранные',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        ...starredGroups.map((e) => ListTile(
+              title: Text(e.name),
+            ))
+      ],
+      const SizedBox(height: 16),
+      const Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16),
+        child: Text(
+          'Все',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+      const SizedBox(height: 8),
+      ...groups.map((e) => GestureDetector(
+            onTap: () => _onTap(e),
+            child: ListTile(
+              title: Text(e.name),
+            ),
+          )),
+    ];
+
+    return ListView.builder(
+      physics: const BouncingScrollPhysics(),
+      itemCount: children.length,
+      itemBuilder: (context, index) {
+        return children[index];
+      },
+    );
+  }
+
+  void _onTap(Group group) {
+    Provider.of<GroupScreenViewModel>(context, listen: false).addStarredGroup(
+        Provider.of<RootScreenViewModel>(context, listen: false).db, group);
   }
 }
