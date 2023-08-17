@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:bsuir_schedule/domain/model/lecturer.dart';
 import 'package:bsuir_schedule/domain/view_model/lecturer_screen_view_model.dart';
 import 'package:bsuir_schedule/domain/view_model/root_screen_view_model.dart';
@@ -76,30 +78,16 @@ class _LecturerScreenBodyState extends State<_LecturerScreenBody> {
           ),
         ),
         const SizedBox(height: 8),
-        ...starredLecturers.map((e) => ListTile(
-              onTap: () =>
-                  Provider.of<RootScreenViewModel>(context, listen: false)
-                      .setSelectedLecturerId(e.id),
-              title: Text('${e.firstName} ${e.middleName} ${e.lastName}'),
-              trailing: SizedBox(
-                width: 65,
-                child: Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.star),
-                      onPressed: () => viewModel.removeStarredLecturer(
-                          Provider.of<RootScreenViewModel>(context,
-                                  listen: false)
-                              .db,
-                          e),
-                    ),
-                    if (Provider.of<RootScreenViewModel>(context)
-                            .selectedLecturerId ==
-                        e.id) ...[
-                      const Icon(Icons.check),
-                    ]
-                  ],
-                ),
+        ...starredLecturers.map((e) => GestureDetector(
+              key: ValueKey(e.id),
+              onTap: () => {
+                Provider.of<RootScreenViewModel>(context, listen: false)
+                    .setSelectedLecturerId(e.id)
+              },
+              child: LecturerCard(
+                context: context,
+                lecturer: e,
+                isEditable: true,
               ),
             )),
         const SizedBox(height: 16),
@@ -116,9 +104,12 @@ class _LecturerScreenBodyState extends State<_LecturerScreenBody> {
       ),
       const SizedBox(height: 8),
       ...lecturers.map((e) => GestureDetector(
+            key: ValueKey(e.id),
             onTap: () => _onTap(e),
-            child: ListTile(
-              title: Text('${e.firstName} ${e.middleName} ${e.lastName}'),
+            child: LecturerCard(
+              context: context,
+              lecturer: e,
+              isEditable: false,
             ),
           ))
     ];
@@ -132,9 +123,85 @@ class _LecturerScreenBodyState extends State<_LecturerScreenBody> {
     );
   }
 
-  void _onTap(Lecturer group) {
+  void _onTap(Lecturer lecturer) {
     Provider.of<LecturerScreenViewModel>(context, listen: false)
         .addStarredLecturer(
-            Provider.of<RootScreenViewModel>(context, listen: false).db, group);
+            Provider.of<RootScreenViewModel>(context, listen: false).db,
+            lecturer);
+    Provider.of<RootScreenViewModel>(context, listen: false)
+        .setSelectedLecturerId(lecturer.id);
+  }
+}
+
+class LecturerCard extends StatefulWidget {
+  final BuildContext context;
+  final Lecturer lecturer;
+  final bool isEditable;
+
+  const LecturerCard({
+    Key? key,
+    required this.context,
+    required this.lecturer,
+    required this.isEditable,
+  }) : super(key: key);
+
+  @override
+  State<LecturerCard> createState() => _LecturerCardState();
+}
+
+class _LecturerCardState extends State<LecturerCard> {
+  Uint8List? photo;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: FutureBuilder(
+          future: _fetchImage(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done &&
+                photo != null) {
+              return CircleAvatar(
+                radius: 16,
+                foregroundImage: Image.memory(photo!).image,
+              );
+            } else {
+              return const CircleAvatar(
+                radius: 16,
+                child: CircularProgressIndicator(),
+              );
+            }
+          }),
+      title: Text(
+          '${widget.lecturer.firstName} ${widget.lecturer.middleName} ${widget.lecturer.lastName}'),
+      trailing: SizedBox(
+        width: 65,
+        child: Row(
+          children: [
+            if (widget.isEditable) ...[
+              IconButton(
+                icon: const Icon(Icons.star),
+                onPressed: () => Provider.of<LecturerScreenViewModel>(context,
+                        listen: false)
+                    .removeStarredLecturer(
+                        Provider.of<RootScreenViewModel>(context, listen: false)
+                            .db,
+                        widget.lecturer),
+              ),
+              if (Provider.of<RootScreenViewModel>(context)
+                      .selectedLecturerId ==
+                  widget.lecturer.id) ...[
+                const Icon(Icons.check),
+              ],
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _fetchImage() async {
+    photo ??= await Provider.of<LecturerScreenViewModel>(widget.context,
+            listen: false)
+        .getLecturerPhoto(widget.lecturer.photoPath);
   }
 }

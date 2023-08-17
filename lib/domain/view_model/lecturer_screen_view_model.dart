@@ -1,4 +1,5 @@
 import 'package:bsuir_schedule/data/db/db_helper/db_helper.dart';
+import 'package:bsuir_schedule/data/service/image_service.dart';
 import 'package:bsuir_schedule/data/service/lecturer_service.dart';
 import 'package:bsuir_schedule/data/service/starred_lecturer_service.dart';
 import 'package:bsuir_schedule/domain/model/lecturer.dart';
@@ -10,6 +11,7 @@ class LecturerScreenViewModel extends ChangeNotifier {
   static final LecturerService _lecturerService = LecturerService();
   static final StarredLecturerService _starredLecturerService =
       StarredLecturerService();
+  static final ImageService _imageService = ImageService();
 
   List<Lecturer> get lecturers => _lecturers;
   List<Lecturer> get starredLecturers => _starredLecturers;
@@ -40,5 +42,9 @@ class LecturerScreenViewModel extends ChangeNotifier {
       _starredLecturers.remove(lecturer);
       notifyListeners();
     }
+  }
+
+  Future<Uint8List?> getLecturerPhoto(String photoPath) async {
+    return await _imageService.getLecturerPhoto(photoPath);
   }
 }

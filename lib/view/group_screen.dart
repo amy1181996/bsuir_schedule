@@ -76,31 +76,35 @@ class _GroupScreenBodyState extends State<_GroupScreenBody> {
           ),
         ),
         const SizedBox(height: 8),
-        ...starredGroups.map((e) => ListTile(
-              onTap: () =>
-                  Provider.of<RootScreenViewModel>(context, listen: false)
-                      .setSelectedGroupId(e.id),
-              title: Text(e.name),
-              trailing: SizedBox(
-                width: 65,
-                child: Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.star),
-                      onPressed: () => {
-                        viewModel.removeStarredGroup(
-                            Provider.of<RootScreenViewModel>(context,
-                                    listen: false)
-                                .db,
-                            e),
-                      },
-                    ),
-                    if (Provider.of<RootScreenViewModel>(context)
-                            .selectedGroupId ==
-                        e.id) ...[
-                      const Icon(Icons.check),
-                    ]
-                  ],
+        ...starredGroups.map((e) => GestureDetector(
+              key: ValueKey(e.id),
+              onTap: () => {
+                Provider.of<RootScreenViewModel>(context, listen: false)
+                    .setSelectedGroupId(e.id)
+              },
+              child: ListTile(
+                title: Text(e.name),
+                trailing: SizedBox(
+                  width: 65,
+                  child: Row(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.star),
+                        onPressed: () => {
+                          viewModel.removeStarredGroup(
+                              Provider.of<RootScreenViewModel>(context,
+                                      listen: false)
+                                  .db,
+                              e),
+                        },
+                      ),
+                      if (Provider.of<RootScreenViewModel>(context)
+                              .selectedGroupId ==
+                          e.id) ...[
+                        const Icon(Icons.check),
+                      ]
+                    ],
+                  ),
                 ),
               ),
             ))
@@ -118,6 +122,7 @@ class _GroupScreenBodyState extends State<_GroupScreenBody> {
       ),
       const SizedBox(height: 8),
       ...groups.map((e) => GestureDetector(
+            key: ValueKey(e.id),
             onTap: () => _onTap(e),
             child: ListTile(
               title: Text(e.name),
@@ -137,5 +142,8 @@ class _GroupScreenBodyState extends State<_GroupScreenBody> {
   void _onTap(Group group) {
     Provider.of<GroupScreenViewModel>(context, listen: false).addStarredGroup(
         Provider.of<RootScreenViewModel>(context, listen: false).db, group);
+
+    Provider.of<RootScreenViewModel>(context, listen: false)
+        .setSelectedGroupId(group.id);
   }
 }
