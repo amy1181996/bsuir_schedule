@@ -77,15 +77,33 @@ class _GroupScreenBodyState extends State<_GroupScreenBody> {
         ),
         const SizedBox(height: 8),
         ...starredGroups.map((e) => ListTile(
-            title: Text(e.name),
-            trailing: IconButton(
-              icon: const Icon(Icons.star),
-              onPressed: () => {
-                viewModel.removeStarredGroup(
-                    Provider.of<RootScreenViewModel>(context, listen: false).db,
-                    e)
-              },
-            )))
+              onTap: () =>
+                  Provider.of<RootScreenViewModel>(context, listen: false)
+                      .setSelectedGroupId(e.id),
+              title: Text(e.name),
+              trailing: SizedBox(
+                width: 65,
+                child: Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.star),
+                      onPressed: () => {
+                        viewModel.removeStarredGroup(
+                            Provider.of<RootScreenViewModel>(context,
+                                    listen: false)
+                                .db,
+                            e),
+                      },
+                    ),
+                    if (Provider.of<RootScreenViewModel>(context)
+                            .selectedGroupId ==
+                        e.id) ...[
+                      const Icon(Icons.check),
+                    ]
+                  ],
+                ),
+              ),
+            ))
       ],
       const SizedBox(height: 16),
       const Padding(

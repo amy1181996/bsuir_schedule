@@ -77,12 +77,31 @@ class _LecturerScreenBodyState extends State<_LecturerScreenBody> {
         ),
         const SizedBox(height: 8),
         ...starredLecturers.map((e) => ListTile(
-            title: Text('${e.firstName} ${e.middleName} ${e.lastName}'),
-            trailing: IconButton(
-                icon: const Icon(Icons.star),
-                onPressed: () => viewModel.removeStarredLecturer(
-                    Provider.of<RootScreenViewModel>(context, listen: false).db,
-                    e)))),
+              onTap: () =>
+                  Provider.of<RootScreenViewModel>(context, listen: false)
+                      .setSelectedLecturerId(e.id),
+              title: Text('${e.firstName} ${e.middleName} ${e.lastName}'),
+              trailing: SizedBox(
+                width: 65,
+                child: Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.star),
+                      onPressed: () => viewModel.removeStarredLecturer(
+                          Provider.of<RootScreenViewModel>(context,
+                                  listen: false)
+                              .db,
+                          e),
+                    ),
+                    if (Provider.of<RootScreenViewModel>(context)
+                            .selectedLecturerId ==
+                        e.id) ...[
+                      const Icon(Icons.check),
+                    ]
+                  ],
+                ),
+              ),
+            )),
         const SizedBox(height: 16),
       ],
       const Padding(

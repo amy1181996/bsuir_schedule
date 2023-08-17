@@ -30,6 +30,14 @@ class _RootScreenBody extends StatefulWidget {
 
 class _RootScreenBodyState extends State<_RootScreenBody> {
   int _currentIndex = 0;
+  late Future<bool> _dataFetched;
+
+  @override
+  void initState() {
+    _dataFetched =
+        Provider.of<RootScreenViewModel>(context, listen: false).init();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +45,7 @@ class _RootScreenBodyState extends State<_RootScreenBody> {
       body: Consumer<RootScreenViewModel>(
         builder: (context, viewModel, child) {
           return FutureBuilder(
-            future: viewModel.init(),
+            future: _dataFetched,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
                 return IndexedStack(
