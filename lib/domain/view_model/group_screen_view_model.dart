@@ -13,20 +13,29 @@ class GroupScreenViewModel extends ChangeNotifier {
   List<Group> get groups => _groups;
   List<Group> get starredGroups => _starredGroups;
 
-  Future<void> fetchData(DatabaseHelper db) async {
+  Future<bool> fetchData(DatabaseHelper db) async {
     _groups = await _groupService.getAllGroups(db);
     _starredGroups = await _starredGroupService.getAllStarredGroups(db);
+    return true;
   }
 
   Future<void> addStarredGroup(DatabaseHelper db, Group group) async {
-    await _starredGroupService.insertStarredGroup(db, group);
-    _groups.add(group);
-    notifyListeners();
+    final int inserted =
+        await _starredGroupService.insertStarredGroup(db, group);
+
+    if (inserted != 0) {
+      _starredGroups.add(group);
+      notifyListeners();
+    }
   }
 
   Future<void> removeStarredGroup(DatabaseHelper db, Group group) async {
-    await _starredGroupService.deleteStarredGroup(db, group);
-    _groups.remove(group);
-    notifyListeners();
+    final int deleted =
+        await _starredGroupService.deleteStarredGroup(db, group);
+
+    if (deleted != 0) {
+      _starredGroups.remove(group);
+      notifyListeners();
+    }
   }
 }

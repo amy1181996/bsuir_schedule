@@ -55,7 +55,7 @@ class StarredLecturerDb {
 
   Future<int> deleteStarredLecturer(
       DatabaseHelper db, Lecturer lecturer) async {
-    return await db.delete(
-        DbTableName.starredLecturer, AddStarredLecturer(lecturer.id));
+    return await db.deleteWhere(
+        DbTableName.starredLecturer, 'lecturer_id = ?', [lecturer.id]);
   }
 }

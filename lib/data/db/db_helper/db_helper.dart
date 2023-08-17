@@ -8,7 +8,7 @@ import 'package:path_provider/path_provider.dart';
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper.internal();
   static const String _dbName = 'main.db';
-  static const int _dbVersion = 1;
+  static const int _dbVersion = 10;
 
   factory DatabaseHelper() => _instance;
 
@@ -109,4 +109,8 @@ class DatabaseHelper {
 
   Future<int> delete(String table, BaseModel model) async =>
       (await db).delete(table, where: 'id = ?', whereArgs: [model.id]);
+
+  Future<int> deleteWhere(
+          String table, String where, List<dynamic> whereArgs) async =>
+      (await db).delete(table, where: where, whereArgs: whereArgs);
 }

@@ -14,22 +14,31 @@ class LecturerScreenViewModel extends ChangeNotifier {
   List<Lecturer> get lecturers => _lecturers;
   List<Lecturer> get starredLecturers => _starredLecturers;
 
-  Future<void> fetchData(DatabaseHelper db) async {
+  Future<bool> fetchData(DatabaseHelper db) async {
     _lecturers = await _lecturerService.getAllLecturers(db);
     _starredLecturers =
         await _starredLecturerService.getAllStarredLecturers(db);
+    return true;
   }
 
   Future<void> addStarredLecturer(DatabaseHelper db, Lecturer lecturer) async {
-    await _starredLecturerService.insertStarredLecturer(db, lecturer);
-    _lecturers.add(lecturer);
-    notifyListeners();
+    final int inserted =
+        await _starredLecturerService.insertStarredLecturer(db, lecturer);
+
+    if (inserted != 0) {
+      _starredLecturers.add(lecturer);
+      notifyListeners();
+    }
   }
 
   Future<void> removeStarredLecturer(
       DatabaseHelper db, Lecturer lecturer) async {
-    await _starredLecturerService.deleteStarredLecturer(db, lecturer);
-    _lecturers.remove(lecturer);
-    notifyListeners();
+    final int deleted =
+        await _starredLecturerService.deleteStarredLecturer(db, lecturer);
+
+    if (deleted != 0) {
+      _starredLecturers.remove(lecturer);
+      notifyListeners();
+    }
   }
 }

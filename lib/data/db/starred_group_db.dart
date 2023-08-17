@@ -53,6 +53,7 @@ class StarredGroupDb {
   }
 
   Future<int> deleteStarredGroup(DatabaseHelper db, Group group) async {
-    return await db.delete(DbTableName.starredGroup, AddStarredGroup(group.id));
+    return await db
+        .deleteWhere(DbTableName.starredGroup, 'group_id = ?', [group.id]);
   }
 }

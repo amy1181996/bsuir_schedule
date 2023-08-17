@@ -9,11 +9,11 @@ class StarredGroupService {
     return await _starredGroupDb.getAllStarredGroups(db);
   }
 
-  Future<void> insertStarredGroup(DatabaseHelper db, Group group) async {
-    await _starredGroupDb.insertStarredGroup(db, group);
+  Future<int> insertStarredGroup(DatabaseHelper db, Group group) async {
+    return await _starredGroupDb.insertStarredGroup(db, group);
   }
 
-  Future<void> deleteStarredGroup(DatabaseHelper db, Group group) async {
-    await _starredGroupDb.deleteStarredGroup(db, group);
+  Future<int> deleteStarredGroup(DatabaseHelper db, Group group) async {
+    return await _starredGroupDb.deleteStarredGroup(db, group);
   }
 }

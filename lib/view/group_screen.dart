@@ -29,13 +29,21 @@ class _GroupScreenBody extends StatefulWidget {
 }
 
 class _GroupScreenBodyState extends State<_GroupScreenBody> {
+  late Future<bool> _dataFetched;
+
+  @override
+  void initState() {
+    _dataFetched = Provider.of<GroupScreenViewModel>(context, listen: false)
+        .fetchData(Provider.of<RootScreenViewModel>(context, listen: false).db);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(body: Consumer<GroupScreenViewModel>(
       builder: (context, viewModel, child) {
         return FutureBuilder(
-          future:
-              viewModel.fetchData(Provider.of<RootScreenViewModel>(context).db),
+          future: _dataFetched,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
               return getBody(viewModel);
@@ -69,8 +77,15 @@ class _GroupScreenBodyState extends State<_GroupScreenBody> {
         ),
         const SizedBox(height: 8),
         ...starredGroups.map((e) => ListTile(
-              title: Text(e.name),
-            ))
+            title: Text(e.name),
+            trailing: IconButton(
+              icon: const Icon(Icons.star),
+              onPressed: () => {
+                viewModel.removeStarredGroup(
+                    Provider.of<RootScreenViewModel>(context, listen: false).db,
+                    e)
+              },
+            )))
       ],
       const SizedBox(height: 16),
       const Padding(

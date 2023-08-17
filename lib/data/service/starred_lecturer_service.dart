@@ -9,13 +9,13 @@ class StarredLecturerService {
     return await _starredLecturerDb.getAllStarredLecturers(db);
   }
 
-  Future<void> insertStarredLecturer(
+  Future<int> insertStarredLecturer(
       DatabaseHelper db, Lecturer lecturer) async {
-    await _starredLecturerDb.insertStarredLecturer(db, lecturer);
+    return await _starredLecturerDb.insertStarredLecturer(db, lecturer);
   }
 
-  Future<void> deleteStarredLecturer(
+  Future<int> deleteStarredLecturer(
       DatabaseHelper db, Lecturer lecturer) async {
-    await _starredLecturerDb.deleteStarredLecturer(db, lecturer);
+    return await _starredLecturerDb.deleteStarredLecturer(db, lecturer);
   }
 }

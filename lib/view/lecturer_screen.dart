@@ -29,13 +29,21 @@ class _LecturerScreenBody extends StatefulWidget {
 }
 
 class _LecturerScreenBodyState extends State<_LecturerScreenBody> {
+  late Future<bool> _dataFetched;
+
+  @override
+  void initState() {
+    _dataFetched = Provider.of<LecturerScreenViewModel>(context, listen: false)
+        .fetchData(Provider.of<RootScreenViewModel>(context, listen: false).db);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(body: Consumer<LecturerScreenViewModel>(
       builder: (context, viewModel, child) {
         return FutureBuilder(
-          future:
-              viewModel.fetchData(Provider.of<RootScreenViewModel>(context).db),
+          future: _dataFetched,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
               return getBody(viewModel);
@@ -69,8 +77,12 @@ class _LecturerScreenBodyState extends State<_LecturerScreenBody> {
         ),
         const SizedBox(height: 8),
         ...starredLecturers.map((e) => ListTile(
-              title: Text('${e.firstName} ${e.middleName} ${e.lastName}'),
-            )),
+            title: Text('${e.firstName} ${e.middleName} ${e.lastName}'),
+            trailing: IconButton(
+                icon: const Icon(Icons.star),
+                onPressed: () => viewModel.removeStarredLecturer(
+                    Provider.of<RootScreenViewModel>(context, listen: false).db,
+                    e)))),
         const SizedBox(height: 16),
       ],
       const Padding(
