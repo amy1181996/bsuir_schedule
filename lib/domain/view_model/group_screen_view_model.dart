@@ -2,20 +2,32 @@ import 'package:bsuir_schedule/data/db/db_helper/db_helper.dart';
 import 'package:bsuir_schedule/data/service/group_service.dart';
 import 'package:bsuir_schedule/data/service/starred_group_service.dart';
 import 'package:bsuir_schedule/domain/model/group.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 
 class GroupScreenViewModel extends ChangeNotifier {
   List<Group> _groups = [];
   List<Group> _starredGroups = [];
+  List<Group> _shownGroups = [];
+  List<Group> _shownStarredGroups = [];
   static final GroupService _groupService = GroupService();
   static final StarredGroupService _starredGroupService = StarredGroupService();
+  static final TextEditingController _searchController =
+      TextEditingController();
 
-  List<Group> get groups => _groups;
-  List<Group> get starredGroups => _starredGroups;
+  List<Group> get groups => _shownGroups;
+  List<Group> get starredGroups => _shownStarredGroups;
+
+  TextEditingController get searchController => _searchController;
+
+  GroupScreenViewModel() {
+    _searchController.addListener(_search);
+  }
 
   Future<bool> fetchData(DatabaseHelper db) async {
     _groups = await _groupService.getAllGroups(db);
     _starredGroups = await _starredGroupService.getAllStarredGroups(db);
+    _shownGroups = _groups;
+    _shownStarredGroups = _starredGroups;
     return true;
   }
 
@@ -37,5 +49,25 @@ class GroupScreenViewModel extends ChangeNotifier {
       _starredGroups.remove(group);
       notifyListeners();
     }
+  }
+
+  void _search() {
+    final String query = _searchController.text.toLowerCase();
+
+    if (query.isEmpty) {
+      _shownGroups = _groups;
+      _shownStarredGroups = _starredGroups;
+    } else {
+      _shownGroups = _groups
+          .where((group) =>
+              group.name.toLowerCase().contains(query) ||
+              group.facultyAbbrev.toLowerCase().contains(query) ||
+              group.specialityAbbrev.toLowerCase().contains(query) ||
+              group.specialityName.toString().contains(query))
+          .toList();
+      _shownStarredGroups = [];
+    }
+
+    notifyListeners();
   }
 }
