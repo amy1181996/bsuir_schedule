@@ -9,6 +9,29 @@ class LecturerDb {
     return maps.map((map) => GetLecturer.fromMap(map).toLecturer()).toList();
   }
 
+  Future<Lecturer?> getLecturerById(DatabaseHelper db, int id) async {
+    final maps =
+        (await db.queryWhere(DbTableName.lecturer, 'id = ?', [id])).firstOrNull;
+
+    if (maps == null) {
+      return null;
+    }
+
+    return GetLecturer.fromMap(maps).toLecturer();
+  }
+
+  Future<Lecturer?> getLecturerByUrlId(DatabaseHelper db, String urlId) async {
+    final maps =
+        (await db.queryWhere(DbTableName.lecturer, 'url_id = ?', [urlId]))
+            .firstOrNull;
+
+    if (maps == null) {
+      return null;
+    }
+
+    return GetLecturer.fromMap(maps).toLecturer();
+  }
+
   Future<int> insertLecturer(DatabaseHelper db, Lecturer lecturer) async {
     return await db.insert(
         DbTableName.lecturer, AddLecturer.fromLecturer(lecturer));

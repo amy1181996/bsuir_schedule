@@ -1,4 +1,5 @@
 import 'package:bsuir_schedule/data/db/db_helper/db_helper.dart';
+import 'package:bsuir_schedule/data/service/group_schedule_service.dart';
 import 'package:bsuir_schedule/data/service/group_service.dart';
 import 'package:bsuir_schedule/data/service/starred_group_service.dart';
 import 'package:bsuir_schedule/domain/model/group.dart';
@@ -13,6 +14,8 @@ class GroupScreenViewModel extends ChangeNotifier {
   static final StarredGroupService _starredGroupService = StarredGroupService();
   static final TextEditingController _searchController =
       TextEditingController();
+  static final GroupScheduleService _groupScheduleService =
+      GroupScheduleService();
 
   List<Group> get groups => _shownGroups;
   List<Group> get starredGroups => _shownStarredGroups;
@@ -35,8 +38,9 @@ class GroupScreenViewModel extends ChangeNotifier {
     final int inserted =
         await _starredGroupService.insertStarredGroup(db, group);
 
-    if (inserted != 0) {
+    if (inserted != -1) {
       _starredGroups.add(group);
+      await _groupScheduleService.getGroupSchedule(db, group);
       notifyListeners();
     }
   }

@@ -1,5 +1,6 @@
 import 'package:bsuir_schedule/data/db/db_helper/db_helper.dart';
 import 'package:bsuir_schedule/data/service/image_service.dart';
+import 'package:bsuir_schedule/data/service/lecturer_schedule_service.dart';
 import 'package:bsuir_schedule/data/service/lecturer_service.dart';
 import 'package:bsuir_schedule/data/service/starred_lecturer_service.dart';
 import 'package:bsuir_schedule/domain/model/lecturer.dart';
@@ -17,6 +18,8 @@ class LecturerScreenViewModel extends ChangeNotifier {
   static final ImageService _imageService = ImageService();
   static final TextEditingController _searchController =
       TextEditingController();
+  static final LecturerScheduleService _lecturerScheduleService =
+      LecturerScheduleService();
 
   List<Lecturer> get lecturers => _shownLecturers;
   List<Lecturer> get starredLecturers => _shownStarredLecturers;
@@ -40,8 +43,9 @@ class LecturerScreenViewModel extends ChangeNotifier {
     final int inserted =
         await _starredLecturerService.insertStarredLecturer(db, lecturer);
 
-    if (inserted != 0) {
+    if (inserted != -1) {
       _starredLecturers.add(lecturer);
+      await _lecturerScheduleService.getLecturerSchedule(db, lecturer);
       notifyListeners();
     }
   }

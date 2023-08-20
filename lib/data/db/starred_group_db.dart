@@ -45,7 +45,7 @@ class StarredGroupDb {
           DbTableName.starredGroup, AddStarredGroup(group.id));
     } on DatabaseException catch (e) {
       if (e.isUniqueConstraintError()) {
-        return 0;
+        return -1;
       } else {
         rethrow;
       }

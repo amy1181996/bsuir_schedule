@@ -18,4 +18,16 @@ class LecturerService {
 
     return lecturers;
   }
+
+  Future<Lecturer?> getLecturerById(DatabaseHelper db, int id) async {
+    return await _lecturerDb.getLecturerById(db, id);
+  }
+
+  Future<Lecturer?> getLecturerByUrlId(DatabaseHelper db, String urlId) async {
+    return await _lecturerDb.getLecturerByUrlId(db, urlId);
+  }
+
+  Future<int> addLecturer(DatabaseHelper db, Lecturer lecturer) async {
+    return await _lecturerDb.insertLecturer(db, lecturer);
+  }
 }

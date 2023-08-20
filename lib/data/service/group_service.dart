@@ -17,4 +17,12 @@ class GroupService {
 
     return groups;
   }
+
+  Future<Group?> getGroupById(DatabaseHelper db, int id) async {
+    return await _groupDb.getGroupById(db, id);
+  }
+
+  Future<Group?> getGroupByName(DatabaseHelper db, String name) async {
+    return await _groupDb.getGroupByName(db, name);
+  }
 }

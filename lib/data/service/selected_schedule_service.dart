@@ -1,4 +1,4 @@
-import 'package:bsuir_schedule/data/shared_preferences/selected_schedule_shared_preferences.dart';
+import 'package:bsuir_schedule/data/shared_preferences/selected_schedule_shared_prefs.dart';
 
 class SelectedScheduleService {
   static final SelectedScheduleSharedPreferences

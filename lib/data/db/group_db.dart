@@ -9,6 +9,28 @@ class GroupDb {
     return maps.map((map) => GetGroup.fromMap(map).toGroup()).toList();
   }
 
+  Future<Group?> getGroupById(DatabaseHelper db, int id) async {
+    final maps =
+        (await db.queryWhere(DbTableName.group, 'id = ?', [id])).firstOrNull;
+
+    if (maps == null) {
+      return null;
+    }
+
+    return GetGroup.fromMap(maps).toGroup();
+  }
+
+  Future<Group?> getGroupByName(DatabaseHelper db, String name) async {
+    final maps = (await db.queryWhere(DbTableName.group, 'name = ?', [name]))
+        .firstOrNull;
+
+    if (maps == null) {
+      return null;
+    }
+
+    return GetGroup.fromMap(maps).toGroup();
+  }
+
   Future<int> insertGroup(DatabaseHelper db, Group group) async {
     return await db.insert(DbTableName.group, AddGroup.fromGroup(group));
   }

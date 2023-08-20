@@ -8,7 +8,7 @@ import 'package:path_provider/path_provider.dart';
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper.internal();
   static const String _dbName = 'main.db';
-  static const int _dbVersion = 10;
+  static const int _dbVersion = 20;
 
   factory DatabaseHelper() => _instance;
 
@@ -37,6 +37,11 @@ class DatabaseHelper {
     await _createLecturerTable(db);
     await _createStarredGroupTable(db);
     await _createStarredLecturerTable(db);
+    await _createLessonTable(db);
+    await _createLessonGroupRelationTable(db);
+    await _createLessonLecturerRelationTable(db);
+    await _createGroupScheduleTable(db);
+    await _createLecturerScheduleTable(db);
   }
 
   _createGroupTable(Database db) async {
@@ -85,12 +90,94 @@ class DatabaseHelper {
     ''');
   }
 
+  _createLessonTable(Database db) async {
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS ${DbTableName.lesson} (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        auditories TEXT NOT NULL,
+        start_lesson_time TEXT NOT NULL,
+        end_lesson_time TEXT NOT NULL,
+        lesson_type_abbrev TEXT NOT NULL,
+        note TEXT,
+        num_subgroup INTEGER NOT NULL,
+        subject TEXT NOT NULL,
+        subject_full_name TEXT NOT NULL,
+        weeks TEXT NOT NULL,
+        date_lesson TEXT,
+        start_lesson_date TEXT NOT NULL,
+        end_lesson_date TEXT NOT NULL,
+        week_day TEXT
+      )
+    ''');
+  }
+
+  _createLessonGroupRelationTable(Database db) async {
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS ${DbTableName.lessonGroupRelation} (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        lesson_id INTEGER NOT NULL,
+        group_id INTEGER NOT NULL,
+        FOREIGN KEY (lesson_id) REFERENCES ${DbTableName.lesson}(id),
+        FOREIGN KEY (group_id) REFERENCES ${DbTableName.group}(id)
+      )
+    ''');
+  }
+
+  _createLessonLecturerRelationTable(Database db) async {
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS ${DbTableName.lessonLecturerRelation} (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        lesson_id INTEGER NOT NULL,
+        lecturer_id INTEGER NOT NULL,
+        FOREIGN KEY (lesson_id) REFERENCES ${DbTableName.lesson}(id),
+        FOREIGN KEY (lecturer_id) REFERENCES ${DbTableName.lecturer}(id)
+      )
+    ''');
+  }
+
+  _createGroupScheduleTable(Database db) async {
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS ${DbTableName.groupSchedule} (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        start_date TEXT NOT NULL,
+        end_date TEXT NOT NULL,
+        start_exams_date TEXT,
+        end_exams_date TEXT,
+        group_id INTEGER,
+        lecturer_id INTEGER,
+        FOREIGN KEY (group_id) REFERENCES ${DbTableName.group}(id),
+        FOREIGN KEY (lecturer_id) REFERENCES ${DbTableName.lecturer}(id)
+      )
+    ''');
+  }
+
+  _createLecturerScheduleTable(Database db) async {
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS ${DbTableName.lecturerSchedule} (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        start_date TEXT NOT NULL,
+        end_date TEXT NOT NULL,
+        start_exams_date TEXT,
+        end_exams_date TEXT,
+        group_id INTEGER,
+        lecturer_id INTEGER,
+        FOREIGN KEY (group_id) REFERENCES ${DbTableName.group}(id),
+        FOREIGN KEY (lecturer_id) REFERENCES ${DbTableName.lecturer}(id)
+      )
+    ''');
+  }
+
   void _onUpgrade(Database db, int oldVersion, int newVersion) async {
-    // as now active development is in progress, we just drop all tables
     await db.execute('DROP TABLE IF EXISTS ${DbTableName.group}');
     await db.execute('DROP TABLE IF EXISTS ${DbTableName.lecturer}');
     await db.execute('DROP TABLE IF EXISTS ${DbTableName.starredGroup}');
     await db.execute('DROP TABLE IF EXISTS ${DbTableName.starredLecturer}');
+    await db.execute('DROP TABLE IF EXISTS ${DbTableName.lesson}');
+    await db.execute('DROP TABLE IF EXISTS ${DbTableName.lessonGroupRelation}');
+    await db
+        .execute('DROP TABLE IF EXISTS ${DbTableName.lessonLecturerRelation}');
+    await db.execute('DROP TABLE IF EXISTS ${DbTableName.groupSchedule}');
+    await db.execute('DROP TABLE IF EXISTS ${DbTableName.lecturerSchedule}');
     _onCreate(db, newVersion);
   }
 
