@@ -1,8 +1,8 @@
 import 'package:bsuir_schedule/data/shared_preferences/selected_schedule_shared_prefs.dart';
 
 class SelectedScheduleService {
-  static final SelectedScheduleSharedPreferences
-      _selectedScheduleSharedPreferences = SelectedScheduleSharedPreferences();
+  static final SelectedScheduleSharedPrefs _selectedScheduleSharedPreferences =
+      SelectedScheduleSharedPrefs();
 
   Future<int?> getSelectedGroupId() async {
     return await _selectedScheduleSharedPreferences.getSelectedGroupId();

@@ -7,20 +7,19 @@ class CurrentWeekService {
       CurrentWeekSharedPrefs();
 
   Future<int?> getCurrentWeek() async {
-    final currentWeekApi = await _currentWeekApi.getCurrentWeek();
+    final currentWeekSharedPrefs =
+        await _currentWeekSharedPrefs.getCurrentWeek();
+    int? currentWeek = currentWeekSharedPrefs.key;
+    final currentWeekSetDate = currentWeekSharedPrefs.value;
 
-    if (currentWeekApi == null) {
-      final currentWeekSharedPrefs =
-          await _currentWeekSharedPrefs.getCurrentWeek();
-      final currentWeek = currentWeekSharedPrefs.key;
-      final currentWeekSetDate = currentWeekSharedPrefs.value;
+    if (currentWeek == null) {
+      currentWeek = await _currentWeekApi.getCurrentWeek() ?? 1;
       final weeksDelta =
           DateTime.now().difference(currentWeekSetDate).inDays ~/ 7;
-      final actualWeek = (currentWeek + weeksDelta - 1) % 4 + 1;
-      await _currentWeekSharedPrefs.setCurrentWeek(actualWeek);
-      return actualWeek;
+      currentWeek = (currentWeek + weeksDelta - 1) % 4 + 1;
+      await _currentWeekSharedPrefs.setCurrentWeek(currentWeek);
     }
 
-    return currentWeekApi;
+    return currentWeek;
   }
 }

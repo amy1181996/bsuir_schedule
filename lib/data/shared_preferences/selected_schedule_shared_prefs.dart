@@ -1,6 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-class SelectedScheduleSharedPreferences {
+class SelectedScheduleSharedPrefs {
   Future<int?> getSelectedGroupId() async {
     final prefs = await SharedPreferences.getInstance();
     final id = prefs.getInt('selected_group_id');

@@ -1,6 +1,8 @@
 import 'package:bsuir_schedule/domain/view_model/root_screen_view_model.dart';
+import 'package:bsuir_schedule/screen_factory/screen_factory.dart';
 import 'package:bsuir_schedule/view/group_screen.dart';
 import 'package:bsuir_schedule/view/lecturer_screen.dart';
+import 'package:bsuir_schedule/view/schedule_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -31,6 +33,7 @@ class _RootScreenBody extends StatefulWidget {
 class _RootScreenBodyState extends State<_RootScreenBody> {
   int _currentIndex = 0;
   late Future<bool> _dataFetched;
+  final _screenFactory = ScreenFactory();
 
   @override
   void initState() {
@@ -50,9 +53,10 @@ class _RootScreenBodyState extends State<_RootScreenBody> {
               if (snapshot.connectionState == ConnectionState.done) {
                 return IndexedStack(
                   index: _currentIndex,
-                  children: const [
-                    GroupScreen(),
-                    LecturerScreen(),
+                  children: [
+                    _screenFactory.makeScheduleScreen(),
+                    const GroupScreen(),
+                    const LecturerScreen(),
                   ],
                 );
               } else {
@@ -72,6 +76,8 @@ class _RootScreenBodyState extends State<_RootScreenBody> {
           });
         },
         items: const [
+          BottomNavigationBarItem(
+              icon: Icon(Icons.schedule_outlined), label: 'Расписание'),
           BottomNavigationBarItem(
             icon: Icon(Icons.group),
             label: 'Группы',

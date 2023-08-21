@@ -42,48 +42,50 @@ class _LecturerScreenBodyState extends State<_LecturerScreenBody> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: Consumer<LecturerScreenViewModel>(
-      builder: (context, viewModel, child) {
-        return Stack(
-          children: [
-            FutureBuilder(
-              future: _dataFetched,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.done) {
-                  return getBody(viewModel);
-                } else {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-              },
-            ),
-            Padding(
-              padding: const EdgeInsets.only(
-                top: 15,
-                left: 15,
-                right: 15,
+    return Scaffold(
+      body: Consumer<LecturerScreenViewModel>(
+        builder: (context, viewModel, child) {
+          return Stack(
+            children: [
+              FutureBuilder(
+                future: _dataFetched,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    return getBody(viewModel);
+                  } else {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                },
               ),
-              child: TextField(
-                keyboardType: TextInputType.name,
-                controller: viewModel.searchController,
-                decoration: const InputDecoration(
-                  hintText: 'Поиск...',
-                  isCollapsed: true,
-                  contentPadding: EdgeInsets.all(15.0),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(30.0)),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(30.0)),
+              Padding(
+                padding: const EdgeInsets.only(
+                  top: 15,
+                  left: 15,
+                  right: 15,
+                ),
+                child: TextField(
+                  keyboardType: TextInputType.name,
+                  controller: viewModel.searchController,
+                  decoration: const InputDecoration(
+                    hintText: 'Поиск...',
+                    isCollapsed: true,
+                    contentPadding: EdgeInsets.all(15.0),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(30.0)),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(30.0)),
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
-        );
-      },
-    ));
+            ],
+          );
+        },
+      ),
+    );
   }
 
   ListView getBody(LecturerScreenViewModel viewModel) {
