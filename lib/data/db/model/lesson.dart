@@ -18,6 +18,22 @@ class AddLesson extends BaseModel {
   final String endLessonDate;
   final String? weekDay;
 
+  @override
+  int get hashCode =>
+      auditories.hashCode ^
+      startLessonTime.hashCode ^
+      endLessonTime.hashCode ^
+      lessonTypeAbbrev.hashCode ^
+      note.hashCode ^
+      numSubgroup.hashCode ^
+      subject.hashCode ^
+      subjectFullName.hashCode ^
+      weeks.hashCode ^
+      dateLesson.hashCode ^
+      startLessonDate.hashCode ^
+      endLessonDate.hashCode ^
+      weekDay.hashCode;
+
   AddLesson({
     required this.auditories,
     required this.startLessonTime,
@@ -65,6 +81,7 @@ class AddLesson extends BaseModel {
         'start_lesson_date': startLessonDate,
         'end_lesson_date': endLessonDate,
         'week_day': weekDay,
+        'hash': hashCode,
       };
 }
 

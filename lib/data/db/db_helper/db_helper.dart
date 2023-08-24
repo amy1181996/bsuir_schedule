@@ -8,7 +8,7 @@ import 'package:path_provider/path_provider.dart';
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper.internal();
   static const String _dbName = 'main.db';
-  static const int _dbVersion = 20;
+  static const int _dbVersion = 28;
 
   factory DatabaseHelper() => _instance;
 
@@ -106,7 +106,8 @@ class DatabaseHelper {
         date_lesson TEXT,
         start_lesson_date TEXT NOT NULL,
         end_lesson_date TEXT NOT NULL,
-        week_day TEXT
+        week_day TEXT NOT NULL,
+        hash INTEGER NOT NULL UNIQUE
       )
     ''');
   }
@@ -117,6 +118,7 @@ class DatabaseHelper {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         lesson_id INTEGER NOT NULL,
         group_id INTEGER NOT NULL,
+        hash INTEGER NOT NULL UNIQUE,
         FOREIGN KEY (lesson_id) REFERENCES ${DbTableName.lesson}(id),
         FOREIGN KEY (group_id) REFERENCES ${DbTableName.group}(id)
       )
@@ -129,6 +131,7 @@ class DatabaseHelper {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         lesson_id INTEGER NOT NULL,
         lecturer_id INTEGER NOT NULL,
+        hash INTEGER NOT NULL UNIQUE,
         FOREIGN KEY (lesson_id) REFERENCES ${DbTableName.lesson}(id),
         FOREIGN KEY (lecturer_id) REFERENCES ${DbTableName.lecturer}(id)
       )
@@ -143,7 +146,7 @@ class DatabaseHelper {
         end_date TEXT NOT NULL,
         start_exams_date TEXT,
         end_exams_date TEXT,
-        group_id INTEGER,
+        group_id INTEGER UNIQUE,
         lecturer_id INTEGER,
         FOREIGN KEY (group_id) REFERENCES ${DbTableName.group}(id),
         FOREIGN KEY (lecturer_id) REFERENCES ${DbTableName.lecturer}(id)
@@ -160,7 +163,7 @@ class DatabaseHelper {
         start_exams_date TEXT,
         end_exams_date TEXT,
         group_id INTEGER,
-        lecturer_id INTEGER,
+        lecturer_id INTEGER UNIQUE,
         FOREIGN KEY (group_id) REFERENCES ${DbTableName.group}(id),
         FOREIGN KEY (lecturer_id) REFERENCES ${DbTableName.lecturer}(id)
       )

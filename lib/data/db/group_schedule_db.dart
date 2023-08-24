@@ -78,17 +78,25 @@ class GroupScheduleDb {
 
   Future<int> updateGroupSchedule(
       DatabaseHelper db, Schedule groupSchedule) async {
-    // TODO: remove old lessons
-    await Future.wait(groupSchedule.schedules.map((lesson) async {
-      await _lessonService.removeLesson(db, lesson);
-    }));
+    final oldGroupSchedule = (await getGroupSchedule(db, groupSchedule.group!));
 
-    await Future.wait(groupSchedule.exams.map((lesson) async {
-      await _lessonService.removeLesson(db, lesson);
-    }));
+    if (oldGroupSchedule != null) {
+      await Future.wait(groupSchedule.schedules.map((lesson) async {
+        await _lessonService.removeLesson(db, lesson);
+      }));
+
+      await Future.wait(groupSchedule.exams.map((lesson) async {
+        await _lessonService.removeLesson(db, lesson);
+      }));
+    }
 
     final int scheduleId = await db.update(
         DbTableName.groupSchedule, AddSchedule.fromSchedule(groupSchedule));
+
+    // if (scheduleId == 0) {
+    //   await db.insert(
+    //       DbTableName.groupSchedule, AddSchedule.fromSchedule(groupSchedule));
+    // }
 
     await Future.wait(groupSchedule.schedules.map((lesson) async {
       await _lessonService.addLesson(db, lesson);

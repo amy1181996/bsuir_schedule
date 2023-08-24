@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:bsuir_schedule/data/api/model/schedule.dart';
 import 'package:bsuir_schedule/data/api/shared_api.dart';
@@ -17,7 +18,14 @@ class GroupScheduleApi with SharedApi {
   Future<Schedule?> getGroupSchedule(DatabaseHelper db, Group group) async {
     final String localPath = 'schedule?studentGroup=${group.name}';
 
-    final response = await getResponse(localPath);
+    HttpClientResponse response;
+
+    try {
+      response = await getResponse(localPath);
+    } on Exception catch (e) {
+      print('$e');
+      return null;
+    }
 
     if (response.statusCode != 200) {
       return null;

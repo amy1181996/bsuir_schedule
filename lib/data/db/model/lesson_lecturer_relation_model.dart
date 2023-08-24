@@ -4,6 +4,9 @@ class AddLessonLecturerRelation extends BaseModel {
   final int lessonId;
   final int lecturerId;
 
+  @override
+  int get hashCode => lessonId.hashCode ^ lecturerId.hashCode;
+
   AddLessonLecturerRelation({
     required this.lessonId,
     required this.lecturerId,
@@ -13,6 +16,7 @@ class AddLessonLecturerRelation extends BaseModel {
   Map<String, dynamic> toMap() => {
         'lesson_id': lessonId,
         'lecturer_id': lecturerId,
+        'hash': hashCode,
       };
 }
 
