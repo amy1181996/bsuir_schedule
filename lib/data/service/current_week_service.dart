@@ -14,11 +14,13 @@ class CurrentWeekService {
 
     if (currentWeek == null) {
       currentWeek = await _currentWeekApi.getCurrentWeek() ?? 1;
+    } else {
       final weeksDelta =
           DateTime.now().difference(currentWeekSetDate).inDays ~/ 7;
       currentWeek = (currentWeek + weeksDelta - 1) % 4 + 1;
-      await _currentWeekSharedPrefs.setCurrentWeek(currentWeek);
     }
+
+    await _currentWeekSharedPrefs.setCurrentWeek(currentWeek);
 
     return currentWeek;
   }
