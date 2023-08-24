@@ -1,5 +1,5 @@
-import 'package:bsuir_schedule/themes/lesson_tab_style.dart';
-import 'package:bsuir_schedule/view/view_constants.dart';
+import 'package:bsuir_schedule/ui/themes/lesson_tab_style.dart';
+import 'package:bsuir_schedule/ui/screens/view_constants.dart';
 import 'package:flutter/material.dart';
 
 class LessonTab extends StatelessWidget {

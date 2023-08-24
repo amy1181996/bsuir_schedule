@@ -1,8 +1,8 @@
 import 'package:bsuir_schedule/domain/model/lecturer.dart';
 import 'package:bsuir_schedule/domain/view_model/lecturer_screen_view_model.dart';
 import 'package:bsuir_schedule/domain/view_model/root_screen_view_model.dart';
-import 'package:bsuir_schedule/view/widget/lecturer_card.dart';
-import 'package:bsuir_schedule/view/widget/lecturer_image_factory.dart';
+import 'package:bsuir_schedule/ui/widget/lecturer_card.dart';
+import 'package:bsuir_schedule/ui/widget/lecturer_image_factory.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

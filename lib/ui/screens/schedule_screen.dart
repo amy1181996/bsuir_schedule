@@ -1,10 +1,10 @@
 import 'package:bsuir_schedule/domain/view_model/root_screen_view_model.dart';
 import 'package:bsuir_schedule/domain/view_model/schedule_screen_view_model.dart';
-import 'package:bsuir_schedule/view/view_constants.dart';
-import 'package:bsuir_schedule/view/widget/lecturer_image_factory.dart';
-import 'package:bsuir_schedule/view/widget/lesson_bottom_sheet.dart';
-import 'package:bsuir_schedule/view/widget/lesson_card.dart';
-import 'package:bsuir_schedule/view/widget/lesson_tab.dart';
+import 'package:bsuir_schedule/ui/screens/view_constants.dart';
+import 'package:bsuir_schedule/ui/widget/lecturer_image_factory.dart';
+import 'package:bsuir_schedule/ui/widget/lesson_bottom_sheet.dart';
+import 'package:bsuir_schedule/ui/widget/lesson_card.dart';
+import 'package:bsuir_schedule/ui/widget/lesson_tab.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

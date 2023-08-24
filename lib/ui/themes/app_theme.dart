@@ -1,8 +1,8 @@
-import 'package:bsuir_schedule/themes/group_card_style.dart';
-import 'package:bsuir_schedule/themes/lecturer_card_style.dart';
-import 'package:bsuir_schedule/themes/lesson_bottom_sheet_style.dart';
-import 'package:bsuir_schedule/themes/lesson_card_style.dart';
-import 'package:bsuir_schedule/themes/lesson_tab_style.dart';
+import 'package:bsuir_schedule/ui/themes/group_card_style.dart';
+import 'package:bsuir_schedule/ui/themes/lecturer_card_style.dart';
+import 'package:bsuir_schedule/ui/themes/lesson_bottom_sheet_style.dart';
+import 'package:bsuir_schedule/ui/themes/lesson_card_style.dart';
+import 'package:bsuir_schedule/ui/themes/lesson_tab_style.dart';
 import 'package:flutter/material.dart';
 
 class MaterialColorGenerator {

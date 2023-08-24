@@ -1,5 +1,5 @@
 import 'package:bsuir_schedule/domain/view_model/root_screen_view_model.dart';
-import 'package:bsuir_schedule/screen_factory/screen_factory.dart';
+import 'package:bsuir_schedule/ui/screen_factory/screen_factory.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

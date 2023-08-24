@@ -1,5 +1,5 @@
 import 'package:bsuir_schedule/domain/model/lecturer.dart';
-import 'package:bsuir_schedule/themes/lecturer_card_style.dart';
+import 'package:bsuir_schedule/ui/themes/lecturer_card_style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 

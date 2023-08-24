@@ -1,5 +1,5 @@
 import 'package:bsuir_schedule/domain/model/group.dart';
-import 'package:bsuir_schedule/themes/group_card_style.dart';
+import 'package:bsuir_schedule/ui/themes/group_card_style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 

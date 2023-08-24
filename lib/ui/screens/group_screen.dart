@@ -1,7 +1,7 @@
 import 'package:bsuir_schedule/domain/model/group.dart';
 import 'package:bsuir_schedule/domain/view_model/group_screen_view_model.dart';
 import 'package:bsuir_schedule/domain/view_model/root_screen_view_model.dart';
-import 'package:bsuir_schedule/view/widget/group_card.dart';
+import 'package:bsuir_schedule/ui/widget/group_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
