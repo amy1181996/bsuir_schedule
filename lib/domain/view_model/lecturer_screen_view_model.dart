@@ -1,5 +1,4 @@
 import 'package:bsuir_schedule/data/db/db_helper/db_helper.dart';
-import 'package:bsuir_schedule/data/service/image_service.dart';
 import 'package:bsuir_schedule/data/service/lecturer_schedule_service.dart';
 import 'package:bsuir_schedule/data/service/lecturer_service.dart';
 import 'package:bsuir_schedule/data/service/starred_lecturer_service.dart';
@@ -15,20 +14,11 @@ class LecturerScreenViewModel extends ChangeNotifier {
   static final LecturerService _lecturerService = LecturerService();
   static final StarredLecturerService _starredLecturerService =
       StarredLecturerService();
-  static final ImageService _imageService = ImageService();
-  static final TextEditingController _searchController =
-      TextEditingController();
   static final LecturerScheduleService _lecturerScheduleService =
       LecturerScheduleService();
 
   List<Lecturer> get lecturers => _shownLecturers;
   List<Lecturer> get starredLecturers => _shownStarredLecturers;
-
-  TextEditingController get searchController => _searchController;
-
-  LecturerScreenViewModel() {
-    _searchController.addListener(_search);
-  }
 
   Future<bool> fetchData(DatabaseHelper db) async {
     _lecturers = await _lecturerService.getAllLecturers(db);
@@ -57,30 +47,13 @@ class LecturerScreenViewModel extends ChangeNotifier {
 
     if (deleted != 0) {
       _starredLecturers.remove(lecturer);
+      await _lecturerScheduleService.removeLecturerSchedule(db, lecturer);
       notifyListeners();
     }
   }
 
-  Future<Uint8List?> getLecturerPhoto(String photoPath) async {
-    return await _imageService.getLecturerPhoto(photoPath);
-  }
-
-  void _search() {
-    final String query = _searchController.text.toLowerCase();
-
-    if (query.isEmpty) {
-      _shownLecturers = _lecturers;
-      _shownStarredLecturers = _starredLecturers;
-    } else {
-      _shownLecturers = _lecturers
-          .where((lecturer) =>
-              lecturer.firstName.toLowerCase().contains(query) ||
-              lecturer.lastName.toLowerCase().contains(query) ||
-              lecturer.middleName.toLowerCase().contains(query))
-          .toList();
-      _shownStarredLecturers = [];
-    }
-
-    notifyListeners();
+  Future<void> updateStarredLecturer(
+      DatabaseHelper db, Lecturer lecturer) async {
+    await _lecturerScheduleService.updateLecturerSchedule(db, lecturer);
   }
 }

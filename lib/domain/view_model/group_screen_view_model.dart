@@ -12,19 +12,11 @@ class GroupScreenViewModel extends ChangeNotifier {
   List<Group> _shownStarredGroups = [];
   static final GroupService _groupService = GroupService();
   static final StarredGroupService _starredGroupService = StarredGroupService();
-  static final TextEditingController _searchController =
-      TextEditingController();
   static final GroupScheduleService _groupScheduleService =
       GroupScheduleService();
 
   List<Group> get groups => _shownGroups;
   List<Group> get starredGroups => _shownStarredGroups;
-
-  TextEditingController get searchController => _searchController;
-
-  GroupScreenViewModel() {
-    _searchController.addListener(_search);
-  }
 
   Future<bool> fetchData(DatabaseHelper db) async {
     _groups = await _groupService.getAllGroups(db);
@@ -51,27 +43,12 @@ class GroupScreenViewModel extends ChangeNotifier {
 
     if (deleted != 0) {
       _starredGroups.remove(group);
+      await _groupScheduleService.removeGroupSchedule(db, group);
       notifyListeners();
     }
   }
 
-  void _search() {
-    final String query = _searchController.text.toLowerCase();
-
-    if (query.isEmpty) {
-      _shownGroups = _groups;
-      _shownStarredGroups = _starredGroups;
-    } else {
-      _shownGroups = _groups
-          .where((group) =>
-              group.name.toLowerCase().contains(query) ||
-              group.facultyAbbrev.toLowerCase().contains(query) ||
-              group.specialityAbbrev.toLowerCase().contains(query) ||
-              group.specialityName.toString().contains(query))
-          .toList();
-      _shownStarredGroups = [];
-    }
-
-    notifyListeners();
+  Future<void> updateStarredGroup(DatabaseHelper db, Group group) async {
+    await _groupScheduleService.updateGroupSchedule(db, group);
   }
 }

@@ -18,7 +18,10 @@ class ScheduleScreenViewModel extends ChangeNotifier {
     'Воскресенье': 6,
   };
 
-  late int _currentWeek;
+  late int? _currentWeek;
+
+  DateTime? _startDate;
+  DateTime? _endDate;
 
   Map<String, List<Lesson>> _mappedSchedule = {};
 
@@ -45,7 +48,10 @@ class ScheduleScreenViewModel extends ChangeNotifier {
 
   List<Lesson> get exams => _exams;
 
-  int get currentWeek => _currentWeek;
+  int get currentWeek => _currentWeek ?? 1;
+
+  DateTime? get startDate => _startDate;
+  DateTime? get endDate => _endDate;
 
   static final GroupScheduleService _groupScheduleService =
       GroupScheduleService();
@@ -56,8 +62,6 @@ class ScheduleScreenViewModel extends ChangeNotifier {
   static final CurrentWeekService _currentWeekService = CurrentWeekService();
 
   ScheduleScreenViewModel() {
-    _currentWeek = 1;
-
     _resetSchedule();
   }
 
@@ -92,10 +96,13 @@ class ScheduleScreenViewModel extends ChangeNotifier {
         [],
       ));
     }
+
+    _startDate = null;
+    _endDate = null;
   }
 
   Future<void> fetchCurrentWeek(DatabaseHelper db) async {
-    _currentWeek = await _currentWeekService.getCurrentWeek() ?? 1;
+    _currentWeek = await _currentWeekService.getCurrentWeek();
   }
 
   Future<void> fetchGroupSchedule(DatabaseHelper db, int groupId) async {
@@ -117,6 +124,8 @@ class ScheduleScreenViewModel extends ChangeNotifier {
 
     _lessons = schedule.schedules;
     _exams = schedule.exams;
+    _startDate = schedule.startDate;
+    _endDate = schedule.endDate;
 
     _fetchSchedule();
   }
@@ -141,6 +150,8 @@ class ScheduleScreenViewModel extends ChangeNotifier {
 
     _lessons = schedule.schedules;
     _exams = schedule.exams;
+    _startDate = schedule.startDate;
+    _endDate = schedule.endDate;
 
     _fetchSchedule();
   }
@@ -161,6 +172,13 @@ class ScheduleScreenViewModel extends ChangeNotifier {
             ])
         .toList();
 
+    _mappedSchedule.map((key, value) => MapEntry(key, value.sort((a, b) {
+          DateTime timeA = DateTime.parse('2000-01-01 ${a.startLessonTime}');
+          DateTime timeB = DateTime.parse('2000-01-01 ${b.startLessonTime}');
+
+          return timeA.compareTo(timeB);
+        })));
+
     final currentDate = DateTime.now();
     int daysUntilMonday = (8 - currentDate.weekday) % 7;
     final now = currentDate.add(Duration(days: daysUntilMonday));
@@ -173,25 +191,23 @@ class ScheduleScreenViewModel extends ChangeNotifier {
       ));
     }
 
-    _fullScheduleFirstSubgroup = [];
-    for (var entry in _mappedSchedule.entries) {
-      _fullScheduleFirstSubgroup.add(DaySchedule(
-        now.add(Duration(days: _weekDayNumber[entry.key]!)),
-        entry.value
-            .where((e) => e.numSubgroup == 1 || e.numSubgroup == 0)
-            .toList(),
-      ));
-    }
+    _fullScheduleFirstSubgroup = _fullScheduleAllGroup
+        .map((daySchedule) => DaySchedule(
+            daySchedule.date,
+            daySchedule.lessons
+                .where((schedule) =>
+                    schedule.numSubgroup == 0 || schedule.numSubgroup == 1)
+                .toList()))
+        .toList();
 
-    _fullScheduleSecondSubgroup = [];
-    for (var entry in _mappedSchedule.entries) {
-      _fullScheduleSecondSubgroup.add(DaySchedule(
-        now.add(Duration(days: _weekDayNumber[entry.key]!)),
-        entry.value
-            .where((e) => e.numSubgroup == 2 || e.numSubgroup == 0)
-            .toList(),
-      ));
-    }
+    _fullScheduleSecondSubgroup = _fullScheduleAllGroup
+        .map((daySchedule) => DaySchedule(
+            daySchedule.date,
+            daySchedule.lessons
+                .where((schedule) =>
+                    schedule.numSubgroup == 0 || schedule.numSubgroup == 2)
+                .toList()))
+        .toList();
   }
 
   void _fetchDaylySchedule() {
@@ -200,56 +216,47 @@ class ScheduleScreenViewModel extends ChangeNotifier {
 
     _daylyScheduleAllGroup = [];
     for (int i = 0; i < 14; i++) {
-      _daylyScheduleAllGroup.add(DaySchedule(
-        now.add(Duration(days: i)),
-        _mappedSchedule[_weekDayNumber.keys.elementAt(currentWeekDay)]
-                ?.where(
-                  (e) => e.weeks.contains(_currentWeek),
-                )
-                .toList() ??
-            [],
-      ));
+      final currentDate = now.add(Duration(days: i));
 
-      currentWeekDay = (currentWeekDay + 1) % 7;
-    }
-
-    _daylyScheduleFirstSubgroup = [];
-    for (int i = 0; i < 14; i++) {
-      _daylyScheduleFirstSubgroup.add(DaySchedule(
-        now.add(Duration(days: i)),
-        _mappedSchedule[_weekDayNumber.keys.elementAt(currentWeekDay)]
-                ?.where(
-                  (e) =>
-                      e.weeks.contains(_currentWeek) && e.numSubgroup == 1 ||
-                      e.numSubgroup == 0,
-                )
-                .toList() ??
-            [],
-      ));
-
-      currentWeekDay = (currentWeekDay + 1) % 7;
-    }
-
-    _daylyScheduleSecondSubgroup = [];
-    for (int i = 0; i < 14; i++) {
-      _daylyScheduleSecondSubgroup.add(DaySchedule(
-        now.add(Duration(days: i)),
-        _mappedSchedule[_weekDayNumber.keys.elementAt(currentWeekDay)]
-                ?.where(
-                  (e) =>
-                      e.weeks.contains(_currentWeek) && e.numSubgroup == 2 ||
-                      e.numSubgroup == 0,
-                )
-                .toList() ??
-            [],
-      ));
+      if (currentDate.compareTo(_startDate!) >= 0 &&
+          currentDate.compareTo(_endDate!) <= 0) {
+        _daylyScheduleAllGroup.add(DaySchedule(
+          currentDate,
+          _mappedSchedule[_weekDayNumber.keys.elementAt(currentWeekDay)]
+                  ?.where(
+                    (e) => e.weeks.contains(_currentWeek),
+                  )
+                  .toList() ??
+              [],
+        ));
+      } else {
+        _daylyScheduleAllGroup.add(DaySchedule(currentDate, []));
+      }
 
       currentWeekDay = (currentWeekDay + 1) % 7;
     }
 
     _daylyScheduleAllGroup.sort((a, b) => a.date.compareTo(b.date));
-    _daylyScheduleFirstSubgroup.sort((a, b) => a.date.compareTo(b.date));
-    _daylyScheduleSecondSubgroup.sort((a, b) => a.date.compareTo(b.date));
+
+    _daylyScheduleFirstSubgroup = _daylyScheduleAllGroup
+        .map((daySchedule) => DaySchedule(
+              daySchedule.date,
+              daySchedule.lessons
+                  .where((schedule) =>
+                      schedule.numSubgroup == 0 || schedule.numSubgroup == 1)
+                  .toList(),
+            ))
+        .toList();
+
+    _daylyScheduleSecondSubgroup = _daylyScheduleAllGroup
+        .map((daySchedule) => DaySchedule(
+              daySchedule.date,
+              daySchedule.lessons
+                  .where((schedule) =>
+                      schedule.numSubgroup == 0 || schedule.numSubgroup == 2)
+                  .toList(),
+            ))
+        .toList();
   }
 }
 

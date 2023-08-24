@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 
 enum ScheduleViewType {
-  fullAllGroup,
-  fullFirstSubgroup,
-  fullSecondSubgroup,
-  daylyAllGroup,
-  daylyFirstSubgroup,
-  daylySecondSubgroup,
+  full,
+  dayly,
   exams,
+}
+
+enum ScheduleGroupType {
+  allGroup,
+  firstSubgroup,
+  secondSubgroup,
 }
 
 enum ScheduleEntityType {
@@ -17,18 +19,18 @@ enum ScheduleEntityType {
 
 abstract class ScheduleWidgetConstants {
   static const monthesList = [
-    'Января',
-    'Февраля',
-    'Марта',
-    'Апреля',
-    'Мая',
-    'Июня',
-    'Июля',
-    'Августа',
-    'Сентября',
-    'Октября',
-    'Ноября',
-    'Декабря'
+    'января',
+    'февраля',
+    'марта',
+    'апреля',
+    'мая',
+    'июня',
+    'июля',
+    'августа',
+    'сентября',
+    'октября',
+    'ноября',
+    'декабря'
   ];
 
   static const weekdayList = [

@@ -1,6 +1,7 @@
 import 'package:bsuir_schedule/domain/model/group.dart';
 import 'package:bsuir_schedule/domain/view_model/group_screen_view_model.dart';
 import 'package:bsuir_schedule/domain/view_model/root_screen_view_model.dart';
+import 'package:bsuir_schedule/view/widget/group_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -12,23 +13,6 @@ class GroupScreen extends StatefulWidget {
 }
 
 class _GroupScreenState extends State<GroupScreen> {
-  @override
-  Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => GroupScreenViewModel(),
-      child: const _GroupScreenBody(),
-    );
-  }
-}
-
-class _GroupScreenBody extends StatefulWidget {
-  const _GroupScreenBody({super.key});
-
-  @override
-  State<_GroupScreenBody> createState() => _GroupScreenBodyState();
-}
-
-class _GroupScreenBodyState extends State<_GroupScreenBody> {
   late Future<bool> _dataFetched;
 
   @override
@@ -40,138 +24,213 @@ class _GroupScreenBodyState extends State<_GroupScreenBody> {
 
   @override
   Widget build(BuildContext context) {
+    return FutureBuilder(
+        future: _dataFetched,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            return const _GroupScreenBodyWidget();
+          } else {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        });
+  }
+}
+
+class _GroupScreenBodyWidget extends StatelessWidget {
+  const _GroupScreenBodyWidget({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final starredGroups =
+        Provider.of<GroupScreenViewModel>(context).starredGroups;
+    final selectedGroupId =
+        Provider.of<RootScreenViewModel>(context).selectedGroupId;
+    // final starredGroups = context
+    //     .select((GroupScreenViewModel viewModel) => viewModel.starredGroups);
+    // final selectedGroupId = context
+    //     .select((RootScreenViewModel viewModel) => viewModel.selectedGroupId);
+
     return Scaffold(
-      body: Consumer<GroupScreenViewModel>(
-        builder: (context, viewModel, child) {
-          return Stack(
-            children: [
-              FutureBuilder(
-                future: _dataFetched,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done) {
-                    return getBody(viewModel);
-                  } else {
-                    return const Center(
-                      child: CircularProgressIndicator(),
+      body: NestedScrollView(
+        headerSliverBuilder: (
+          BuildContext context,
+          bool innerBoxIsScrolled,
+        ) =>
+            <Widget>[
+          const SliverAppBar(
+              expandedHeight: 100,
+              pinned: true,
+              floating: true,
+              flexibleSpace: FlexibleSpaceBar(
+                expandedTitleScale: 1,
+                centerTitle: true,
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('Избранные группы'),
+                    SizedBox(width: 8),
+                    Icon(
+                      Icons.star,
+                      color: Colors.amber,
+                    ),
+                  ],
+                ),
+              )),
+        ],
+        body: getStarred(context, starredGroups, selectedGroupId),
+      ),
+      floatingActionButton: FloatingActionButton(
+        heroTag: 'group_screen_floating_action_button',
+        onPressed: () {
+          showSearch(
+            context: context,
+            delegate: GroupSearchDelegate(
+              allGroups: context.read<GroupScreenViewModel>().groups,
+              onSelected: (Group group) {
+                context.read<GroupScreenViewModel>().addStarredGroup(
+                      context.read<RootScreenViewModel>().db,
+                      group,
                     );
-                  }
-                },
-              ),
-              Padding(
-                padding: const EdgeInsets.only(
-                  top: 15,
-                  left: 15,
-                  right: 15,
-                ),
-                child: TextField(
-                  keyboardType: TextInputType.name,
-                  controller: viewModel.searchController,
-                  decoration: const InputDecoration(
-                    hintText: 'Поиск...',
-                    isCollapsed: true,
-                    contentPadding: EdgeInsets.all(15.0),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(30.0)),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(30.0)),
-                    ),
-                  ),
-                ),
-              ),
-            ],
+              },
+            ),
           );
         },
+        child: const Icon(Icons.add),
       ),
     );
   }
 
-  ListView getBody(GroupScreenViewModel viewModel) {
-    final List<Group> starredGroups = viewModel.starredGroups;
-    final List<Group> groups = viewModel.groups;
-
-    List<Widget> children = [
-      const SizedBox(height: 16),
-      if (starredGroups.isNotEmpty) ...[
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16),
-          child: Text(
-            'Избранные',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-        const SizedBox(height: 8),
-        ...starredGroups.map((e) => GestureDetector(
-              key: ValueKey(e.id),
-              onTap: () => {
-                Provider.of<RootScreenViewModel>(context, listen: false)
-                    .setSelectedGroupId(e.id)
-              },
-              child: ListTile(
-                title: Text(e.name),
-                trailing: SizedBox(
-                  width: 65,
-                  child: Row(
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.star),
-                        onPressed: () => {
-                          viewModel.removeStarredGroup(
-                              Provider.of<RootScreenViewModel>(context,
-                                      listen: false)
-                                  .db,
-                              e),
-                        },
-                      ),
-                      if (Provider.of<RootScreenViewModel>(context)
-                              .selectedGroupId ==
-                          e.id) ...[
-                        const Icon(Icons.check),
-                      ]
-                    ],
-                  ),
-                ),
-              ),
-            ))
-      ],
-      const SizedBox(height: 16),
-      const Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16),
+  Widget getStarred(
+    BuildContext context,
+    List<Group> starredGroups,
+    int? selectedGroupId,
+  ) {
+    if (starredGroups.isEmpty) {
+      return const Center(
         child: Text(
-          'Все',
+          'Тут пока что пусто...',
           style: TextStyle(
+            color: Colors.white,
             fontSize: 16,
-            fontWeight: FontWeight.bold,
           ),
         ),
+      );
+    }
+
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(vertical: 20),
+      physics: const BouncingScrollPhysics(),
+      itemCount: starredGroups.length,
+      itemBuilder: (context, index) {
+        final group = starredGroups[index];
+        return GroupCard(
+          group: group,
+          isSelected: selectedGroupId == group.id,
+          onPressed: (Group group) {
+            context.read<RootScreenViewModel>().setSelectedGroupId(group.id);
+          },
+          onDelete: (Group group) {
+            final db = context.read<RootScreenViewModel>().db;
+            context.read<GroupScreenViewModel>().removeStarredGroup(db, group);
+          },
+          onUpdate: (Group group) {
+            final db = context.read<RootScreenViewModel>().db;
+            context.read<GroupScreenViewModel>().updateStarredGroup(db, group);
+
+            if (selectedGroupId == group.id) {
+              context.read<RootScreenViewModel>().setSelectedGroupId(group.id);
+            }
+          },
+        );
+      },
+    );
+  }
+}
+
+class GroupSearchDelegate extends SearchDelegate {
+  final List<Group> allGroups;
+  final Function(Group) onSelected;
+
+  GroupSearchDelegate({
+    required this.allGroups,
+    required this.onSelected,
+  });
+
+  @override
+  List<Widget> buildActions(BuildContext context) {
+    return [
+      IconButton(
+        onPressed: () => query = '',
+        icon: const Icon(Icons.clear),
       ),
-      const SizedBox(height: 8),
-      ...groups.map((e) => GestureDetector(
-            key: ValueKey(e.id),
-            onTap: () => _onTap(e),
-            child: ListTile(
-              title: Text(e.name),
-            ),
-          )),
     ];
+  }
+
+  @override
+  Widget buildLeading(BuildContext context) {
+    return IconButton(
+      onPressed: () => close(context, null),
+      icon: const Icon(Icons.arrow_back),
+    );
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    query = query.toLowerCase();
+
+    final groups = allGroups
+        .where((group) =>
+            group.name.toLowerCase().contains(query) ||
+            group.facultyAbbrev.toLowerCase().contains(query) ||
+            group.specialityAbbrev.toLowerCase().contains(query) ||
+            group.specialityName.toString().contains(query))
+        .toList();
 
     return ListView.builder(
       physics: const BouncingScrollPhysics(),
-      itemCount: children.length,
+      itemCount: groups.length,
       itemBuilder: (context, index) {
-        return children[index];
+        return GroupCard(
+          group: groups[index],
+          isSelected: false,
+          onPressed: (Group group) {
+            onSelected(group);
+            close(context, null);
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text('Добавляю расписание для ${group.name}')));
+          },
+        );
       },
     );
   }
 
-  void _onTap(Group group) {
-    Provider.of<GroupScreenViewModel>(context, listen: false).addStarredGroup(
-        Provider.of<RootScreenViewModel>(context, listen: false).db, group);
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    final groups = allGroups
+        .where((group) =>
+            group.name.toLowerCase().contains(query) ||
+            group.facultyAbbrev.toLowerCase().contains(query) ||
+            group.specialityAbbrev.toLowerCase().contains(query) ||
+            group.specialityName.toString().contains(query))
+        .toList();
 
-    Provider.of<RootScreenViewModel>(context, listen: false)
-        .setSelectedGroupId(group.id);
+    return ListView.builder(
+      physics: const BouncingScrollPhysics(),
+      itemCount: groups.length,
+      itemBuilder: (context, index) {
+        return GroupCard(
+          group: groups[index],
+          isSelected: false,
+          onPressed: (Group group) {
+            onSelected(group);
+            close(context, null);
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text('Добавляю расписание для ${group.name}')));
+          },
+        );
+      },
+    );
   }
 }

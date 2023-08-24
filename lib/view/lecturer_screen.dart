@@ -1,8 +1,8 @@
-import 'dart:typed_data';
-
 import 'package:bsuir_schedule/domain/model/lecturer.dart';
 import 'package:bsuir_schedule/domain/view_model/lecturer_screen_view_model.dart';
 import 'package:bsuir_schedule/domain/view_model/root_screen_view_model.dart';
+import 'package:bsuir_schedule/view/widget/lecturer_card.dart';
+import 'package:bsuir_schedule/view/widget/lecturer_image_factory.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -14,23 +14,6 @@ class LecturerScreen extends StatefulWidget {
 }
 
 class _LecturerScreenState extends State<LecturerScreen> {
-  @override
-  Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => LecturerScreenViewModel(),
-      child: const _LecturerScreenBody(),
-    );
-  }
-}
-
-class _LecturerScreenBody extends StatefulWidget {
-  const _LecturerScreenBody({super.key});
-
-  @override
-  State<_LecturerScreenBody> createState() => _LecturerScreenBodyState();
-}
-
-class _LecturerScreenBodyState extends State<_LecturerScreenBody> {
   late Future<bool> _dataFetched;
 
   @override
@@ -42,194 +25,221 @@ class _LecturerScreenBodyState extends State<_LecturerScreenBody> {
 
   @override
   Widget build(BuildContext context) {
+    return FutureBuilder(
+        future: _dataFetched,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            return const _LecturerScreenBodyWidget();
+          } else {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        });
+  }
+}
+
+class _LecturerScreenBodyWidget extends StatelessWidget {
+  const _LecturerScreenBodyWidget({Key? key}) : super(key: key);
+  static final imageFactory = LecturerImageFactory();
+
+  @override
+  Widget build(BuildContext context) {
+    final starredLecturers =
+        Provider.of<LecturerScreenViewModel>(context).starredLecturers;
+    final selectedLecturerId =
+        Provider.of<RootScreenViewModel>(context).selectedLecturerId;
+
     return Scaffold(
-      body: Consumer<LecturerScreenViewModel>(
-        builder: (context, viewModel, child) {
-          return Stack(
-            children: [
-              FutureBuilder(
-                future: _dataFetched,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done) {
-                    return getBody(viewModel);
-                  } else {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
+        body: NestedScrollView(
+          headerSliverBuilder: (
+            BuildContext context,
+            innerBoxIsScrolled,
+          ) =>
+              <Widget>[
+            const SliverAppBar(
+              expandedHeight: 100,
+              pinned: true,
+              floating: true,
+              flexibleSpace: FlexibleSpaceBar(
+                expandedTitleScale: 1,
+                centerTitle: true,
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('Избранные преподаватели'),
+                    SizedBox(width: 8),
+                    Icon(
+                      Icons.star,
+                      color: Colors.amber,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+          body: getBody(context, starredLecturers, selectedLecturerId),
+        ),
+        floatingActionButton: FloatingActionButton(
+          heroTag: 'lecturer_screen_floating_action_button',
+          onPressed: () {
+            showSearch(
+              context: context,
+              delegate: LecturerSearchDelegate(
+                allLecturers: context.read<LecturerScreenViewModel>().lecturers,
+                onSelected: (lecturer) {
+                  context.read<LecturerScreenViewModel>().addStarredLecturer(
+                        context.read<RootScreenViewModel>().db,
+                        lecturer,
+                      );
                 },
               ),
-              Padding(
-                padding: const EdgeInsets.only(
-                  top: 15,
-                  left: 15,
-                  right: 15,
-                ),
-                child: TextField(
-                  keyboardType: TextInputType.name,
-                  controller: viewModel.searchController,
-                  decoration: const InputDecoration(
-                    hintText: 'Поиск...',
-                    isCollapsed: true,
-                    contentPadding: EdgeInsets.all(15.0),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(30.0)),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(30.0)),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          );
-        },
-      ),
-    );
+            );
+          },
+          child: const Icon(Icons.add),
+        ));
   }
 
-  ListView getBody(LecturerScreenViewModel viewModel) {
-    final List<Lecturer> starredLecturers = viewModel.starredLecturers;
-    final List<Lecturer> lecturers = viewModel.lecturers;
-
-    List<Widget> children = [
-      const SizedBox(height: 16),
-      if (starredLecturers.isNotEmpty) ...[
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16),
-          child: Text(
-            'Избранные',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-        const SizedBox(height: 8),
-        ...starredLecturers.map((e) => GestureDetector(
-              key: ValueKey(e.id),
-              onTap: () => {
-                Provider.of<RootScreenViewModel>(context, listen: false)
-                    .setSelectedLecturerId(e.id)
-              },
-              child: LecturerCard(
-                context: context,
-                lecturer: e,
-                isEditable: true,
-              ),
-            )),
-        const SizedBox(height: 16),
-      ],
-      const Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16),
+  Widget getBody(
+    BuildContext context,
+    List<Lecturer> starredLecturers,
+    int? selectedLecturerId,
+  ) {
+    if (starredLecturers.isEmpty) {
+      return const Center(
         child: Text(
-          'Все',
+          'Тут пока что пусто...',
           style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
+            color: Colors.white,
+            fontSize: 16,
           ),
         ),
-      ),
-      const SizedBox(height: 8),
-      ...lecturers.map((e) => GestureDetector(
-            key: ValueKey(e.id),
-            onTap: () => _onTap(e),
-            child: LecturerCard(
-              context: context,
-              lecturer: e,
-              isEditable: false,
-            ),
-          ))
-    ];
+      );
+    }
 
     return ListView.builder(
+      padding: const EdgeInsets.symmetric(vertical: 20),
       physics: const BouncingScrollPhysics(),
-      itemCount: children.length,
+      itemCount: starredLecturers.length,
       itemBuilder: (context, index) {
-        return children[index];
+        final lecturer = starredLecturers[index];
+        return LecturerCard(
+          lecturer: lecturer,
+          image: imageFactory.fetchImage(
+            radius: 23,
+            borderSize: 0,
+            lecturer: lecturer,
+          ),
+          isStarred: selectedLecturerId == lecturer.id,
+          onPressed: () {
+            context
+                .read<RootScreenViewModel>()
+                .setSelectedLecturerId(lecturer.id);
+          },
+          onDelete: (Lecturer lecturer) {
+            context.read<LecturerScreenViewModel>().removeStarredLecturer(
+                  context.read<RootScreenViewModel>().db,
+                  lecturer,
+                );
+          },
+          onUpdate: (Lecturer lecturer) {
+            context.read<LecturerScreenViewModel>().updateStarredLecturer(
+                  context.read<RootScreenViewModel>().db,
+                  lecturer,
+                );
+          },
+        );
+      },
+    );
+  }
+}
+
+class LecturerSearchDelegate extends SearchDelegate {
+  final List<Lecturer> allLecturers;
+  final Function(Lecturer) onSelected;
+
+  LecturerSearchDelegate({
+    required this.allLecturers,
+    required this.onSelected,
+  });
+
+  @override
+  List<Widget> buildActions(BuildContext context) => [
+        IconButton(
+          icon: const Icon(Icons.clear),
+          onPressed: () => query = '',
+        ),
+      ];
+
+  @override
+  Widget buildLeading(BuildContext context) => IconButton(
+        icon: const Icon(Icons.arrow_back),
+        onPressed: () => close(context, null),
+      );
+
+  @override
+  Widget buildResults(BuildContext context) {
+    query = query.toLowerCase();
+
+    final lecturers = allLecturers
+        .where((lecturer) =>
+            lecturer.firstName.toLowerCase().contains(query) ||
+            lecturer.middleName.toLowerCase().contains(query) ||
+            lecturer.lastName.toLowerCase().contains(query))
+        .toList();
+
+    return ListView.builder(
+      itemCount: lecturers.length,
+      itemBuilder: (context, index) {
+        final lecturer = lecturers[index];
+        return LecturerCard(
+          lecturer: lecturer,
+          image: const Icon(Icons.person_outline),
+          isStarred: false,
+          onPressed: () {
+            onSelected(lecturer);
+            close(context, null);
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Добавляю расписание для ${lecturer.lastName}'),
+              ),
+            );
+          },
+        );
       },
     );
   }
 
-  void _onTap(Lecturer lecturer) {
-    Provider.of<LecturerScreenViewModel>(context, listen: false)
-        .addStarredLecturer(
-            Provider.of<RootScreenViewModel>(context, listen: false).db,
-            lecturer);
-    Provider.of<RootScreenViewModel>(context, listen: false)
-        .setSelectedLecturerId(lecturer.id);
-  }
-}
-
-class LecturerCard extends StatefulWidget {
-  final BuildContext context;
-  final Lecturer lecturer;
-  final bool isEditable;
-
-  const LecturerCard({
-    Key? key,
-    required this.context,
-    required this.lecturer,
-    required this.isEditable,
-  }) : super(key: key);
-
   @override
-  State<LecturerCard> createState() => _LecturerCardState();
-}
+  Widget buildSuggestions(BuildContext context) {
+    query = query.toLowerCase();
 
-class _LecturerCardState extends State<LecturerCard> {
-  Uint8List? photo;
+    final lecturers = allLecturers
+        .where((lecturer) =>
+            lecturer.firstName.toLowerCase().contains(query) ||
+            lecturer.middleName.toLowerCase().contains(query) ||
+            lecturer.lastName.toLowerCase().contains(query))
+        .toList();
 
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      leading: FutureBuilder(
-          future: _fetchImage(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done &&
-                photo != null) {
-              return CircleAvatar(
-                radius: 16,
-                foregroundImage: Image.memory(photo!).image,
-              );
-            } else {
-              return const CircleAvatar(
-                radius: 16,
-                child: CircularProgressIndicator(),
-              );
-            }
-          }),
-      title: Text(
-          '${widget.lecturer.firstName} ${widget.lecturer.middleName} ${widget.lecturer.lastName}'),
-      trailing: SizedBox(
-        width: 65,
-        child: Row(
-          children: [
-            if (widget.isEditable) ...[
-              IconButton(
-                icon: const Icon(Icons.star),
-                onPressed: () => Provider.of<LecturerScreenViewModel>(context,
-                        listen: false)
-                    .removeStarredLecturer(
-                        Provider.of<RootScreenViewModel>(context, listen: false)
-                            .db,
-                        widget.lecturer),
+    return ListView.builder(
+      itemCount: lecturers.length,
+      itemBuilder: (context, index) {
+        final lecturer = lecturers[index];
+        return LecturerCard(
+          lecturer: lecturer,
+          image: const Icon(Icons.person_outline),
+          isStarred: false,
+          onPressed: () {
+            onSelected(lecturer);
+            close(context, null);
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Добавляю расписание для ${lecturer.lastName}'),
               ),
-              if (Provider.of<RootScreenViewModel>(context)
-                      .selectedLecturerId ==
-                  widget.lecturer.id) ...[
-                const Icon(Icons.check),
-              ],
-            ],
-          ],
-        ),
-      ),
+            );
+          },
+        );
+      },
     );
-  }
-
-  Future<void> _fetchImage() async {
-    photo ??= await Provider.of<LecturerScreenViewModel>(widget.context,
-            listen: false)
-        .getLecturerPhoto(widget.lecturer.photoPath);
   }
 }
