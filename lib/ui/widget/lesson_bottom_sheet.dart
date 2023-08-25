@@ -1,3 +1,4 @@
+import 'package:bsuir_schedule/domain/model/group.dart';
 import 'package:bsuir_schedule/domain/model/lesson.dart';
 import 'package:bsuir_schedule/ui/themes/lesson_bottom_sheet_style.dart';
 import 'package:bsuir_schedule/ui/screens/view_constants.dart';
@@ -43,7 +44,7 @@ class LessonBottomSheet extends StatelessWidget {
           if (scheduleEntityType == ScheduleEntityType.group)
             getLecturerInfo(bodyStyle, Theme.of(context).primaryColor)
           else
-            getGroupInfo(bodyStyle, Theme.of(context).primaryColor),
+            getGroupInfo(context, bodyStyle, Theme.of(context).primaryColor),
           const SizedBox(
             height: 15,
           ),
@@ -161,7 +162,11 @@ class LessonBottomSheet extends StatelessWidget {
         ],
       );
 
-  Widget getGroupInfo(TextStyle bodyStyle, Color backgroundColor) {
+  Widget getGroupInfo(
+    BuildContext context,
+    TextStyle bodyStyle,
+    Color backgroundColor,
+  ) {
     final groups = lesson.studentGroups;
 
     if (groups.isEmpty ||
@@ -170,38 +175,61 @@ class LessonBottomSheet extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    return Container(
-      height: 75,
-      padding: const EdgeInsets.all(15),
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: const BorderRadius.all(Radius.circular(20)),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                groups.map((group) => group.name).join(', '),
-                style: bodyStyle.copyWith(fontWeight: FontWeight.bold),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              Text(
-                '${groups.first.facultyAbbrev} ${groups.first.specialityAbbrev}',
-                style: bodyStyle,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              )
-            ],
+    return GestureDetector(
+      onTap: () => showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(
+              top: Radius.circular(20),
+            ),
           ),
-          const CircleAvatar(
-            child: Icon(Icons.group_outlined),
-          )
-        ],
+          builder: (context) {
+            return _ExtendedGroupBottomSheet(
+              groups: groups,
+            );
+          }),
+      child: Container(
+        height: 75,
+        padding: const EdgeInsets.all(15),
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          borderRadius: const BorderRadius.all(Radius.circular(20)),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    groups.map((group) => group.name).join(', '),
+                    style: bodyStyle.copyWith(fontWeight: FontWeight.bold),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Text(
+                    groups
+                        .map((group) =>
+                            '${group.facultyAbbrev} ${group.specialityAbbrev}')
+                        .join(', '),
+                    style: bodyStyle,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  )
+                ],
+              ),
+            ),
+            const SizedBox(
+              width: 5,
+            ),
+            const CircleAvatar(
+              child: Icon(Icons.group_outlined),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -241,6 +269,65 @@ class LessonBottomSheet extends StatelessWidget {
             image!,
           ]
         ],
+      ),
+    );
+  }
+}
+
+class _ExtendedGroupBottomSheet extends StatelessWidget {
+  final List<Group> groups;
+
+  const _ExtendedGroupBottomSheet({Key? key, required this.groups})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final defaultStyle = Theme.of(context).extension<LessonBottomSheetStyle>()!;
+
+    final bodyStyle = defaultStyle.bodyStyle;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: List.generate(groups.length, (index) {
+          final group = groups[index];
+
+          return Container(
+            margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            padding: const EdgeInsets.all(15),
+            decoration: BoxDecoration(
+              color: Theme.of(context).primaryColor,
+              borderRadius: const BorderRadius.all(Radius.circular(20)),
+            ),
+            child: Row(
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      group.name,
+                      style: bodyStyle.copyWith(fontWeight: FontWeight.bold),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Text(
+                      '${group.facultyAbbrev} ${group.specialityAbbrev}, ${group.course}-й курс',
+                      style: bodyStyle,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+                const Spacer(),
+                const CircleAvatar(
+                  child: Icon(Icons.group_outlined),
+                )
+              ],
+            ),
+          );
+        }),
       ),
     );
   }
