@@ -5,12 +5,14 @@ import 'package:flutter/material.dart';
 
 class LessonBottomSheet extends StatelessWidget {
   final LessonBottomSheetStyle? style;
+  final ScheduleEntityType scheduleEntityType;
   final Lesson lesson;
   final Widget? image;
 
   const LessonBottomSheet({
     super.key,
     this.style,
+    required this.scheduleEntityType,
     required this.lesson,
     required this.image,
   });
@@ -38,7 +40,7 @@ class LessonBottomSheet extends StatelessWidget {
           const SizedBox(
             height: 15,
           ),
-          if (lesson.lecturers.isNotEmpty)
+          if (scheduleEntityType == ScheduleEntityType.group)
             getLecturerInfo(bodyStyle, Theme.of(context).primaryColor)
           else
             getGroupInfo(bodyStyle, Theme.of(context).primaryColor),

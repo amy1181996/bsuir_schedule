@@ -387,6 +387,7 @@ class _LessonListWidgetState extends State<_LessonListWidget>
             builder: (context) {
               return LessonBottomSheet(
                 lesson: lesson,
+                scheduleEntityType: widget.scheduleEntityType,
                 image: imageFactory.fetchImage(
                   radius: 25,
                   borderSize: 0,
