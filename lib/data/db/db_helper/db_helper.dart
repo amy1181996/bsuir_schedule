@@ -8,7 +8,7 @@ import 'package:path_provider/path_provider.dart';
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper.internal();
   static const String _dbName = 'main.db';
-  static const int _dbVersion = 28;
+  static const int _dbVersion = 40;
 
   factory DatabaseHelper() => _instance;
 
@@ -42,6 +42,7 @@ class DatabaseHelper {
     await _createLessonLecturerRelationTable(db);
     await _createGroupScheduleTable(db);
     await _createLecturerScheduleTable(db);
+    await _createScheduleLastUpdateTable(db);
   }
 
   _createGroupTable(Database db) async {
@@ -170,6 +171,18 @@ class DatabaseHelper {
     ''');
   }
 
+  _createScheduleLastUpdateTable(Database db) async {
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS ${DbTableName.scheduleLastUpdate} (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        schedule_id INTEGER NOT NULL UNIQUE,
+        last_update TEXT NOT NULL,
+        hash INTEGER NOT NULL UNIQUE,
+        FOREIGN KEY (schedule_id) REFERENCES ${DbTableName.groupSchedule}(id)
+      )
+    ''');
+  }
+
   void _onUpgrade(Database db, int oldVersion, int newVersion) async {
     await db.execute('DROP TABLE IF EXISTS ${DbTableName.group}');
     await db.execute('DROP TABLE IF EXISTS ${DbTableName.lecturer}');
@@ -181,6 +194,7 @@ class DatabaseHelper {
         .execute('DROP TABLE IF EXISTS ${DbTableName.lessonLecturerRelation}');
     await db.execute('DROP TABLE IF EXISTS ${DbTableName.groupSchedule}');
     await db.execute('DROP TABLE IF EXISTS ${DbTableName.lecturerSchedule}');
+    await db.execute('DROP TABLE IF EXISTS ${DbTableName.scheduleLastUpdate}');
     _onCreate(db, newVersion);
   }
 
@@ -196,6 +210,11 @@ class DatabaseHelper {
 
   Future<int> update(String table, BaseModel model) async => (await db)
       .update(table, model.toMap(), where: 'id = ?', whereArgs: [model.id]);
+
+  Future<int> updateWhere(String table, BaseModel model, String where,
+          List<dynamic> whereArgs) async =>
+      (await db)
+          .update(table, model.toMap(), where: where, whereArgs: whereArgs);
 
   Future<int> delete(String table, BaseModel model) async =>
       (await db).delete(table, where: 'id = ?', whereArgs: [model.id]);

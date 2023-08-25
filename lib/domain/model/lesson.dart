@@ -37,4 +37,41 @@ class Lesson {
     required this.endLessonDate,
     required this.weekDay,
   });
+
+  Lesson copyWith({
+    int? id,
+    List<String>? auditories,
+    String? startLessonTime,
+    String? endLessonTime,
+    String? lessonTypeAbbrev,
+    String? note,
+    int? numSubgroup,
+    List<Group>? studentGroups,
+    List<Lecturer>? lecturers,
+    String? subject,
+    String? subjectFullName,
+    List<int>? weeks,
+    DateTime? dateLesson,
+    DateTime? startLessonDate,
+    DateTime? endLessonDate,
+    String? weekDay,
+  }) =>
+      Lesson(
+        id: id ?? this.id,
+        auditories: auditories ?? this.auditories,
+        startLessonTime: startLessonTime ?? this.startLessonTime,
+        endLessonTime: endLessonTime ?? this.endLessonTime,
+        lessonTypeAbbrev: lessonTypeAbbrev ?? this.lessonTypeAbbrev,
+        note: note ?? this.note,
+        numSubgroup: numSubgroup ?? this.numSubgroup,
+        studentGroups: studentGroups ?? this.studentGroups,
+        lecturers: lecturers ?? this.lecturers,
+        subject: subject ?? this.subject,
+        subjectFullName: subjectFullName ?? this.subjectFullName,
+        weeks: weeks ?? this.weeks,
+        dateLesson: dateLesson ?? this.dateLesson,
+        startLessonDate: startLessonDate ?? this.startLessonDate,
+        endLessonDate: endLessonDate ?? this.endLessonDate,
+        weekDay: weekDay ?? this.weekDay,
+      );
 }

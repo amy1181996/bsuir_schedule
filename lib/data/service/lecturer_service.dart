@@ -12,8 +12,11 @@ class LecturerService {
 
     if (lecturers.isEmpty) {
       lecturers = await _lecturerApi.getAllLecturers() ?? [];
-      await Future.wait(
-          lecturers.map((e) => _lecturerDb.insertLecturer(db, e)));
+
+      for (int i = 0; i < lecturers.length; i++) {
+        final lecturerId = await _lecturerDb.insertLecturer(db, lecturers[i]);
+        lecturers[i] = lecturers[i].copyWith(id: lecturerId);
+      }
     }
 
     return lecturers;

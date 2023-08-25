@@ -76,14 +76,18 @@ class LecturerScheduleDb {
 
   Future<int> updateLecturerSchedule(
       DatabaseHelper db, Schedule lecturerSchedule) async {
-    // TODO: remove old lessons
-    await Future.wait(lecturerSchedule.schedules.map((lesson) async {
-      await _lessonService.removeLesson(db, lesson);
-    }));
+    final oldLecturerSchedule =
+        await getLecturerSchedule(db, lecturerSchedule.lecturer!);
 
-    await Future.wait(lecturerSchedule.exams.map((lesson) async {
-      await _lessonService.removeLesson(db, lesson);
-    }));
+    if (oldLecturerSchedule != null) {
+      await Future.wait(oldLecturerSchedule.schedules.map((lesson) async {
+        await _lessonService.removeLesson(db, lesson);
+      }));
+
+      await Future.wait(oldLecturerSchedule.exams.map((lesson) async {
+        await _lessonService.removeLesson(db, lesson);
+      }));
+    }
 
     final int scheduleId = await db.update(DbTableName.lecturerSchedule,
         AddSchedule.fromSchedule(lecturerSchedule));

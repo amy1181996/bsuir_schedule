@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:bsuir_schedule/data/api/model/schedule.dart';
 import 'package:bsuir_schedule/data/api/shared_api.dart';
@@ -18,7 +19,14 @@ class LecturerScheduleApi with SharedApi {
       DatabaseHelper db, Lecturer lecturer) async {
     final String localPath = 'employees/schedule/${lecturer.urlId}';
 
-    final response = await getResponse(localPath);
+    HttpClientResponse response;
+
+    try {
+      response = await getResponse(localPath);
+    } catch (e) {
+      print('$e');
+      return null;
+    }
 
     if (response.statusCode != 200) {
       return null;
@@ -52,6 +60,8 @@ class LecturerScheduleApi with SharedApi {
                 .toList()
             : [];
 
+        lecturers.insert(0, lecturer);
+
         final Lesson lesson = apiLesson.toLesson(
             weekDay: entry.key, studentGroups: groups, lecturers: lecturers);
 
@@ -77,6 +87,8 @@ class LecturerScheduleApi with SharedApi {
               .whereType<Lecturer>()
               .toList()
           : [];
+
+      lecturers.insert(0, lecturer);
 
       final Lesson lesson = apiLesson.toLesson(
           weekDay: null, studentGroups: groups, lecturers: lecturers);

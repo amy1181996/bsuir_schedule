@@ -1,13 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:bsuir_schedule/data/api/model/group.dart';
 import 'package:bsuir_schedule/data/api/shared_api.dart';
 import 'package:bsuir_schedule/domain/model/group.dart';
+import 'package:intl/intl.dart';
 
-class GroupApi with SharedApi {
-  Future<List<Group>?> getAllGroups() async {
-    const localPath = 'student-groups';
+class GroupScheduleLastUpdateApi with SharedApi {
+  Future<DateTime?> getGroupScheduleLastUpdate(Group group) async {
+    final localPath =
+        'last-update-date/student-group?groupNumber=${group.name}';
 
     HttpClientResponse response;
 
@@ -22,9 +23,7 @@ class GroupApi with SharedApi {
       return null;
     }
 
-    return (jsonDecode(await response.transform(utf8.decoder).join()) as List)
-        .where((e) => e['course'] != null)
-        .map((e) => ApiGroup.fromJson(e).toGroup())
-        .toList();
+    return DateFormat('dd.MM.yyyy').parse(jsonDecode(
+        await response.transform(utf8.decoder).join())['lastUpdateDate']);
   }
 }

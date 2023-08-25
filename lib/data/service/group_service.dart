@@ -12,7 +12,10 @@ class GroupService {
 
     if (groups.isEmpty) {
       groups = await _groupApi.getAllGroups() ?? [];
-      await Future.wait(groups.map((e) => _groupDb.insertGroup(db, e)));
+      for (int i = 0; i < groups.length; i++) {
+        final groupId = await _groupDb.insertGroup(db, groups[i]);
+        groups[i] = groups[i].copyWith(id: groupId);
+      }
     }
 
     return groups;

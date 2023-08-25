@@ -5,11 +5,11 @@ import 'package:bsuir_schedule/domain/model/lesson.dart';
 class LessonService {
   static final LessonDb _lessonDb = LessonDb();
 
-  Future<Lesson?> getLesson(DatabaseHelper db, int id) {
+  Future<Lesson?> getLesson(DatabaseHelper db, int id) async {
     return _lessonDb.getLesson(db, id);
   }
 
-  Future<int> addLesson(DatabaseHelper db, Lesson lesson) {
+  Future<int> addLesson(DatabaseHelper db, Lesson lesson) async {
     return _lessonDb.insertLesson(db, lesson);
   }
 

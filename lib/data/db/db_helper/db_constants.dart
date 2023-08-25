@@ -8,4 +8,5 @@ abstract class DbTableName {
   static const String lessonLecturerRelation = 'lesson_lecturer_relation';
   static const String groupSchedule = 'group_schedule';
   static const String lecturerSchedule = 'lecturer_schedule';
+  static const String scheduleLastUpdate = 'schedule_last_update';
 }

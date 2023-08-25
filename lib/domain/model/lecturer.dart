@@ -14,4 +14,21 @@ class Lecturer {
     required this.photoPath,
     required this.urlId,
   });
+
+  Lecturer copyWith({
+    int? id,
+    String? firstName,
+    String? lastName,
+    String? middleName,
+    String? photoPath,
+    String? urlId,
+  }) =>
+      Lecturer(
+        id: id ?? this.id,
+        firstName: firstName ?? this.firstName,
+        lastName: lastName ?? this.lastName,
+        middleName: middleName ?? this.middleName,
+        photoPath: photoPath ?? this.photoPath,
+        urlId: urlId ?? this.urlId,
+      );
 }

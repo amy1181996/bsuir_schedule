@@ -1,13 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:bsuir_schedule/data/api/model/lecturer.dart';
 import 'package:bsuir_schedule/data/api/shared_api.dart';
 import 'package:bsuir_schedule/domain/model/lecturer.dart';
+import 'package:intl/intl.dart';
 
-class LecturerApi with SharedApi {
-  Future<List<Lecturer>?> getAllLecturers() async {
-    const localPath = 'employees/all';
+class LecturerScheduleLastUpdateApi with SharedApi {
+  Future<DateTime?> getLecturerLastUpdate(Lecturer lecturer) async {
+    final localPath = 'last-update-date/employee?url-id=${lecturer.urlId}';
 
     HttpClientResponse response;
 
@@ -22,8 +22,7 @@ class LecturerApi with SharedApi {
       return null;
     }
 
-    return (jsonDecode(await response.transform(utf8.decoder).join()) as List)
-        .map((e) => ApiLecturer.fromJson(e).toLecturer())
-        .toList();
+    return DateFormat('dd.MM.yyyy').parse(jsonDecode(
+        await response.transform(utf8.decoder).join())['lastUpdateDate']);
   }
 }

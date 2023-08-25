@@ -24,4 +24,26 @@ class Schedule {
     required this.schedules,
     required this.exams,
   });
+
+  Schedule copyWith({
+    int? id,
+    DateTime? startDate,
+    DateTime? endDate,
+    DateTime? startExamsDate,
+    Lecturer? lecturer,
+    Group? group,
+    List<Lesson>? schedules,
+    List<Lesson>? exams,
+  }) =>
+      Schedule(
+        id: id ?? this.id,
+        startDate: startDate ?? this.startDate,
+        endDate: endDate ?? this.endDate,
+        startExamsDate: startExamsDate ?? this.startDate,
+        endExamsDate: endExamsDate ?? this.endDate,
+        lecturer: lecturer ?? this.lecturer,
+        group: group ?? this.group,
+        schedules: schedules ?? this.schedules,
+        exams: exams ?? this.exams,
+      );
 }
