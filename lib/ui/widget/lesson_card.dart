@@ -174,13 +174,6 @@ class LessonCard extends StatelessWidget {
             )
           : const SizedBox.shrink();
 
-  Widget getSubgroupNumber(TextStyle bodyStyle) => lesson.numSubgroup != 0
-      ? Text(
-          '${lesson.numSubgroup}-я подгруппа',
-          style: bodyStyle,
-        )
-      : const SizedBox.shrink();
-
   Widget getWeeks(TextStyle bodyStyle) => lesson.weeks.isNotEmpty
       ? Text(
           'нед. ${lesson.weeks.join(', ')}',
@@ -216,8 +209,20 @@ class LessonCard extends StatelessWidget {
         ? Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              getLecturerFullName(bodyStyle),
-              image ?? const SizedBox.shrink()
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    lecturer.lastName,
+                    style: bodyStyle.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    '${lecturer.firstName} ${lecturer.middleName}',
+                    style: bodyStyle,
+                  ),
+                ],
+              ),
+              image ?? const SizedBox.shrink(),
             ],
           )
         : const SizedBox.shrink();
@@ -228,30 +233,35 @@ class LessonCard extends StatelessWidget {
 
     return !lesson.subject.toLowerCase().contains('спецп') &&
             !lesson.subject.toLowerCase().contains('физк')
-        ? Text(
-            groups.map((group) => group.name).join(', '),
-            style: bodyStyle,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          )
-        : const SizedBox.shrink();
-  }
-
-  Widget getLecturerFullName(TextStyle bodyStyle) {
-    final lecturer = lesson.lecturers.firstOrNull;
-
-    return lecturer != null
-        ? Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        ? Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                lecturer.lastName,
-                style: bodyStyle.copyWith(fontWeight: FontWeight.bold),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      groups.map((group) => group.name).join(', '),
+                      style: bodyStyle.copyWith(fontWeight: FontWeight.bold),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Text(
+                      groups
+                          .map((group) =>
+                              '${group.facultyAbbrev} ${group.specialityAbbrev}')
+                          .join(', '),
+                      style: bodyStyle,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
               ),
-              Text(
-                '${lecturer.firstName} ${lecturer.middleName}',
-                style: bodyStyle,
-              ),
+              const CircleAvatar(
+                radius: 20,
+                child: Icon(Icons.person_outline),
+              )
             ],
           )
         : const SizedBox.shrink();
