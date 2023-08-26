@@ -312,7 +312,7 @@ class _ScheduleScreenBodyWidgetState extends State<_ScheduleScreenBodyWidget> {
                 (e) => _LessonListWidget(
                   daySchedule: e,
                   scheduleViewType: _currentScheduleType,
-                  scheduleEntityType: widget.scheduleEntityType!,
+                  scheduleEntityType: widget.scheduleEntityType,
                   startDate:
                       Provider.of<ScheduleScreenViewModel>(context).startDate ??
                           DateTime.now(),
@@ -328,7 +328,7 @@ class _ScheduleScreenBodyWidgetState extends State<_ScheduleScreenBodyWidget> {
 
 class _LessonListWidget extends StatefulWidget {
   final ScheduleViewType scheduleViewType;
-  final ScheduleEntityType scheduleEntityType;
+  final ScheduleEntityType? scheduleEntityType;
   final DaySchedule daySchedule;
   final DateTime startDate;
   final DateTime endDate;
@@ -403,6 +403,15 @@ class _LessonListWidgetState extends State<_LessonListWidget>
     final textStyle = textTheme.bodyStyle;
 
     if (lessonCards.isEmpty) {
+      if (widget.scheduleEntityType == null) {
+        return Center(
+          child: Text(
+            'Выберите расписание',
+            style: textStyle,
+          ),
+        );
+      }
+
       if (widget.scheduleViewType == ScheduleViewType.dayly) {
         final now = widget.daySchedule.date;
 

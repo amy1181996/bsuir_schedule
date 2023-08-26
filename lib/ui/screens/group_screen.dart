@@ -135,6 +135,12 @@ class _GroupScreenBodyWidget extends StatelessWidget {
           onDelete: (Group group) {
             final db = context.read<RootScreenViewModel>().db;
             context.read<GroupScreenViewModel>().removeStarredGroup(db, group);
+            final selectedGroupId =
+                context.read<RootScreenViewModel>().selectedGroupId;
+            if (selectedGroupId == group.id) {
+              Provider.of<RootScreenViewModel>(context, listen: false)
+                  .setSelectedGroupId(null);
+            }
           },
           onUpdate: (Group group) {
             final db = context.read<RootScreenViewModel>().db;

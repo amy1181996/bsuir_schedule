@@ -8,7 +8,7 @@ class LessonCard extends StatelessWidget {
   final LessonCardStyle? style;
 
   final Lesson lesson;
-  final ScheduleEntityType scheduleEntityType;
+  final ScheduleEntityType? scheduleEntityType;
   final Widget? image;
   final bool shouldShowTimeGradient;
   final DateTime currentTime;

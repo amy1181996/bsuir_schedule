@@ -67,6 +67,7 @@ class ScheduleScreenViewModel extends ChangeNotifier {
 
   void _resetSchedule() {
     final now = DateTime.now();
+
     for (int i = 0; i < 7; i++) {
       _fullScheduleAllGroup.add(DaySchedule(
         now.add(Duration(days: i)),

@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 
 class LessonBottomSheet extends StatelessWidget {
   final LessonBottomSheetStyle? style;
-  final ScheduleEntityType scheduleEntityType;
+  final ScheduleEntityType? scheduleEntityType;
   final Lesson lesson;
   final Widget? image;
 

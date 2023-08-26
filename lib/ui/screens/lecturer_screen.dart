@@ -142,6 +142,12 @@ class _LecturerScreenBodyWidget extends StatelessWidget {
                   context.read<RootScreenViewModel>().db,
                   lecturer,
                 );
+            final selectedLecturerId =
+                context.read<RootScreenViewModel>().selectedLecturerId;
+            if (selectedLecturerId == lecturer.id) {
+              Provider.of<RootScreenViewModel>(context)
+                  .setSelectedLecturerId(null);
+            }
           },
           onUpdate: (Lecturer lecturer) {
             context.read<LecturerScreenViewModel>().updateStarredLecturer(
