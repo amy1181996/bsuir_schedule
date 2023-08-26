@@ -190,6 +190,8 @@ class LecturerSearchDelegate extends SearchDelegate {
         .toList();
 
     return ListView.builder(
+      physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.symmetric(vertical: 20),
       itemCount: lecturers.length,
       itemBuilder: (context, index) {
         final lecturer = lecturers[index];
@@ -223,6 +225,8 @@ class LecturerSearchDelegate extends SearchDelegate {
         .toList();
 
     return ListView.builder(
+      physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.symmetric(vertical: 20),
       itemCount: lecturers.length,
       itemBuilder: (context, index) {
         final lecturer = lecturers[index];

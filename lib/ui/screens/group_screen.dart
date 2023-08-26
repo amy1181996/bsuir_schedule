@@ -191,6 +191,7 @@ class GroupSearchDelegate extends SearchDelegate {
 
     return ListView.builder(
       physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.symmetric(vertical: 20),
       itemCount: groups.length,
       itemBuilder: (context, index) {
         return GroupCard(
@@ -219,6 +220,7 @@ class GroupSearchDelegate extends SearchDelegate {
 
     return ListView.builder(
       physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.symmetric(vertical: 20),
       itemCount: groups.length,
       itemBuilder: (context, index) {
         return GroupCard(
