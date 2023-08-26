@@ -1,6 +1,7 @@
 import 'package:bsuir_schedule/domain/model/group.dart';
 import 'package:bsuir_schedule/domain/view_model/group_screen_view_model.dart';
 import 'package:bsuir_schedule/domain/view_model/root_screen_view_model.dart';
+import 'package:bsuir_schedule/ui/themes/app_text_theme.dart';
 import 'package:bsuir_schedule/ui/widget/group_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -108,13 +109,13 @@ class _GroupScreenBodyWidget extends StatelessWidget {
     int? selectedGroupId,
   ) {
     if (starredGroups.isEmpty) {
-      return const Center(
+      final textTheme = Theme.of(context).extension<AppTextTheme>()!;
+      final textStyle = textTheme.bodyStyle;
+
+      return Center(
         child: Text(
           'Тут пока что пусто...',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 16,
-          ),
+          style: textStyle,
         ),
       );
     }

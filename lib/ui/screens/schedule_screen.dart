@@ -1,6 +1,7 @@
 import 'package:bsuir_schedule/domain/view_model/root_screen_view_model.dart';
 import 'package:bsuir_schedule/domain/view_model/schedule_screen_view_model.dart';
 import 'package:bsuir_schedule/ui/screens/view_constants.dart';
+import 'package:bsuir_schedule/ui/themes/app_text_theme.dart';
 import 'package:bsuir_schedule/ui/widget/lecturer_image_factory.dart';
 import 'package:bsuir_schedule/ui/widget/lesson_bottom_sheet.dart';
 import 'package:bsuir_schedule/ui/widget/lesson_card.dart';
@@ -398,23 +399,35 @@ class _LessonListWidgetState extends State<_LessonListWidget>
       );
     });
 
+    final textTheme = Theme.of(context).extension<AppTextTheme>()!;
+    final textStyle = textTheme.bodyStyle;
+
     if (lessonCards.isEmpty) {
       if (widget.scheduleViewType == ScheduleViewType.dayly) {
         final now = widget.daySchedule.date;
 
         if (now.compareTo(widget.startDate) < 0) {
           return Center(
-            child: Text('Занятия начнутся ${_convertDate(widget.startDate)}'),
+            child: Text(
+              'Занятия начнутся ${_convertDate(widget.startDate)}',
+              style: textStyle,
+            ),
           );
         } else if (now.compareTo(widget.endDate) > 0) {
           return Center(
-            child: Text('Занятия закончились ${_convertDate(widget.endDate)}'),
+            child: Text(
+              'Занятия закончились ${_convertDate(widget.endDate)}',
+              style: textStyle,
+            ),
           );
         }
       }
 
-      return const Center(
-        child: Text('Отдыхай'),
+      return Center(
+        child: Text(
+          'Отдыхай',
+          style: textStyle,
+        ),
       );
     }
 

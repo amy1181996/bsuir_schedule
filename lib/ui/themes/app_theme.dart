@@ -1,3 +1,4 @@
+import 'package:bsuir_schedule/ui/themes/app_text_theme.dart';
 import 'package:bsuir_schedule/ui/themes/group_card_style.dart';
 import 'package:bsuir_schedule/ui/themes/lecturer_card_style.dart';
 import 'package:bsuir_schedule/ui/themes/lesson_bottom_sheet_style.dart';
@@ -126,6 +127,17 @@ abstract class AppTheme {
           fontWeight: FontWeight.w500,
         ),
         dateStyle: TextStyle(
+          color: Colors.white,
+          fontSize: 16,
+        ),
+      ),
+      AppTextTheme(
+        titleStyle: const TextStyle(
+          color: Colors.white,
+          fontSize: 19,
+          fontWeight: FontWeight.bold,
+        ),
+        bodyStyle: const TextStyle(
           color: Colors.white,
           fontSize: 16,
         ),

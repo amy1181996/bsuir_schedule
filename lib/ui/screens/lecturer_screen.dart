@@ -1,6 +1,7 @@
 import 'package:bsuir_schedule/domain/model/lecturer.dart';
 import 'package:bsuir_schedule/domain/view_model/lecturer_screen_view_model.dart';
 import 'package:bsuir_schedule/domain/view_model/root_screen_view_model.dart';
+import 'package:bsuir_schedule/ui/themes/app_text_theme.dart';
 import 'package:bsuir_schedule/ui/widget/lecturer_card.dart';
 import 'package:bsuir_schedule/ui/widget/lecturer_image_factory.dart';
 import 'package:flutter/material.dart';
@@ -106,13 +107,13 @@ class _LecturerScreenBodyWidget extends StatelessWidget {
     int? selectedLecturerId,
   ) {
     if (starredLecturers.isEmpty) {
-      return const Center(
+      final textTheme = Theme.of(context).extension<AppTextTheme>()!;
+      final textStyle = textTheme.bodyStyle;
+
+      return Center(
         child: Text(
           'Тут пока что пусто...',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 16,
-          ),
+          style: textStyle,
         ),
       );
     }
