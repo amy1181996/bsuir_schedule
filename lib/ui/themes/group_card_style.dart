@@ -7,7 +7,7 @@ class GroupCardStyle extends ThemeExtension<GroupCardStyle> {
   final TextStyle titleStyle;
   final TextStyle subtitleStyle;
 
-  GroupCardStyle({
+  const GroupCardStyle({
     this.borderRadius = 20,
     this.titleStyle = const TextStyle(
       color: Colors.black,

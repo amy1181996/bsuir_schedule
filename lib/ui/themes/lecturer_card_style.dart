@@ -7,7 +7,7 @@ class LecturerCardStyle extends ThemeExtension<LecturerCardStyle> {
   final TextStyle titleStyle;
   final TextStyle subtitleStyle;
 
-  LecturerCardStyle({
+  const LecturerCardStyle({
     this.borderRadius = 20,
     this.titleStyle = const TextStyle(
       fontSize: 17,

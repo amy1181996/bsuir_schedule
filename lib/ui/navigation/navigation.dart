@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 abstract class NavigationRoutes {
   static const root = '/';
+  static const settings = '/settings';
 }
 
 class MainNavigation {
@@ -10,6 +11,7 @@ class MainNavigation {
 
   Map<String, WidgetBuilder> get routes => {
         NavigationRoutes.root: (_) => _screenFactory.makeRootScreen(),
+        NavigationRoutes.settings: (_) => _screenFactory.makeSettingsScreen(),
       };
 
   Route<dynamic>? onGenerateRoute(RouteSettings routeSettings) {

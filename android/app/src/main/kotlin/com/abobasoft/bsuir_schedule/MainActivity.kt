@@ -1,4 +1,4 @@
-package com.example.bsuir_schedule
+package com.abobasoft.bsuir_schedule
 
 import io.flutter.embedding.android.FlutterActivity
 

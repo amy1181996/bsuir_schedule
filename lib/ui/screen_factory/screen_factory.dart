@@ -6,6 +6,7 @@ import 'package:bsuir_schedule/ui/screens/group_screen.dart';
 import 'package:bsuir_schedule/ui/screens/lecturer_screen.dart';
 import 'package:bsuir_schedule/ui/screens/root_screen.dart';
 import 'package:bsuir_schedule/ui/screens/schedule_screen.dart';
+import 'package:bsuir_schedule/ui/screens/settings_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -26,4 +27,5 @@ class ScreenFactory {
         create: (_) => LecturerScreenViewModel(),
         child: const LecturerScreen(),
       );
+  Widget makeSettingsScreen() => const SettingsScreen();
 }

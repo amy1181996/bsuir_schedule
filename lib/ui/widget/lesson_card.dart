@@ -1,8 +1,11 @@
+import 'package:bsuir_schedule/application/settings/models/app_settings.dart';
+import 'package:bsuir_schedule/application/settings/settings_provider.dart';
 import 'package:bsuir_schedule/domain/model/lecturer.dart';
 import 'package:bsuir_schedule/domain/model/lesson.dart';
 import 'package:bsuir_schedule/ui/themes/lesson_card_style.dart';
 import 'package:bsuir_schedule/ui/screens/view_constants.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class LessonCard extends StatelessWidget {
   final LessonCardStyle? style;
@@ -48,20 +51,53 @@ class LessonCard extends StatelessWidget {
             color: backgroundColor,
             borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
           ),
-          child: getCard(titleStyle, bodyStyle, secondayBodyStyle),
+          child: getCard(context, titleStyle, bodyStyle, secondayBodyStyle),
         ),
       ),
     );
   }
 
+  static const Map<LessonColor, Color> lessonColorToColor = {
+    LessonColor.red: Colors.red,
+    LessonColor.amber: Colors.amber,
+    LessonColor.yellowAccent: Colors.yellowAccent,
+    LessonColor.green: Colors.green,
+    LessonColor.blue: Colors.blue,
+    LessonColor.purple: Colors.purple,
+    LessonColor.violet: Color.fromARGB(255, 135, 8, 190),
+    LessonColor.grey: Colors.grey,
+  };
+
+  Color getLessonColor(BuildContext context, String lessonAbbrev) {
+    switch (lessonAbbrev) {
+      case 'ЛК':
+        return lessonColorToColor[
+            Provider.of<SettingsProvider>(context).lectureColor]!;
+      case 'ЛР':
+        return lessonColorToColor[
+            Provider.of<SettingsProvider>(context).laboratoryColor]!;
+      case 'ПЗ':
+        return lessonColorToColor[
+            Provider.of<SettingsProvider>(context).practiceColor]!;
+      case 'Консультация':
+        return lessonColorToColor[
+            Provider.of<SettingsProvider>(context).consultColor]!;
+      case 'Экзамен':
+        return lessonColorToColor[
+            Provider.of<SettingsProvider>(context).examColor]!;
+      default:
+        return lessonColorToColor[
+            Provider.of<SettingsProvider>(context).unknownColor]!;
+    }
+  }
+
   Widget getCard(
+    BuildContext context,
     TextStyle titleStyle,
     TextStyle bodyStyle,
     TextStyle secondayBodyStyle,
   ) {
-    final lessonColor =
-        ScheduleWidgetConstants.lessonColors[lesson.lessonTypeAbbrev] ??
-            Colors.grey;
+    final lessonColor = getLessonColor(context, lesson.lessonTypeAbbrev);
 
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -78,7 +114,7 @@ class LessonCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              getLessonTitle(titleStyle, bodyStyle),
+              getLessonTitle(context, titleStyle, bodyStyle),
               const SizedBox(
                 height: 5,
               ),
@@ -135,15 +171,16 @@ class LessonCard extends StatelessWidget {
     );
   }
 
-  Widget getLessonTitle(TextStyle titleStyle, TextStyle bodyStyle) => Row(
+  Widget getLessonTitle(
+          BuildContext context, TextStyle titleStyle, TextStyle bodyStyle) =>
+      Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Text(
             '${lesson.subject} (${lesson.lessonTypeAbbrev})',
             style: titleStyle.copyWith(
-                color: ScheduleWidgetConstants
-                        .lessonColors[lesson.lessonTypeAbbrev] ??
-                    Colors.grey),
+              color: getLessonColor(context, lesson.lessonTypeAbbrev),
+            ),
           ),
           if (lesson.numSubgroup != 0) ...[
             const Spacer(),

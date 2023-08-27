@@ -1,5 +1,6 @@
 import 'package:bsuir_schedule/domain/view_model/root_screen_view_model.dart';
 import 'package:bsuir_schedule/domain/view_model/schedule_screen_view_model.dart';
+import 'package:bsuir_schedule/ui/navigation/navigation.dart';
 import 'package:bsuir_schedule/ui/screens/view_constants.dart';
 import 'package:bsuir_schedule/ui/themes/app_text_theme.dart';
 import 'package:bsuir_schedule/ui/widget/lecturer_image_factory.dart';
@@ -244,6 +245,13 @@ class _ScheduleScreenBodyWidgetState extends State<_ScheduleScreenBodyWidget> {
           onPressed: _toggleScheduleTypeAction,
           icon: const Icon(Icons.developer_board_outlined),
         ),
+        IconButton(
+          tooltip: 'На стройку',
+          onPressed: () {
+            Navigator.of(context).pushNamed(NavigationRoutes.settings);
+          },
+          icon: const Icon(Icons.settings_outlined),
+        )
       ];
 
   String getTooltip() => (_currentScheduleType == ScheduleViewType.full)
@@ -378,24 +386,23 @@ class _LessonListWidgetState extends State<_LessonListWidget>
           lecturer: lesson.lecturers.firstOrNull,
         ),
         onPressed: () => showModalBottomSheet(
-            context: context,
-            isScrollControlled: true,
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.vertical(
-                top: Radius.circular(20),
-              ),
+          context: context,
+          isScrollControlled: true,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(
+              top: Radius.circular(20),
             ),
-            builder: (context) {
-              return LessonBottomSheet(
-                lesson: lesson,
-                scheduleEntityType: widget.scheduleEntityType,
-                image: imageFactory.fetchImage(
-                  radius: 25,
-                  borderSize: 0,
-                  lecturer: lesson.lecturers.firstOrNull,
-                ),
-              );
-            }),
+          ),
+          builder: (context) => LessonBottomSheet(
+            lesson: lesson,
+            scheduleEntityType: widget.scheduleEntityType,
+            image: imageFactory.fetchImage(
+              radius: 25,
+              borderSize: 0,
+              lecturer: lesson.lecturers.firstOrNull,
+            ),
+          ),
+        ),
       );
     });
 

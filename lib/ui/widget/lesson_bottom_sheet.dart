@@ -1,8 +1,11 @@
+import 'package:bsuir_schedule/application/settings/models/app_settings.dart';
+import 'package:bsuir_schedule/application/settings/settings_provider.dart';
 import 'package:bsuir_schedule/domain/model/group.dart';
 import 'package:bsuir_schedule/domain/model/lesson.dart';
-import 'package:bsuir_schedule/ui/themes/lesson_bottom_sheet_style.dart';
 import 'package:bsuir_schedule/ui/screens/view_constants.dart';
+import 'package:bsuir_schedule/ui/themes/lesson_bottom_sheet_style.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class LessonBottomSheet extends StatelessWidget {
   final LessonBottomSheetStyle? style;
@@ -37,7 +40,7 @@ class LessonBottomSheet extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          getSubjectName(titleStyle),
+          getSubjectName(context, titleStyle),
           const SizedBox(
             height: 15,
           ),
@@ -69,14 +72,47 @@ class LessonBottomSheet extends StatelessWidget {
     );
   }
 
-  Widget getSubjectName(TextStyle titleStyle) => Container(
+  static const Map<LessonColor, Color> lessonColorToColor = {
+    LessonColor.red: Colors.red,
+    LessonColor.amber: Colors.amber,
+    LessonColor.yellowAccent: Colors.yellowAccent,
+    LessonColor.green: Colors.green,
+    LessonColor.blue: Colors.blue,
+    LessonColor.purple: Colors.purple,
+    LessonColor.violet: Color.fromARGB(255, 135, 8, 190),
+    LessonColor.grey: Colors.grey,
+  };
+
+  Color getLessonColor(BuildContext context, String lessonAbbrev) {
+    switch (lessonAbbrev) {
+      case 'ЛК':
+        return lessonColorToColor[
+            Provider.of<SettingsProvider>(context).lectureColor]!;
+      case 'ЛР':
+        return lessonColorToColor[
+            Provider.of<SettingsProvider>(context).laboratoryColor]!;
+      case 'ПЗ':
+        return lessonColorToColor[
+            Provider.of<SettingsProvider>(context).practiceColor]!;
+      case 'Консультация':
+        return lessonColorToColor[
+            Provider.of<SettingsProvider>(context).consultColor]!;
+      case 'Экзамен':
+        return lessonColorToColor[
+            Provider.of<SettingsProvider>(context).examColor]!;
+      default:
+        return lessonColorToColor[
+            Provider.of<SettingsProvider>(context).unknownColor]!;
+    }
+  }
+
+  Widget getSubjectName(BuildContext context, TextStyle titleStyle) =>
+      Container(
         margin: const EdgeInsets.all(10),
         child: Text(
           lesson.subjectFullName,
           style: titleStyle.copyWith(
-              color: ScheduleWidgetConstants
-                      .lessonColors[lesson.lessonTypeAbbrev] ??
-                  Colors.grey),
+              color: getLessonColor(context, lesson.lessonTypeAbbrev)),
         ),
       );
 

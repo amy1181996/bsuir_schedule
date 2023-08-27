@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
 class LessonBottomSheetStyle extends ThemeExtension<LessonBottomSheetStyle> {
-  TextStyle titleStyle;
-  TextStyle bodyStyle;
-  EdgeInsets padding;
+  final TextStyle titleStyle;
+  final TextStyle bodyStyle;
+  final EdgeInsets padding;
 
-  LessonBottomSheetStyle({
+  const LessonBottomSheetStyle({
     this.titleStyle = const TextStyle(
       color: Colors.black,
       fontSize: 19,

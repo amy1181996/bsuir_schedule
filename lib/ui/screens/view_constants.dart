@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 enum ScheduleViewType {
   full,
   dayly,
@@ -51,11 +49,11 @@ abstract class ScheduleWidgetConstants {
     'ПЗ': 'Практическое занятие',
   };
 
-  static const lessonColors = {
-    'ЛК': Colors.green,
-    'Консультация': Colors.green,
-    'ЛР': Colors.red,
-    'ПЗ': Colors.yellow,
-    'Экзамен': Color.fromARGB(255, 135, 8, 190),
-  };
+  // static const lessonColors = {
+  //   'ЛК': Colors.green,
+  //   'Консультация': Colors.green,
+  //   'ЛР': Colors.red,
+  //   'ПЗ': Colors.yellow,
+  //   'Экзамен': Color.fromARGB(255, 135, 8, 190),
+  // };
 }

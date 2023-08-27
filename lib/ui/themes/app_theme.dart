@@ -67,8 +67,8 @@ abstract class AppTheme {
         borderRadius: BorderRadius.all(Radius.circular(20)),
       ),
     ),
-    extensions: <ThemeExtension<dynamic>>{
-      const LessonCardStyle(
+    extensions: const <ThemeExtension<dynamic>>{
+      LessonCardStyle(
         backgroundColor: Color.fromARGB(255, 28, 28, 28),
         titleStyle: TextStyle(
           color: Colors.white,
@@ -87,40 +87,40 @@ abstract class AppTheme {
       ),
       GroupCardStyle(
         borderRadius: 20,
-        titleStyle: const TextStyle(
+        titleStyle: TextStyle(
           color: Colors.white,
           fontSize: 17,
           fontWeight: FontWeight.bold,
         ),
-        subtitleStyle: const TextStyle(
+        subtitleStyle: TextStyle(
           color: Colors.grey,
           fontSize: 15,
         ),
       ),
       LecturerCardStyle(
         borderRadius: 20,
-        titleStyle: const TextStyle(
+        titleStyle: TextStyle(
           color: Colors.white,
           fontSize: 17,
           fontWeight: FontWeight.bold,
         ),
-        subtitleStyle: const TextStyle(
+        subtitleStyle: TextStyle(
           color: Colors.white,
           fontSize: 15,
         ),
       ),
       LessonBottomSheetStyle(
-        titleStyle: const TextStyle(
+        titleStyle: TextStyle(
           color: Colors.white,
           fontSize: 19,
           fontWeight: FontWeight.bold,
         ),
-        bodyStyle: const TextStyle(
+        bodyStyle: TextStyle(
           color: Colors.white,
           fontSize: 16,
         ),
       ),
-      const LessonTabStyle(
+      LessonTabStyle(
         weekdayStyle: TextStyle(
           color: Colors.grey,
           fontSize: 16,
@@ -132,12 +132,12 @@ abstract class AppTheme {
         ),
       ),
       AppTextTheme(
-        titleStyle: const TextStyle(
+        titleStyle: TextStyle(
           color: Colors.white,
           fontSize: 19,
           fontWeight: FontWeight.bold,
         ),
-        bodyStyle: const TextStyle(
+        bodyStyle: TextStyle(
           color: Colors.white,
           fontSize: 16,
         ),
@@ -147,6 +147,44 @@ abstract class AppTheme {
 
   static final light = ThemeData(
     primarySwatch: Colors.blue,
+    colorScheme: const ColorScheme.dark(
+      primary: Colors.black,
+      secondary: Colors.white,
+      background: Colors.white,
+    ),
+    primaryColor: Colors.white,
     scaffoldBackgroundColor: Colors.grey,
+    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+      backgroundColor: Colors.white,
+      selectedItemColor: Color.fromARGB(255, 28, 28, 28),
+      unselectedItemColor: Colors.grey,
+    ),
+    appBarTheme: const AppBarTheme(backgroundColor: Colors.white),
+    tabBarTheme: const TabBarTheme(
+      labelColor: Color.fromARGB(255, 28, 28, 28),
+      unselectedLabelColor: Colors.grey,
+      indicatorColor: Color.fromARGB(255, 28, 28, 28),
+    ),
+    floatingActionButtonTheme: const FloatingActionButtonThemeData(
+      foregroundColor: Color.fromARGB(255, 28, 28, 28),
+    ),
+    snackBarTheme: const SnackBarThemeData(
+      backgroundColor: Colors.grey,
+      contentTextStyle: TextStyle(
+        color: Colors.white,
+        fontSize: 16,
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(20)),
+      ),
+    ),
+    extensions: const <ThemeExtension<dynamic>>{
+      LessonCardStyle(),
+      GroupCardStyle(),
+      LecturerCardStyle(),
+      LessonBottomSheetStyle(),
+      LessonTabStyle(),
+      AppTextTheme(),
+    },
   );
 }

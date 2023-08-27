@@ -4,7 +4,7 @@ class AppTextTheme extends ThemeExtension<AppTextTheme> {
   final TextStyle titleStyle;
   final TextStyle bodyStyle;
 
-  AppTextTheme({
+  const AppTextTheme({
     this.titleStyle = const TextStyle(
       color: Colors.black,
       fontSize: 19,
