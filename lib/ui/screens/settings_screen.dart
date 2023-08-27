@@ -391,57 +391,63 @@ class _SettingsSwitcherState<T> extends State<_SettingsSwitcher<T>> {
     return _SettingsItem(
       onPressed: () => showModalBottomSheet(
         context: context,
+        isScrollControlled: true,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(
             top: Radius.circular(20),
           ),
         ),
-        builder: (context) => ListView(
-          children: List.generate(
-            widget.items.length,
-            (index) => Row(
-              children: [
-                Radio(
-                  fillColor:
-                      MaterialStateColor.resolveWith((states) => Colors.white),
-                  value: widget.items[index].value,
-                  groupValue: _currentRecord!.value,
-                  onChanged: (value) {
-                    if (widget.items[index].onPressed != null) {
-                      widget.items[index].onPressed!();
-                    }
+        builder: (context) => Padding(
+          padding: const EdgeInsets.only(top: 20, bottom: 5),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: List.generate(
+              widget.items.length,
+              (index) => Row(
+                children: [
+                  Radio(
+                    fillColor: MaterialStateColor.resolveWith(
+                        (states) => Colors.white),
+                    value: widget.items[index].value,
+                    groupValue: _currentRecord!.value,
+                    onChanged: (value) {
+                      if (widget.items[index].onPressed != null) {
+                        widget.items[index].onPressed!();
+                      }
 
-                    setState(() {
-                      _currentRecord = widget.items[index];
-                    });
+                      setState(() {
+                        _currentRecord = widget.items[index];
+                      });
 
-                    Navigator.of(context).pop();
-                  },
-                ),
-                Expanded(
-                  child: Container(
-                    margin: const EdgeInsets.only(right: 20, top: 5, bottom: 5),
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColor,
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(15))),
-                    child: Row(
-                      children: [
-                        Text(
-                          widget.items[index].name,
-                          style: const TextStyle(
-                              color: Colors.white, fontSize: 16),
-                        ),
-                        if (widget.items[index].trailing != null) ...[
-                          const Spacer(),
-                          widget.items[index].trailing!,
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  Expanded(
+                    child: Container(
+                      margin:
+                          const EdgeInsets.only(right: 20, top: 5, bottom: 5),
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                          color: Theme.of(context).primaryColor,
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(15))),
+                      child: Row(
+                        children: [
+                          Text(
+                            widget.items[index].name,
+                            style: const TextStyle(
+                                color: Colors.white, fontSize: 16),
+                          ),
+                          if (widget.items[index].trailing != null) ...[
+                            const Spacer(),
+                            widget.items[index].trailing!,
+                          ],
                         ],
-                      ],
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
