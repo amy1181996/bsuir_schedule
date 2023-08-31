@@ -4,7 +4,9 @@ import 'package:bsuir_schedule/data/service/group_schedule_service.dart';
 import 'package:bsuir_schedule/data/service/group_service.dart';
 import 'package:bsuir_schedule/data/service/lecturer_schedule_service.dart';
 import 'package:bsuir_schedule/data/service/lecturer_service.dart';
+import 'package:bsuir_schedule/data/service/schedule_presentation_service.dart';
 import 'package:bsuir_schedule/domain/model/lesson.dart';
+import 'package:bsuir_schedule/ui/screens/view_constants.dart';
 import 'package:flutter/foundation.dart';
 
 class ScheduleScreenViewModel extends ChangeNotifier {
@@ -18,7 +20,7 @@ class ScheduleScreenViewModel extends ChangeNotifier {
     'Воскресенье': 6,
   };
 
-  late int? _currentWeek;
+  int? _currentWeek;
 
   DateTime? _startDate;
   DateTime? _endDate;
@@ -34,6 +36,9 @@ class ScheduleScreenViewModel extends ChangeNotifier {
   List<DaySchedule> _daylyScheduleAllGroup = [];
   List<DaySchedule> _daylyScheduleFirstSubgroup = [];
   List<DaySchedule> _daylyScheduleSecondSubgroup = [];
+
+  ScheduleGroupType? _scheduleGroupType;
+  ScheduleViewType? _scheduleViewType;
 
   List<DaySchedule> get fullScheduleAllGroup => _fullScheduleAllGroup;
   List<DaySchedule> get fullScheduleFirstSubgroup => _fullScheduleFirstSubgroup;
@@ -53,6 +58,11 @@ class ScheduleScreenViewModel extends ChangeNotifier {
   DateTime? get startDate => _startDate;
   DateTime? get endDate => _endDate;
 
+  ScheduleGroupType get scheduleGroupType =>
+      _scheduleGroupType ?? ScheduleGroupType.allGroup;
+  ScheduleViewType get scheduleViewType =>
+      _scheduleViewType ?? ScheduleViewType.dayly;
+
   static final GroupScheduleService _groupScheduleService =
       GroupScheduleService();
   static final LecturerScheduleService _lecturerScheduleService =
@@ -60,6 +70,8 @@ class ScheduleScreenViewModel extends ChangeNotifier {
   static final GroupService _groupService = GroupService();
   static final LecturerService _lecturerService = LecturerService();
   static final CurrentWeekService _currentWeekService = CurrentWeekService();
+  static final SchedulePresentationService _schedulePresentationService =
+      SchedulePresentationService();
 
   ScheduleScreenViewModel() {
     _resetSchedule();
@@ -102,8 +114,24 @@ class ScheduleScreenViewModel extends ChangeNotifier {
     _endDate = null;
   }
 
-  Future<void> fetchCurrentWeek(DatabaseHelper db) async {
-    _currentWeek = await _currentWeekService.getCurrentWeek();
+  Future<void> fetchData(DatabaseHelper db) async {
+    _currentWeek ??= await _currentWeekService.getCurrentWeek();
+    _scheduleGroupType ??=
+        await _schedulePresentationService.getScheduleGroupType();
+    _scheduleViewType ??=
+        await _schedulePresentationService.getScheduleViewType();
+  }
+
+  Future<void> setScheduleGroupType(ScheduleGroupType scheduleGroupType) async {
+    _scheduleGroupType = scheduleGroupType;
+    await _schedulePresentationService.setScheduleGroupType(scheduleGroupType);
+    notifyListeners();
+  }
+
+  Future<void> setScheduleViewType(ScheduleViewType scheduleViewType) async {
+    _scheduleViewType = scheduleViewType;
+    await _schedulePresentationService.setScheduleViewType(scheduleViewType);
+    notifyListeners();
   }
 
   Future<void> fetchGroupSchedule(DatabaseHelper db, int groupId) async {

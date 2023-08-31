@@ -84,7 +84,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     final db = context.select((RootScreenViewModel vm) => vm.db);
     final viewModel = context.read<ScheduleScreenViewModel>();
 
-    await viewModel.fetchCurrentWeek(db);
+    await viewModel.fetchData(db);
 
     if (lecturerScheduleId != null) {
       await viewModel.fetchLecturerSchedule(db, lecturerScheduleId);
@@ -126,21 +126,8 @@ class _ScheduleScreenBodyWidgetState extends State<_ScheduleScreenBodyWidget> {
   ScheduleViewType _currentScheduleType = ScheduleViewType.full;
   ScheduleGroupType _currentGroupType = ScheduleGroupType.allGroup;
 
-  void _toggleScheduleTypeAction() {
-    if (_currentScheduleType == ScheduleViewType.full) {
-      _currentScheduleType = ScheduleViewType.dayly;
-    } else {
-      _currentScheduleType = ScheduleViewType.full;
-    }
-
-    setState(() {});
-  }
-
   @override
   Widget build(BuildContext context) {
-    final currentWeek =
-        Provider.of<ScheduleScreenViewModel>(context).currentWeek;
-
     switch (_currentScheduleType) {
       case ScheduleViewType.dayly:
         {
@@ -189,13 +176,7 @@ class _ScheduleScreenBodyWidgetState extends State<_ScheduleScreenBodyWidget> {
               bool innerBoxIsScrolled,
             ) =>
                 <Widget>[
-              SliverAppBar(
-                expandedHeight: 30,
-                floating: true,
-                pinned: false,
-                title: getTitle(DateTime.now(), currentWeek),
-                actions: getActions(),
-              ),
+              const _ScheduleScreenAppBar(),
             ],
             body: getBody(_schedule),
           ),
@@ -203,86 +184,6 @@ class _ScheduleScreenBodyWidgetState extends State<_ScheduleScreenBodyWidget> {
       ),
     );
   }
-
-  Widget getTitle(DateTime now, int currentWeek) => Align(
-        alignment: Alignment.topLeft,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-                '${now.day}-е ${ScheduleWidgetConstants.monthesList[now.month]}',
-                style: Theme.of(context).extension<AppTextTheme>()!.titleStyle),
-            Text(
-              '$currentWeek-я учебная неделя',
-              style: Theme.of(context)
-                  .extension<AppTextTheme>()!
-                  .bodyStyle
-                  .copyWith(color: Colors.grey),
-            ),
-          ],
-        ),
-      );
-
-  List<Widget> getActions() => [
-        if (_currentScheduleType != ScheduleViewType.exams) ...[
-          PopupMenuButton(
-            tooltip: 'Подгруппа',
-            itemBuilder: (context) => getPopupMenuItems(),
-            onSelected: (value) => setState(() {
-              _currentGroupType = value;
-            }),
-            child: const Icon(Icons.group_outlined),
-          ),
-        ],
-        IconButton(
-          tooltip: _currentScheduleType == ScheduleViewType.full
-              ? 'Ежедневное расписание'
-              : 'Полное расписание',
-          onPressed: _toggleScheduleTypeAction,
-          icon: const Icon(Icons.developer_board_outlined),
-        ),
-        IconButton(
-          tooltip: 'На стройку',
-          onPressed: () {
-            Navigator.of(context).pushNamed(NavigationRoutes.settings);
-          },
-          icon: const Icon(Icons.settings_outlined),
-        )
-      ];
-
-  List<PopupMenuItem<ScheduleGroupType>> getPopupMenuItems() => [
-        const PopupMenuItem<ScheduleGroupType>(
-          value: ScheduleGroupType.allGroup,
-          child: Row(
-            children: [
-              Icon(Icons.group_outlined),
-              SizedBox(width: 8),
-              Text('Вся группа'),
-            ],
-          ),
-        ),
-        const PopupMenuItem<ScheduleGroupType>(
-          value: ScheduleGroupType.firstSubgroup,
-          child: Row(
-            children: [
-              Icon(Icons.person_2_outlined),
-              SizedBox(width: 8),
-              Text('1-я подгруппа'),
-            ],
-          ),
-        ),
-        const PopupMenuItem<ScheduleGroupType>(
-          value: ScheduleGroupType.secondSubgroup,
-          child: Row(
-            children: [
-              Icon(Icons.person_3_outlined),
-              SizedBox(width: 8),
-              Text('2-я подгруппа'),
-            ],
-          ),
-        ),
-      ];
 
   Widget getBody(List<DaySchedule> schedule) => Column(
         children: [
@@ -326,6 +227,146 @@ class _ScheduleScreenBodyWidgetState extends State<_ScheduleScreenBodyWidget> {
               .toList(),
         ),
       );
+}
+
+class _ScheduleScreenAppBar extends StatefulWidget {
+  const _ScheduleScreenAppBar({super.key});
+
+  @override
+  State<_ScheduleScreenAppBar> createState() => _ScheduleScreenAppBarState();
+}
+
+class _ScheduleScreenAppBarState extends State<_ScheduleScreenAppBar> {
+  late final ScheduleViewType _currentScheduleType;
+  late final ScheduleGroupType _currentGroupType;
+
+  @override
+  Widget build(BuildContext context) {
+    final currentWeek =
+        Provider.of<ScheduleScreenViewModel>(context).currentWeek;
+    _currentScheduleType =
+        Provider.of<ScheduleScreenViewModel>(context).scheduleViewType;
+    _currentGroupType =
+        Provider.of<ScheduleScreenViewModel>(context).scheduleGroupType;
+    final bool isSessonPeriod = context.select(
+            (ScheduleScreenViewModel viewModel) =>
+                viewModel.exams.isNotEmpty) ??
+        false;
+
+    return SliverAppBar(
+      expandedHeight: 30,
+      floating: true,
+      pinned: false,
+      title: getTitle(DateTime.now(), currentWeek),
+      actions: getActions(isSessonPeriod),
+    );
+  }
+
+  Widget getTitle(DateTime now, int currentWeek) => Builder(builder: (context) {
+        return Align(
+          alignment: Alignment.topLeft,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                  '${now.day}-е ${ScheduleWidgetConstants.monthesList[now.month]}',
+                  style:
+                      Theme.of(context).extension<AppTextTheme>()!.titleStyle),
+              Text(
+                '$currentWeek-я учебная неделя',
+                style: Theme.of(context)
+                    .extension<AppTextTheme>()!
+                    .bodyStyle
+                    .copyWith(color: Colors.grey),
+              ),
+            ],
+          ),
+        );
+      });
+
+  List<Widget> getActions(bool isSessionPeriod) => [
+        if (_currentScheduleType != ScheduleViewType.exams) ...[
+          PopupMenuButton(
+            tooltip: 'Подгруппа',
+            itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: ScheduleGroupType.allGroup,
+                child: Row(
+                  children: [
+                    Icon(Icons.group_outlined),
+                    SizedBox(width: 8),
+                    Text('Вся группа'),
+                  ],
+                ),
+              ),
+              const PopupMenuItem(
+                value: ScheduleGroupType.firstSubgroup,
+                child: Row(
+                  children: [
+                    Icon(Icons.person_2_outlined),
+                    SizedBox(width: 8),
+                    Text('1-я подгруппа'),
+                  ],
+                ),
+              ),
+              const PopupMenuItem(
+                value: ScheduleGroupType.secondSubgroup,
+                child: Row(
+                  children: [
+                    Icon(Icons.person_3_outlined),
+                    SizedBox(width: 8),
+                    Text('2-я подгруппа'),
+                  ],
+                ),
+              ),
+            ],
+            onSelected: (value) {
+              setState(() {
+                _currentGroupType = value;
+              });
+              Provider.of<ScheduleScreenViewModel>(context)
+                  .setScheduleGroupType(_currentGroupType);
+            },
+            child: const Icon(Icons.group_outlined),
+          ),
+          const SizedBox(width: 10),
+        ],
+        PopupMenuButton(
+          tooltip: 'Вид расписания',
+          itemBuilder: (context) => [
+            const PopupMenuItem(
+              value: ScheduleViewType.full,
+              child: Text('Полное'),
+            ),
+            const PopupMenuItem(
+              value: ScheduleViewType.dayly,
+              child: Text('По дням'),
+            ),
+            if (isSessionPeriod) ...[
+              const PopupMenuItem(
+                value: ScheduleViewType.exams,
+                child: Text('Экзамены'),
+              ),
+            ],
+          ],
+          onSelected: (value) {
+            setState(() {
+              _currentScheduleType = value;
+            });
+            Provider.of<ScheduleScreenViewModel>(context)
+                .setScheduleGroupType(_currentGroupType);
+          },
+          child: const Icon(Icons.grid_view_rounded),
+        ),
+        IconButton(
+          tooltip: 'На стройку',
+          onPressed: () {
+            Navigator.of(context).pushNamed(NavigationRoutes.settings);
+          },
+          icon: const Icon(Icons.settings_outlined),
+        )
+      ];
 }
 
 class _LessonListWidget extends StatefulWidget {
