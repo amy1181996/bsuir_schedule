@@ -58,7 +58,8 @@ class _LecturerScreenBodyWidget extends StatelessWidget {
             innerBoxIsScrolled,
           ) =>
               <Widget>[
-            const SliverAppBar(
+            SliverAppBar(
+              forceElevated: true,
               expandedHeight: 100,
               pinned: true,
               floating: true,
@@ -68,9 +69,14 @@ class _LecturerScreenBodyWidget extends StatelessWidget {
                 title: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('Избранные преподаватели'),
-                    SizedBox(width: 8),
-                    Icon(
+                    Text(
+                      'Избранные преподаватели',
+                      style: Theme.of(context)
+                          .extension<AppTextTheme>()!
+                          .titleStyle,
+                    ),
+                    const SizedBox(width: 8),
+                    const Icon(
                       Icons.star,
                       color: Colors.amber,
                     ),

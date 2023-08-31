@@ -4,57 +4,31 @@ import 'package:bsuir_schedule/ui/themes/lecturer_card_style.dart';
 import 'package:bsuir_schedule/ui/themes/lesson_bottom_sheet_style.dart';
 import 'package:bsuir_schedule/ui/themes/lesson_card_style.dart';
 import 'package:bsuir_schedule/ui/themes/lesson_tab_style.dart';
+import 'package:bsuir_schedule/ui/themes/settings_theme.dart';
 import 'package:flutter/material.dart';
 
-class MaterialColorGenerator {
-  static MaterialColor from(Color color) {
-    return MaterialColor(
-      color.value,
-      <int, Color>{
-        50: color.withOpacity(0.1),
-        100: color.withOpacity(0.2),
-        200: color.withOpacity(0.3),
-        300: color.withOpacity(0.4),
-        400: color.withOpacity(0.5),
-        500: color.withOpacity(0.6),
-        600: color.withOpacity(0.7),
-        700: color.withOpacity(0.8),
-        800: color.withOpacity(0.9),
-        900: color.withOpacity(1.0),
-      },
-    );
-  }
-}
-
 abstract class AppTheme {
-  static final _darkPrimarySwatch = MaterialColorGenerator.from(
-    const Color.fromARGB(255, 28, 28, 28),
-  );
-
   static final dark = ThemeData(
     brightness: Brightness.dark,
-    colorScheme: const ColorScheme.dark(
-      primary: Colors.white,
-      secondary: Color.fromARGB(255, 28, 28, 28),
-      background: Color.fromARGB(255, 28, 28, 28),
-    ),
-    primarySwatch: _darkPrimarySwatch,
-    primaryColor: const Color.fromARGB(255, 28, 28, 28),
+    primarySwatch: Colors.blue,
+    primaryColor: Colors.blue,
     scaffoldBackgroundColor: Colors.black,
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       backgroundColor: Color.fromARGB(255, 28, 28, 28),
-      selectedItemColor: Colors.white,
+      selectedItemColor: Colors.blue,
       unselectedItemColor: Colors.grey,
     ),
     appBarTheme: const AppBarTheme(
       backgroundColor: Color.fromARGB(255, 28, 28, 28),
-    ),
-    tabBarTheme: const TabBarTheme(
-      labelColor: Colors.white,
-      unselectedLabelColor: Colors.grey,
-      indicatorColor: Colors.white,
+      iconTheme: IconThemeData(
+        color: Colors.blue,
+      ),
+      actionsIconTheme: IconThemeData(
+        color: Colors.blue,
+      ),
     ),
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
+      backgroundColor: Color.fromARGB(255, 28, 28, 28),
       foregroundColor: Colors.white,
     ),
     snackBarTheme: const SnackBarThemeData(
@@ -67,6 +41,8 @@ abstract class AppTheme {
         borderRadius: BorderRadius.all(Radius.circular(20)),
       ),
     ),
+    radioTheme: RadioThemeData(
+        fillColor: MaterialStateColor.resolveWith((states) => Colors.blue)),
     extensions: const <ThemeExtension<dynamic>>{
       LessonCardStyle(
         backgroundColor: Color.fromARGB(255, 28, 28, 28),
@@ -86,6 +62,7 @@ abstract class AppTheme {
         borderRadius: 20,
       ),
       GroupCardStyle(
+        backgroundColor: Color.fromARGB(255, 28, 28, 28),
         borderRadius: 20,
         titleStyle: TextStyle(
           color: Colors.white,
@@ -98,6 +75,7 @@ abstract class AppTheme {
         ),
       ),
       LecturerCardStyle(
+        backgroundColor: Color.fromARGB(255, 28, 28, 28),
         borderRadius: 20,
         titleStyle: TextStyle(
           color: Colors.white,
@@ -119,6 +97,7 @@ abstract class AppTheme {
           color: Colors.white,
           fontSize: 16,
         ),
+        cardColor: Color.fromARGB(255, 28, 28, 28),
       ),
       LessonTabStyle(
         weekdayStyle: TextStyle(
@@ -142,24 +121,33 @@ abstract class AppTheme {
           fontSize: 16,
         ),
       ),
+      SettingsTheme(
+        scaffoldColor: Colors.black,
+        menuColor: Color.fromARGB(255, 28, 28, 28),
+      ),
     },
   );
 
   static final light = ThemeData(
+    brightness: Brightness.light,
     primarySwatch: Colors.blue,
-    colorScheme: const ColorScheme.dark(
-      primary: Colors.black,
-      secondary: Colors.white,
-      background: Colors.white,
-    ),
-    primaryColor: Colors.white,
-    scaffoldBackgroundColor: Colors.grey,
+    primaryColor: Colors.blue,
+    scaffoldBackgroundColor: Colors.white,
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       backgroundColor: Colors.white,
-      selectedItemColor: Color.fromARGB(255, 28, 28, 28),
       unselectedItemColor: Colors.grey,
     ),
-    appBarTheme: const AppBarTheme(backgroundColor: Colors.white),
+    appBarTheme: AppBarTheme(
+      backgroundColor: Colors.white,
+      iconTheme: const IconThemeData(
+        color: Colors.blue,
+      ),
+      actionsIconTheme: const IconThemeData(
+        color: Colors.blue,
+      ),
+      shadowColor: Colors.grey[100]!,
+      elevation: 1.0,
+    ),
     tabBarTheme: const TabBarTheme(
       labelColor: Color.fromARGB(255, 28, 28, 28),
       unselectedLabelColor: Colors.grey,
@@ -167,6 +155,7 @@ abstract class AppTheme {
     ),
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
       foregroundColor: Color.fromARGB(255, 28, 28, 28),
+      backgroundColor: Colors.white,
     ),
     snackBarTheme: const SnackBarThemeData(
       backgroundColor: Colors.grey,
@@ -178,13 +167,68 @@ abstract class AppTheme {
         borderRadius: BorderRadius.all(Radius.circular(20)),
       ),
     ),
-    extensions: const <ThemeExtension<dynamic>>{
-      LessonCardStyle(),
-      GroupCardStyle(),
-      LecturerCardStyle(),
-      LessonBottomSheetStyle(),
-      LessonTabStyle(),
-      AppTextTheme(),
+    iconTheme: const IconThemeData(
+      color: Color.fromARGB(255, 28, 28, 28),
+    ),
+    iconButtonTheme: IconButtonThemeData(
+      style: ButtonStyle(
+        iconColor: MaterialStateColor.resolveWith(
+          (states) => const Color.fromARGB(255, 28, 28, 28),
+        ),
+      ),
+    ),
+    radioTheme: RadioThemeData(
+        fillColor: MaterialStateColor.resolveWith((states) => Colors.blue)),
+    extensions: <ThemeExtension<dynamic>>{
+      LessonCardStyle(
+        backgroundColor: Colors.grey[100]!,
+        titleStyle: const TextStyle(
+          color: Color.fromARGB(255, 28, 28, 28),
+          fontSize: 19,
+          fontWeight: FontWeight.bold,
+        ),
+        bodyStyle: const TextStyle(
+          color: Color.fromARGB(255, 28, 28, 28),
+          fontSize: 16,
+        ),
+        secondayBodyStyle: const TextStyle(
+          color: Color.fromARGB(255, 28, 28, 28),
+          fontSize: 16,
+        ),
+      ),
+      GroupCardStyle(
+        backgroundColor: Colors.grey[100]!,
+        titleStyle: const TextStyle(
+          color: Color.fromARGB(255, 28, 28, 28),
+          fontSize: 19,
+          fontWeight: FontWeight.bold,
+        ),
+        subtitleStyle: const TextStyle(
+          color: Color.fromARGB(255, 28, 28, 28),
+          fontSize: 16,
+        ),
+      ),
+      LecturerCardStyle(
+        backgroundColor: Colors.grey[100]!,
+        titleStyle: const TextStyle(
+          color: Color.fromARGB(255, 28, 28, 28),
+          fontSize: 17,
+          fontWeight: FontWeight.bold,
+        ),
+        subtitleStyle: const TextStyle(
+          color: Color.fromARGB(255, 28, 28, 28),
+          fontSize: 15,
+        ),
+      ),
+      LessonBottomSheetStyle(
+        cardColor: Colors.grey[200]!,
+      ),
+      const LessonTabStyle(),
+      const AppTextTheme(),
+      SettingsTheme(
+        scaffoldColor: Colors.grey[400]!,
+        menuColor: Colors.white,
+      )
     },
   );
 }

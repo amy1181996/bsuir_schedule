@@ -31,6 +31,8 @@ class LecturerCard extends StatelessWidget {
     final titleStyle = style?.titleStyle ?? defaultStyle.titleStyle;
     final subtitleStyle = style?.subtitleStyle ?? defaultStyle.subtitleStyle;
     final bodyStyle = Theme.of(context).extension<AppTextTheme>()!.bodyStyle;
+    final backgroundColor =
+        style?.backgroundColor ?? defaultStyle.backgroundColor;
 
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
@@ -80,7 +82,7 @@ class LecturerCard extends StatelessWidget {
         padding: const EdgeInsets.only(left: 20, top: 10, bottom: 10),
         margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
         decoration: BoxDecoration(
-          color: Theme.of(context).primaryColor,
+          color: backgroundColor,
           borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
         ),
         child: Row(
@@ -105,9 +107,9 @@ class LecturerCard extends StatelessWidget {
                       const SizedBox(
                         width: 3,
                       ),
-                      const Icon(
+                      Icon(
                         Icons.remove_red_eye_outlined,
-                        color: Colors.white,
+                        color: Theme.of(context).primaryColor,
                       ),
                     ]
                   ],

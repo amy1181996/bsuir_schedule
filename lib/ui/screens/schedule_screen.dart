@@ -138,8 +138,6 @@ class _ScheduleScreenBodyWidgetState extends State<_ScheduleScreenBodyWidget> {
 
   @override
   Widget build(BuildContext context) {
-    // final currentWeek = context
-    //     .select((ScheduleScreenViewModel viewModel) => viewModel.currentWeek);
     final currentWeek =
         Provider.of<ScheduleScreenViewModel>(context).currentWeek;
 
@@ -210,21 +208,18 @@ class _ScheduleScreenBodyWidgetState extends State<_ScheduleScreenBodyWidget> {
         alignment: Alignment.topLeft,
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
                 '${now.day}-е ${ScheduleWidgetConstants.monthesList[now.month]}',
-                style: const TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.white,
-                )),
-            Text('$currentWeek-я учебная неделя',
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.grey,
-                )),
+                style: Theme.of(context).extension<AppTextTheme>()!.titleStyle),
+            Text(
+              '$currentWeek-я учебная неделя',
+              style: Theme.of(context)
+                  .extension<AppTextTheme>()!
+                  .bodyStyle
+                  .copyWith(color: Colors.grey),
+            ),
           ],
         ),
       );
@@ -241,7 +236,9 @@ class _ScheduleScreenBodyWidgetState extends State<_ScheduleScreenBodyWidget> {
           ),
         ],
         IconButton(
-          tooltip: getTooltip(),
+          tooltip: _currentScheduleType == ScheduleViewType.full
+              ? 'Ежедневное расписание'
+              : 'Полное расписание',
           onPressed: _toggleScheduleTypeAction,
           icon: const Icon(Icons.developer_board_outlined),
         ),
@@ -253,10 +250,6 @@ class _ScheduleScreenBodyWidgetState extends State<_ScheduleScreenBodyWidget> {
           icon: const Icon(Icons.settings_outlined),
         )
       ];
-
-  String getTooltip() => (_currentScheduleType == ScheduleViewType.full)
-      ? 'Ежедневное расписание'
-      : 'Полное расписание';
 
   List<PopupMenuItem<ScheduleGroupType>> getPopupMenuItems() => [
         const PopupMenuItem<ScheduleGroupType>(
@@ -299,8 +292,9 @@ class _ScheduleScreenBodyWidgetState extends State<_ScheduleScreenBodyWidget> {
       );
 
   Widget getTabBar(List<DaySchedule> schedule) => Container(
-        color: Theme.of(context).primaryColor,
+        color: Theme.of(context).appBarTheme.backgroundColor,
         child: TabBar(
+          indicatorColor: Theme.of(context).primaryColor,
           physics: const BouncingScrollPhysics(),
           isScrollable: true,
           tabs: schedule

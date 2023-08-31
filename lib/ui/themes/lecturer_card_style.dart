@@ -6,6 +6,7 @@ class LecturerCardStyle extends ThemeExtension<LecturerCardStyle> {
   final double borderRadius;
   final TextStyle titleStyle;
   final TextStyle subtitleStyle;
+  final Color backgroundColor;
 
   const LecturerCardStyle({
     this.borderRadius = 20,
@@ -17,6 +18,7 @@ class LecturerCardStyle extends ThemeExtension<LecturerCardStyle> {
       fontSize: 15,
       fontWeight: FontWeight.normal,
     ),
+    this.backgroundColor = Colors.white,
   });
 
   @override
@@ -24,11 +26,13 @@ class LecturerCardStyle extends ThemeExtension<LecturerCardStyle> {
     double? borderRadius,
     TextStyle? titleStyle,
     TextStyle? subtitleStyle,
+    Color? backgroundColor,
   }) =>
       LecturerCardStyle(
         borderRadius: borderRadius ?? this.borderRadius,
         titleStyle: titleStyle ?? this.titleStyle,
         subtitleStyle: subtitleStyle ?? this.subtitleStyle,
+        backgroundColor: backgroundColor ?? this.backgroundColor,
       );
 
   @override
@@ -41,6 +45,7 @@ class LecturerCardStyle extends ThemeExtension<LecturerCardStyle> {
       borderRadius: lerpDouble(borderRadius, other.borderRadius, t)!,
       titleStyle: TextStyle.lerp(titleStyle, other.titleStyle, t)!,
       subtitleStyle: TextStyle.lerp(subtitleStyle, other.subtitleStyle, t)!,
+      backgroundColor: Color.lerp(backgroundColor, other.backgroundColor, t)!,
     );
   }
 }

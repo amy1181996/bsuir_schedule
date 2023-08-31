@@ -4,6 +4,7 @@ class LessonBottomSheetStyle extends ThemeExtension<LessonBottomSheetStyle> {
   final TextStyle titleStyle;
   final TextStyle bodyStyle;
   final EdgeInsets padding;
+  final Color cardColor;
 
   const LessonBottomSheetStyle({
     this.titleStyle = const TextStyle(
@@ -16,6 +17,7 @@ class LessonBottomSheetStyle extends ThemeExtension<LessonBottomSheetStyle> {
       fontSize: 16,
     ),
     this.padding = const EdgeInsets.symmetric(horizontal: 15, vertical: 25),
+    this.cardColor = Colors.white,
   });
 
   @override
@@ -23,11 +25,13 @@ class LessonBottomSheetStyle extends ThemeExtension<LessonBottomSheetStyle> {
     TextStyle? titleStyle,
     TextStyle? bodyStyle,
     EdgeInsets? padding,
+    Color? cardColor,
   }) =>
       LessonBottomSheetStyle(
         titleStyle: titleStyle ?? this.titleStyle,
         bodyStyle: bodyStyle ?? this.bodyStyle,
         padding: padding ?? this.padding,
+        cardColor: cardColor ?? this.cardColor,
       );
 
   @override
@@ -41,6 +45,7 @@ class LessonBottomSheetStyle extends ThemeExtension<LessonBottomSheetStyle> {
       titleStyle: TextStyle.lerp(titleStyle, other.titleStyle, t)!,
       bodyStyle: TextStyle.lerp(bodyStyle, other.bodyStyle, t)!,
       padding: EdgeInsets.lerp(padding, other.padding, t)!,
+      cardColor: Color.lerp(cardColor, other.cardColor, t)!,
     );
   }
 }

@@ -48,10 +48,6 @@ class _GroupScreenBodyWidget extends StatelessWidget {
         Provider.of<GroupScreenViewModel>(context).starredGroups;
     final selectedGroupId =
         Provider.of<RootScreenViewModel>(context).selectedGroupId;
-    // final starredGroups = context
-    //     .select((GroupScreenViewModel viewModel) => viewModel.starredGroups);
-    // final selectedGroupId = context
-    //     .select((RootScreenViewModel viewModel) => viewModel.selectedGroupId);
 
     return Scaffold(
       body: NestedScrollView(
@@ -60,7 +56,8 @@ class _GroupScreenBodyWidget extends StatelessWidget {
           bool innerBoxIsScrolled,
         ) =>
             <Widget>[
-          const SliverAppBar(
+          SliverAppBar(
+              forceElevated: true,
               expandedHeight: 100,
               pinned: true,
               floating: true,
@@ -70,9 +67,14 @@ class _GroupScreenBodyWidget extends StatelessWidget {
                 title: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('Избранные группы'),
-                    SizedBox(width: 8),
-                    Icon(
+                    Text(
+                      'Избранные группы',
+                      style: Theme.of(context)
+                          .extension<AppTextTheme>()!
+                          .titleStyle,
+                    ),
+                    const SizedBox(width: 8),
+                    const Icon(
                       Icons.star,
                       color: Colors.amber,
                     ),

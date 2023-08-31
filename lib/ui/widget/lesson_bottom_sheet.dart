@@ -32,6 +32,7 @@ class LessonBottomSheet extends StatelessWidget {
     final titleStyle = style?.titleStyle ?? defaultStyle.titleStyle;
     final bodyStyle = style?.bodyStyle ?? defaultStyle.bodyStyle;
     final padding = style?.padding ?? defaultStyle.padding;
+    final cardColor = style?.cardColor ?? defaultStyle.cardColor;
 
     return Container(
       padding: padding,
@@ -40,16 +41,16 @@ class LessonBottomSheet extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          getSubjectName(context, titleStyle),
+          getSubjectName(titleStyle),
           const SizedBox(
-            height: 15,
+            height: 7,
           ),
           if (scheduleEntityType == ScheduleEntityType.group)
-            getLecturerInfo(bodyStyle, Theme.of(context).primaryColor)
+            getLecturerInfo(bodyStyle, cardColor)
           else
-            getGroupInfo(context, bodyStyle, Theme.of(context).primaryColor),
+            getGroupInfo(bodyStyle, cardColor),
           const SizedBox(
-            height: 15,
+            height: 7,
           ),
           Container(
             margin: const EdgeInsets.all(10),
@@ -83,38 +84,32 @@ class LessonBottomSheet extends StatelessWidget {
     LessonColor.grey: Colors.grey,
   };
 
-  Color getLessonColor(BuildContext context, String lessonAbbrev) {
-    switch (lessonAbbrev) {
-      case 'ЛК':
-        return lessonColorToColor[
-            Provider.of<SettingsProvider>(context).lectureColor]!;
-      case 'ЛР':
-        return lessonColorToColor[
-            Provider.of<SettingsProvider>(context).laboratoryColor]!;
-      case 'ПЗ':
-        return lessonColorToColor[
-            Provider.of<SettingsProvider>(context).practiceColor]!;
-      case 'Консультация':
-        return lessonColorToColor[
-            Provider.of<SettingsProvider>(context).consultColor]!;
-      case 'Экзамен':
-        return lessonColorToColor[
-            Provider.of<SettingsProvider>(context).examColor]!;
-      default:
-        return lessonColorToColor[
-            Provider.of<SettingsProvider>(context).unknownColor]!;
-    }
-  }
+  Color getLessonColor(BuildContext context, String lessonAbbrev) =>
+      switch (lessonAbbrev) {
+        'ЛК' => lessonColorToColor[
+            Provider.of<SettingsProvider>(context).lectureColor]!,
+        'ЛР' => lessonColorToColor[
+            Provider.of<SettingsProvider>(context).laboratoryColor]!,
+        'ПЗ' => lessonColorToColor[
+            Provider.of<SettingsProvider>(context).practiceColor]!,
+        'Консультация' => lessonColorToColor[
+            Provider.of<SettingsProvider>(context).consultColor]!,
+        'Экзамен' =>
+          lessonColorToColor[Provider.of<SettingsProvider>(context).examColor]!,
+        _ => lessonColorToColor[
+            Provider.of<SettingsProvider>(context).unknownColor]!
+      };
 
-  Widget getSubjectName(BuildContext context, TextStyle titleStyle) =>
-      Container(
-        margin: const EdgeInsets.all(10),
-        child: Text(
-          lesson.subjectFullName,
-          style: titleStyle.copyWith(
-              color: getLessonColor(context, lesson.lessonTypeAbbrev)),
-        ),
-      );
+  Widget getSubjectName(TextStyle titleStyle) => Builder(builder: (context) {
+        return Container(
+          margin: const EdgeInsets.all(10),
+          child: Text(
+            lesson.subjectFullName,
+            style: titleStyle.copyWith(
+                color: getLessonColor(context, lesson.lessonTypeAbbrev)),
+          ),
+        );
+      });
 
   Widget getAuditoryInfo(TextStyle bodyStyle) =>
       lesson.auditories.where((element) => element.isNotEmpty).isNotEmpty
@@ -199,7 +194,6 @@ class LessonBottomSheet extends StatelessWidget {
       );
 
   Widget getGroupInfo(
-    BuildContext context,
     TextStyle bodyStyle,
     Color backgroundColor,
   ) {
@@ -211,63 +205,67 @@ class LessonBottomSheet extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    return GestureDetector(
-      onTap: () => showModalBottomSheet(
-          context: context,
-          isScrollControlled: true,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(
-              top: Radius.circular(20),
-            ),
-          ),
-          builder: (context) {
-            return _ExtendedGroupBottomSheet(
-              groups: groups,
-            );
-          }),
-      child: Container(
-        height: 75,
-        padding: const EdgeInsets.all(15),
-        decoration: BoxDecoration(
-          color: backgroundColor,
-          borderRadius: const BorderRadius.all(Radius.circular(20)),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    groups.map((group) => group.name).join(', '),
-                    style: bodyStyle.copyWith(fontWeight: FontWeight.bold),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  Text(
-                    groups
-                        .map((group) =>
-                            '${group.facultyAbbrev} ${group.specialityAbbrev}')
-                        .join(', '),
-                    style: bodyStyle,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  )
-                ],
+    return Builder(builder: (context) {
+      return GestureDetector(
+        onTap: () => showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(
+                top: Radius.circular(20),
               ),
             ),
-            const SizedBox(
-              width: 5,
-            ),
-            const CircleAvatar(
-              child: Icon(Icons.group_outlined),
-            ),
-          ],
+            builder: (context) {
+              return _ExtendedGroupBottomSheet(
+                cardColor: backgroundColor,
+                groups: groups,
+              );
+            }),
+        child: Container(
+          height: 75,
+          margin: const EdgeInsets.symmetric(vertical: 8),
+          padding: const EdgeInsets.all(15),
+          decoration: BoxDecoration(
+            color: backgroundColor,
+            borderRadius: const BorderRadius.all(Radius.circular(20)),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      groups.map((group) => group.name).join(', '),
+                      style: bodyStyle.copyWith(fontWeight: FontWeight.bold),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Text(
+                      groups
+                          .map((group) =>
+                              '${group.facultyAbbrev} ${group.specialityAbbrev}')
+                          .join(', '),
+                      style: bodyStyle,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    )
+                  ],
+                ),
+              ),
+              const SizedBox(
+                width: 5,
+              ),
+              const CircleAvatar(
+                child: Icon(Icons.group_outlined),
+              ),
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   Widget getLecturerInfo(TextStyle bodyStyle, Color backgroundColor) {
@@ -279,6 +277,7 @@ class LessonBottomSheet extends StatelessWidget {
 
     return Container(
       height: 75,
+      margin: const EdgeInsets.symmetric(vertical: 8),
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
         color: backgroundColor,
@@ -312,9 +311,13 @@ class LessonBottomSheet extends StatelessWidget {
 
 class _ExtendedGroupBottomSheet extends StatelessWidget {
   final List<Group> groups;
+  final Color cardColor;
 
-  const _ExtendedGroupBottomSheet({Key? key, required this.groups})
-      : super(key: key);
+  const _ExtendedGroupBottomSheet({
+    Key? key,
+    required this.groups,
+    required this.cardColor,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -333,7 +336,7 @@ class _ExtendedGroupBottomSheet extends StatelessWidget {
             margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
             padding: const EdgeInsets.all(15),
             decoration: BoxDecoration(
-              color: Theme.of(context).primaryColor,
+              color: cardColor,
               borderRadius: const BorderRadius.all(Radius.circular(20)),
             ),
             child: Row(

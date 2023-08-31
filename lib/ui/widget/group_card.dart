@@ -30,6 +30,8 @@ class GroupCard extends StatelessWidget {
     final titleStyle = style?.titleStyle ?? defaultStyle.titleStyle;
     final subtitleStyle = style?.subtitleStyle ?? defaultStyle.subtitleStyle;
     final bodyStyle = Theme.of(context).extension<AppTextTheme>()!.bodyStyle;
+    final backgroundColor =
+        style?.backgroundColor ?? defaultStyle.backgroundColor;
 
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
@@ -79,7 +81,7 @@ class GroupCard extends StatelessWidget {
         padding: const EdgeInsets.only(left: 20, top: 10, bottom: 10),
         margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
         decoration: BoxDecoration(
-          color: Theme.of(context).primaryColor,
+          color: backgroundColor,
           borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
         ),
         child: Column(
@@ -101,22 +103,25 @@ class GroupCard extends StatelessWidget {
     );
   }
 
-  Row getCardTitle(TextStyle titleStyle, bool isSelected) => Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Text(
-            group.name,
-            style: titleStyle,
-          ),
-          if (isSelected) ...[
-            const SizedBox(
-              width: 3,
+  Widget getCardTitle(TextStyle titleStyle, bool isSelected) =>
+      Builder(builder: (context) {
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Text(
+              group.name,
+              style: titleStyle,
             ),
-            const Icon(
-              Icons.remove_red_eye_outlined,
-              color: Colors.white,
-            ),
-          ]
-        ],
-      );
+            if (isSelected) ...[
+              const SizedBox(
+                width: 3,
+              ),
+              Icon(
+                Icons.remove_red_eye_outlined,
+                color: Theme.of(context).primaryColor,
+              ),
+            ]
+          ],
+        );
+      });
 }
