@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:bsuir_schedule/data/api/shared_api.dart';
 import 'package:bsuir_schedule/domain/model/group.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class GroupScheduleLastUpdateApi with SharedApi {
@@ -15,7 +16,7 @@ class GroupScheduleLastUpdateApi with SharedApi {
     try {
       response = await getResponse(localPath);
     } catch (e) {
-      print('$e');
+      debugPrint('$e');
       return null;
     }
 

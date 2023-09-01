@@ -8,6 +8,7 @@ import 'package:bsuir_schedule/data/service/lecturer_service.dart';
 import 'package:bsuir_schedule/domain/model/group.dart';
 import 'package:bsuir_schedule/domain/model/lecturer.dart';
 import 'package:bsuir_schedule/domain/model/lesson.dart';
+import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 
 class LessonDb {
@@ -70,7 +71,7 @@ class LessonDb {
           ),
         );
       } on Exception catch (e) {
-        print('$e');
+        debugPrint('$e');
       }
     }));
 
@@ -84,7 +85,7 @@ class LessonDb {
           ),
         );
       } on Exception catch (e) {
-        print('$e');
+        debugPrint('$e');
       }
     }));
 

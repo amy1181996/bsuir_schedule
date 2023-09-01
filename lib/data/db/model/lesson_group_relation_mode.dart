@@ -7,6 +7,14 @@ class AddLessonGroupRelation extends BaseModel {
   @override
   int get hashCode => lessonId.hashCode ^ groupId.hashCode;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AddLessonGroupRelation &&
+          runtimeType == other.runtimeType &&
+          lessonId == other.lessonId &&
+          groupId == other.groupId;
+
   AddLessonGroupRelation({
     required this.lessonId,
     required this.groupId,
@@ -21,6 +29,8 @@ class AddLessonGroupRelation extends BaseModel {
 }
 
 class GetLessonGroupRelation extends BaseModel {
+  @override
+  // ignore: overridden_fields
   final int id;
   final int lessonId;
   final int groupId;

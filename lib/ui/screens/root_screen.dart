@@ -21,7 +21,7 @@ class _RootScreenState extends State<RootScreen> {
 }
 
 class _RootScreenBody extends StatefulWidget {
-  const _RootScreenBody({super.key});
+  const _RootScreenBody({Key? key}) : super(key: key);
 
   @override
   State<_RootScreenBody> createState() => _RootScreenBodyState();

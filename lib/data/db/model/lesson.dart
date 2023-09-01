@@ -34,6 +34,25 @@ class AddLesson extends BaseModel {
       endLessonDate.hashCode ^
       weekDay.hashCode;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AddLesson &&
+          runtimeType == other.runtimeType &&
+          auditories == other.auditories &&
+          startLessonTime == other.startLessonTime &&
+          endLessonTime == other.endLessonTime &&
+          lessonTypeAbbrev == other.lessonTypeAbbrev &&
+          note == other.note &&
+          numSubgroup == other.numSubgroup &&
+          subject == other.subject &&
+          subjectFullName == other.subjectFullName &&
+          weeks == other.weeks &&
+          dateLesson == other.dateLesson &&
+          startLessonDate == other.startLessonDate &&
+          endLessonDate == other.endLessonDate &&
+          weekDay == other.weekDay;
+
   AddLesson({
     required this.auditories,
     required this.startLessonTime,
@@ -86,6 +105,8 @@ class AddLesson extends BaseModel {
 }
 
 class GetLesson extends BaseModel {
+  @override
+  // ignore: overridden_fields
   final int id;
   final String auditories;
   final String startLessonTime;

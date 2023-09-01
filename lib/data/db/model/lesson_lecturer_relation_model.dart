@@ -7,6 +7,14 @@ class AddLessonLecturerRelation extends BaseModel {
   @override
   int get hashCode => lessonId.hashCode ^ lecturerId.hashCode;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AddLessonLecturerRelation &&
+          runtimeType == other.runtimeType &&
+          lessonId == other.lessonId &&
+          lecturerId == other.lecturerId;
+
   AddLessonLecturerRelation({
     required this.lessonId,
     required this.lecturerId,
@@ -21,6 +29,8 @@ class AddLessonLecturerRelation extends BaseModel {
 }
 
 class GetLessonLecturerRelation extends BaseModel {
+  @override
+  // ignore: overridden_fields
   final int id;
   final int lessonId;
   final int lecturerId;

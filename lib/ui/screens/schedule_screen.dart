@@ -2,13 +2,14 @@ import 'dart:async';
 
 import 'package:bsuir_schedule/domain/view_model/root_screen_view_model.dart';
 import 'package:bsuir_schedule/domain/view_model/schedule_screen_view_model.dart';
-import 'package:bsuir_schedule/ui/navigation/navigation.dart';
 import 'package:bsuir_schedule/ui/screens/view_constants.dart';
 import 'package:bsuir_schedule/ui/themes/app_text_theme.dart';
 import 'package:bsuir_schedule/ui/widget/lecturer_image_factory.dart';
 import 'package:bsuir_schedule/ui/widget/lesson_bottom_sheet.dart';
 import 'package:bsuir_schedule/ui/widget/lesson_card.dart';
 import 'package:bsuir_schedule/ui/widget/lesson_tab.dart';
+import 'package:bsuir_schedule/ui/widget/lesson_time_bar.dart';
+import 'package:bsuir_schedule/ui/widget/schedule_screen_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -124,20 +125,9 @@ class _ScheduleScreenBodyWidget extends StatefulWidget {
 }
 
 class _ScheduleScreenBodyWidgetState extends State<_ScheduleScreenBodyWidget> {
-  final ValueNotifier<DateTime> _dateTime =
-      ValueNotifier<DateTime>(DateTime.now());
-
   List<DaySchedule> _schedule = [];
   ScheduleViewType? currentScheduleType;
   ScheduleGroupType? currentGroupType;
-
-  @override
-  void initState() {
-    super.initState();
-    Timer.periodic(const Duration(seconds: 15), (_) {
-      _dateTime.value = DateTime.now();
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -194,7 +184,7 @@ class _ScheduleScreenBodyWidgetState extends State<_ScheduleScreenBodyWidget> {
               bool innerBoxIsScrolled,
             ) =>
                 <Widget>[
-              const _ScheduleScreenAppBar(),
+              const ScheduleScreenAppBar(),
             ],
             body: getBody(_schedule),
           ),
@@ -207,7 +197,7 @@ class _ScheduleScreenBodyWidgetState extends State<_ScheduleScreenBodyWidget> {
         children: [
           getTabBar(schedule),
           const SizedBox(height: 15),
-          getTimeWidget(schedule.first),
+          LessonTimeBar(daySchedule: schedule.first),
           const SizedBox(height: 10),
           getTabBarView(schedule),
           const SizedBox(height: 20),
@@ -226,79 +216,6 @@ class _ScheduleScreenBodyWidgetState extends State<_ScheduleScreenBodyWidget> {
                     date: e.date,
                   ))
               .toList(),
-        ),
-      );
-
-  DateTime toDateTime(String time) {
-    final now = DateTime.now();
-    final hour = int.parse(time.split(':')[0]);
-    final minute = int.parse(time.split(':')[1]);
-
-    return DateTime(now.year, now.month, now.day, hour, minute);
-  }
-
-  String _getMinutes(int minutes) => switch (minutes % 10) {
-        1 => minutes == 11 ? 'минут' : 'минута',
-        2 => minutes == 12 ? 'минут' : 'минуты',
-        3 => minutes == 13 ? 'минут' : 'минуты',
-        4 => minutes == 14 ? 'минут' : 'минуты',
-        _ => 'минут',
-      };
-
-  Widget getTimeWidget(DaySchedule currentSchedule) =>
-      ValueListenableBuilder<DateTime>(
-        valueListenable: _dateTime,
-        builder: (context, now, child) {
-          final startTime =
-              toDateTime(currentSchedule.lessons.first.startLessonTime);
-          final endTime =
-              toDateTime(currentSchedule.lessons.last.endLessonTime);
-
-          String titleString = '';
-
-          print(now);
-
-          if (now.isBefore(startTime)) {
-            titleString =
-                'Пары начнутся в ${currentSchedule.lessons.first.startLessonTime}';
-            return _timeBar(titleString);
-          } else if (now.isAfter(endTime)) {
-            titleString = 'Пары закончились';
-            return _timeBar(titleString);
-          } else {
-            for (var lesson in currentSchedule.lessons) {
-              final startLessonTime = toDateTime(lesson.startLessonTime);
-              final endLessonTime = toDateTime(lesson.endLessonTime);
-
-              if (now == startLessonTime ||
-                  now.isAfter(startLessonTime) && now.isBefore(endLessonTime)) {
-                final difference = endLessonTime.difference(now).inMinutes;
-                titleString =
-                    'До конца пары осталось $difference ${_getMinutes(difference)}';
-                break;
-              } else if (now == endLessonTime ||
-                  now.isBefore(startLessonTime)) {
-                final difference = startLessonTime.difference(now).inMinutes;
-                titleString =
-                    'До начала пары осталось $difference ${_getMinutes(difference)}';
-                break;
-              }
-            }
-
-            return _timeBar(titleString);
-          }
-        },
-      );
-
-  Widget _timeBar(String titleString) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          color: Theme.of(context).primaryColor,
-        ),
-        child: Text(
-          titleString,
-          style: Theme.of(context).extension<AppTextTheme>()!.bodyStyle,
         ),
       );
 
@@ -322,147 +239,6 @@ class _ScheduleScreenBodyWidgetState extends State<_ScheduleScreenBodyWidget> {
               .toList(),
         ),
       );
-}
-
-class _ScheduleScreenAppBar extends StatefulWidget {
-  const _ScheduleScreenAppBar({super.key});
-
-  @override
-  State<_ScheduleScreenAppBar> createState() => _ScheduleScreenAppBarState();
-}
-
-class _ScheduleScreenAppBarState extends State<_ScheduleScreenAppBar> {
-  ScheduleViewType? _currentScheduleType;
-  // ignore: unused_field
-  ScheduleGroupType? _currentGroupType;
-
-  @override
-  Widget build(BuildContext context) {
-    final currentWeek =
-        Provider.of<ScheduleScreenViewModel>(context).currentWeek;
-    _currentScheduleType =
-        Provider.of<ScheduleScreenViewModel>(context).scheduleViewType;
-    _currentGroupType =
-        Provider.of<ScheduleScreenViewModel>(context).scheduleGroupType;
-    final bool isSessonPeriod = context.select(
-            (ScheduleScreenViewModel viewModel) =>
-                viewModel.exams.isNotEmpty) ??
-        false;
-
-    return SliverAppBar(
-      expandedHeight: 30,
-      floating: true,
-      pinned: false,
-      title: getTitle(DateTime.now(), currentWeek),
-      actions: getActions(isSessonPeriod),
-    );
-  }
-
-  Widget getTitle(DateTime now, int currentWeek) => Builder(builder: (context) {
-        return Align(
-          alignment: Alignment.topLeft,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                  '${now.day}-е ${ScheduleWidgetConstants.monthesList[now.month - 1]}',
-                  style:
-                      Theme.of(context).extension<AppTextTheme>()!.titleStyle),
-              Text(
-                '$currentWeek-я учебная неделя',
-                style: Theme.of(context)
-                    .extension<AppTextTheme>()!
-                    .bodyStyle
-                    .copyWith(color: Colors.grey),
-              ),
-            ],
-          ),
-        );
-      });
-
-  List<Widget> getActions(bool isSessionPeriod) => [
-        if (_currentScheduleType != ScheduleViewType.exams) ...[
-          PopupMenuButton(
-            tooltip: 'Подгруппа',
-            itemBuilder: (context) => [
-              const PopupMenuItem(
-                value: ScheduleGroupType.allGroup,
-                child: Row(
-                  children: [
-                    Icon(Icons.group_outlined),
-                    SizedBox(width: 8),
-                    Text('Вся группа'),
-                  ],
-                ),
-              ),
-              const PopupMenuItem(
-                value: ScheduleGroupType.firstSubgroup,
-                child: Row(
-                  children: [
-                    Icon(Icons.person_2_outlined),
-                    SizedBox(width: 8),
-                    Text('1-я подгруппа'),
-                  ],
-                ),
-              ),
-              const PopupMenuItem(
-                value: ScheduleGroupType.secondSubgroup,
-                child: Row(
-                  children: [
-                    Icon(Icons.person_3_outlined),
-                    SizedBox(width: 8),
-                    Text('2-я подгруппа'),
-                  ],
-                ),
-              ),
-            ],
-            onSelected: (value) {
-              setState(() {
-                _currentGroupType = value;
-              });
-              Provider.of<ScheduleScreenViewModel>(context, listen: false)
-                  .setScheduleGroupType(value);
-            },
-            child: const Icon(Icons.group_outlined),
-          ),
-          const SizedBox(width: 10),
-        ],
-        PopupMenuButton(
-          tooltip: 'Вид расписания',
-          itemBuilder: (context) => [
-            const PopupMenuItem(
-              value: ScheduleViewType.full,
-              child: Text('Полное'),
-            ),
-            const PopupMenuItem(
-              value: ScheduleViewType.dayly,
-              child: Text('По дням'),
-            ),
-            if (isSessionPeriod) ...[
-              const PopupMenuItem(
-                value: ScheduleViewType.exams,
-                child: Text('Экзамены'),
-              ),
-            ],
-          ],
-          onSelected: (value) {
-            setState(() {
-              _currentScheduleType = value;
-            });
-            Provider.of<ScheduleScreenViewModel>(context, listen: false)
-                .setScheduleViewType(value);
-          },
-          child: const Icon(Icons.grid_view_rounded),
-        ),
-        IconButton(
-          tooltip: 'На стройку',
-          onPressed: () {
-            Navigator.of(context).pushNamed(NavigationRoutes.settings);
-          },
-          icon: const Icon(Icons.settings_outlined),
-        )
-      ];
 }
 
 class _LessonListWidget extends StatefulWidget {

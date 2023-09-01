@@ -41,6 +41,8 @@ class AddGroup extends BaseModel {
 }
 
 class GetGroup extends BaseModel {
+  @override
+  // ignore: overridden_fields
   final int id;
   final String name;
   final String facultyAbbrev;

@@ -7,6 +7,14 @@ class AddLastUpdate extends BaseModel {
   @override
   int get hashCode => scheduleId.hashCode ^ lastUpdate.hashCode;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AddLastUpdate &&
+          runtimeType == other.runtimeType &&
+          scheduleId == other.scheduleId &&
+          lastUpdate == other.lastUpdate;
+
   AddLastUpdate({
     required this.scheduleId,
     required this.lastUpdate,
@@ -21,6 +29,8 @@ class AddLastUpdate extends BaseModel {
 }
 
 class GetLastUpdate extends BaseModel {
+  @override
+  // ignore: overridden_fields
   final int id;
   final int scheduleId;
   final DateTime lastUpdate;

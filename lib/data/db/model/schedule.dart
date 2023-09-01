@@ -42,6 +42,8 @@ class AddSchedule extends BaseModel {
 }
 
 class GetSchedule extends BaseModel {
+  @override
+  // ignore: overridden_fields
   final int? id;
   final String? startDate;
   final String? endDate;

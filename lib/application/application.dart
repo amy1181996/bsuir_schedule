@@ -18,7 +18,7 @@ class Application extends StatelessWidget {
 }
 
 class _AppDataLoader extends StatefulWidget {
-  const _AppDataLoader({super.key});
+  const _AppDataLoader({Key? key}) : super(key: key);
 
   @override
   State<_AppDataLoader> createState() => _AppDataLoaderState();

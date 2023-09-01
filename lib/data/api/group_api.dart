@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:bsuir_schedule/data/api/model/group.dart';
 import 'package:bsuir_schedule/data/api/shared_api.dart';
 import 'package:bsuir_schedule/domain/model/group.dart';
+import 'package:flutter/material.dart';
 
 class GroupApi with SharedApi {
   Future<List<Group>?> getAllGroups() async {
@@ -14,7 +15,7 @@ class GroupApi with SharedApi {
     try {
       response = await getResponse(localPath);
     } catch (e) {
-      print('$e');
+      debugPrint('$e');
       return null;
     }
 

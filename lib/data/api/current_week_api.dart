@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:bsuir_schedule/data/api/shared_api.dart';
+import 'package:flutter/material.dart';
 
 class CurrentWeekApi with SharedApi {
   Future<int?> getCurrentWeek() async {
@@ -12,7 +13,7 @@ class CurrentWeekApi with SharedApi {
     try {
       response = await getResponse(localPath);
     } catch (e) {
-      print('$e');
+      debugPrint('$e');
       return null;
     }
 

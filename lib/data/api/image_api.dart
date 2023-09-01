@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:bsuir_schedule/data/api/shared_api.dart';
+import 'package:flutter/material.dart';
 
 class ImageApi with SharedApi {
   Future<Uint8List?> getLecturerPhoto(String photoPath) async {
@@ -12,7 +13,7 @@ class ImageApi with SharedApi {
     try {
       response = await getResponse(localPath);
     } catch (e) {
-      print('$e');
+      debugPrint('$e');
       return null;
     }
 

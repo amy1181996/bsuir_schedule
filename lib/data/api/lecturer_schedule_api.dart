@@ -10,6 +10,7 @@ import 'package:bsuir_schedule/domain/model/group.dart';
 import 'package:bsuir_schedule/domain/model/lecturer.dart';
 import 'package:bsuir_schedule/domain/model/lesson.dart';
 import 'package:bsuir_schedule/domain/model/schedule.dart';
+import 'package:flutter/material.dart';
 
 class LecturerScheduleApi with SharedApi {
   static final GroupService _groupService = GroupService();
@@ -24,7 +25,7 @@ class LecturerScheduleApi with SharedApi {
     try {
       response = await getResponse(localPath);
     } catch (e) {
-      print('$e');
+      debugPrint('$e');
       return null;
     }
 

@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:bsuir_schedule/data/api/shared_api.dart';
 import 'package:bsuir_schedule/domain/model/lecturer.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class LecturerScheduleLastUpdateApi with SharedApi {
@@ -14,7 +15,7 @@ class LecturerScheduleLastUpdateApi with SharedApi {
     try {
       response = await getResponse(localPath);
     } catch (e) {
-      print('$e');
+      debugPrint('$e');
       return null;
     }
 

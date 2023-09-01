@@ -39,6 +39,8 @@ class AddLecturer extends BaseModel {
 }
 
 class GetLecturer extends BaseModel {
+  @override
+  // ignore: overridden_fields
   final int id;
   final String firstName;
   final String lastName;

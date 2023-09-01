@@ -10,6 +10,7 @@ class AddStarredLecturer extends BaseModel {
 
   AddStarredLecturer(this.lecturerId);
 
+  @override
   Map<String, dynamic> toMap() {
     return {
       'lecturer_id': lecturerId,

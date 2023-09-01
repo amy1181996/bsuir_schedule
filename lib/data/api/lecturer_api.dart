@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:bsuir_schedule/data/api/model/lecturer.dart';
 import 'package:bsuir_schedule/data/api/shared_api.dart';
 import 'package:bsuir_schedule/domain/model/lecturer.dart';
+import 'package:flutter/material.dart';
 
 class LecturerApi with SharedApi {
   Future<List<Lecturer>?> getAllLecturers() async {
@@ -14,7 +15,7 @@ class LecturerApi with SharedApi {
     try {
       response = await getResponse(localPath);
     } catch (e) {
-      print('$e');
+      debugPrint('$e');
       return null;
     }
 
