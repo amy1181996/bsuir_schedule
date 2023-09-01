@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bsuir_schedule/domain/view_model/root_screen_view_model.dart';
 import 'package:bsuir_schedule/domain/view_model/schedule_screen_view_model.dart';
 import 'package:bsuir_schedule/ui/navigation/navigation.dart';
@@ -22,10 +24,10 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final lecturerScheduleId = context.select(
-        (RootScreenViewModel viewModel) => viewModel.selectedLecturerId);
-    final groupScheduleId = context
-        .select((RootScreenViewModel viewModel) => viewModel.selectedGroupId);
+    final lecturerScheduleId =
+        Provider.of<RootScreenViewModel>(context).selectedLecturerId;
+    final groupScheduleId =
+        Provider.of<RootScreenViewModel>(context).selectedGroupId;
 
     if (lecturerScheduleId != null) {
       _currentScheduleEntityType = ScheduleEntityType.lecturer;
@@ -122,16 +124,32 @@ class _ScheduleScreenBodyWidget extends StatefulWidget {
 }
 
 class _ScheduleScreenBodyWidgetState extends State<_ScheduleScreenBodyWidget> {
+  final ValueNotifier<DateTime> _dateTime =
+      ValueNotifier<DateTime>(DateTime.now());
+
   List<DaySchedule> _schedule = [];
-  ScheduleViewType _currentScheduleType = ScheduleViewType.full;
-  ScheduleGroupType _currentGroupType = ScheduleGroupType.allGroup;
+  ScheduleViewType? currentScheduleType;
+  ScheduleGroupType? currentGroupType;
+
+  @override
+  void initState() {
+    super.initState();
+    Timer.periodic(const Duration(seconds: 15), (_) {
+      _dateTime.value = DateTime.now();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    switch (_currentScheduleType) {
+    currentScheduleType =
+        Provider.of<ScheduleScreenViewModel>(context).scheduleViewType;
+    currentGroupType =
+        Provider.of<ScheduleScreenViewModel>(context).scheduleGroupType;
+
+    switch (currentScheduleType!) {
       case ScheduleViewType.dayly:
         {
-          switch (_currentGroupType) {
+          switch (currentGroupType!) {
             case ScheduleGroupType.allGroup:
               _schedule = widget.daylyScheduleAllGroup;
               break;
@@ -146,7 +164,7 @@ class _ScheduleScreenBodyWidgetState extends State<_ScheduleScreenBodyWidget> {
         break;
       case ScheduleViewType.full:
         {
-          switch (_currentGroupType) {
+          switch (currentGroupType!) {
             case ScheduleGroupType.allGroup:
               _schedule = widget.fullScheduleAllGroup;
               break;
@@ -188,7 +206,11 @@ class _ScheduleScreenBodyWidgetState extends State<_ScheduleScreenBodyWidget> {
   Widget getBody(List<DaySchedule> schedule) => Column(
         children: [
           getTabBar(schedule),
+          const SizedBox(height: 15),
+          getTimeWidget(schedule.first),
+          const SizedBox(height: 10),
           getTabBarView(schedule),
+          const SizedBox(height: 20),
         ],
       );
 
@@ -200,10 +222,83 @@ class _ScheduleScreenBodyWidgetState extends State<_ScheduleScreenBodyWidget> {
           isScrollable: true,
           tabs: schedule
               .map((e) => LessonTab(
-                    scheduleType: _currentScheduleType,
+                    scheduleType: currentScheduleType!,
                     date: e.date,
                   ))
               .toList(),
+        ),
+      );
+
+  DateTime toDateTime(String time) {
+    final now = DateTime.now();
+    final hour = int.parse(time.split(':')[0]);
+    final minute = int.parse(time.split(':')[1]);
+
+    return DateTime(now.year, now.month, now.day, hour, minute);
+  }
+
+  String _getMinutes(int minutes) => switch (minutes % 10) {
+        1 => minutes == 11 ? 'минут' : 'минута',
+        2 => minutes == 12 ? 'минут' : 'минуты',
+        3 => minutes == 13 ? 'минут' : 'минуты',
+        4 => minutes == 14 ? 'минут' : 'минуты',
+        _ => 'минут',
+      };
+
+  Widget getTimeWidget(DaySchedule currentSchedule) =>
+      ValueListenableBuilder<DateTime>(
+        valueListenable: _dateTime,
+        builder: (context, now, child) {
+          final startTime =
+              toDateTime(currentSchedule.lessons.first.startLessonTime);
+          final endTime =
+              toDateTime(currentSchedule.lessons.last.endLessonTime);
+
+          String titleString = '';
+
+          print(now);
+
+          if (now.isBefore(startTime)) {
+            titleString =
+                'Пары начнутся в ${currentSchedule.lessons.first.startLessonTime}';
+            return _timeBar(titleString);
+          } else if (now.isAfter(endTime)) {
+            titleString = 'Пары закончились';
+            return _timeBar(titleString);
+          } else {
+            for (var lesson in currentSchedule.lessons) {
+              final startLessonTime = toDateTime(lesson.startLessonTime);
+              final endLessonTime = toDateTime(lesson.endLessonTime);
+
+              if (now == startLessonTime ||
+                  now.isAfter(startLessonTime) && now.isBefore(endLessonTime)) {
+                final difference = endLessonTime.difference(now).inMinutes;
+                titleString =
+                    'До конца пары осталось $difference ${_getMinutes(difference)}';
+                break;
+              } else if (now == endLessonTime ||
+                  now.isBefore(startLessonTime)) {
+                final difference = startLessonTime.difference(now).inMinutes;
+                titleString =
+                    'До начала пары осталось $difference ${_getMinutes(difference)}';
+                break;
+              }
+            }
+
+            return _timeBar(titleString);
+          }
+        },
+      );
+
+  Widget _timeBar(String titleString) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          color: Theme.of(context).primaryColor,
+        ),
+        child: Text(
+          titleString,
+          style: Theme.of(context).extension<AppTextTheme>()!.bodyStyle,
         ),
       );
 
@@ -214,7 +309,7 @@ class _ScheduleScreenBodyWidgetState extends State<_ScheduleScreenBodyWidget> {
               .map(
                 (e) => _LessonListWidget(
                   daySchedule: e,
-                  scheduleViewType: _currentScheduleType,
+                  scheduleViewType: currentScheduleType!,
                   scheduleEntityType: widget.scheduleEntityType,
                   startDate:
                       Provider.of<ScheduleScreenViewModel>(context).startDate ??
@@ -237,8 +332,9 @@ class _ScheduleScreenAppBar extends StatefulWidget {
 }
 
 class _ScheduleScreenAppBarState extends State<_ScheduleScreenAppBar> {
-  late final ScheduleViewType _currentScheduleType;
-  late final ScheduleGroupType _currentGroupType;
+  ScheduleViewType? _currentScheduleType;
+  // ignore: unused_field
+  ScheduleGroupType? _currentGroupType;
 
   @override
   Widget build(BuildContext context) {
@@ -270,7 +366,7 @@ class _ScheduleScreenAppBarState extends State<_ScheduleScreenAppBar> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                  '${now.day}-е ${ScheduleWidgetConstants.monthesList[now.month]}',
+                  '${now.day}-е ${ScheduleWidgetConstants.monthesList[now.month - 1]}',
                   style:
                       Theme.of(context).extension<AppTextTheme>()!.titleStyle),
               Text(
@@ -325,8 +421,8 @@ class _ScheduleScreenAppBarState extends State<_ScheduleScreenAppBar> {
               setState(() {
                 _currentGroupType = value;
               });
-              Provider.of<ScheduleScreenViewModel>(context)
-                  .setScheduleGroupType(_currentGroupType);
+              Provider.of<ScheduleScreenViewModel>(context, listen: false)
+                  .setScheduleGroupType(value);
             },
             child: const Icon(Icons.group_outlined),
           ),
@@ -354,8 +450,8 @@ class _ScheduleScreenAppBarState extends State<_ScheduleScreenAppBar> {
             setState(() {
               _currentScheduleType = value;
             });
-            Provider.of<ScheduleScreenViewModel>(context)
-                .setScheduleGroupType(_currentGroupType);
+            Provider.of<ScheduleScreenViewModel>(context, listen: false)
+                .setScheduleViewType(value);
           },
           child: const Icon(Icons.grid_view_rounded),
         ),
@@ -486,11 +582,7 @@ class _LessonListWidgetState extends State<_LessonListWidget>
       physics: const BouncingScrollPhysics(),
       slivers: [
         SliverList(
-          delegate: SliverChildListDelegate([
-            const SizedBox(height: 20),
-            ...lessonCards,
-            const SizedBox(height: 20),
-          ]),
+          delegate: SliverChildListDelegate(lessonCards),
         )
       ],
     );

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bsuir_schedule/application/settings/models/app_settings.dart';
 import 'package:bsuir_schedule/application/settings/settings_provider.dart';
 import 'package:bsuir_schedule/domain/model/lecturer.dart';
@@ -68,28 +70,21 @@ class LessonCard extends StatelessWidget {
     LessonColor.grey: Colors.grey,
   };
 
-  Color getLessonColor(BuildContext context, String lessonAbbrev) {
-    switch (lessonAbbrev) {
-      case 'ЛК':
-        return lessonColorToColor[
-            Provider.of<SettingsProvider>(context).lectureColor]!;
-      case 'ЛР':
-        return lessonColorToColor[
-            Provider.of<SettingsProvider>(context).laboratoryColor]!;
-      case 'ПЗ':
-        return lessonColorToColor[
-            Provider.of<SettingsProvider>(context).practiceColor]!;
-      case 'Консультация':
-        return lessonColorToColor[
-            Provider.of<SettingsProvider>(context).consultColor]!;
-      case 'Экзамен':
-        return lessonColorToColor[
-            Provider.of<SettingsProvider>(context).examColor]!;
-      default:
-        return lessonColorToColor[
-            Provider.of<SettingsProvider>(context).unknownColor]!;
-    }
-  }
+  Color getLessonColor(BuildContext context, String lessonAbbrev) =>
+      switch (lessonAbbrev) {
+        'ЛК' => lessonColorToColor[
+            Provider.of<SettingsProvider>(context).lectureColor]!,
+        'ЛР' => lessonColorToColor[
+            Provider.of<SettingsProvider>(context).laboratoryColor]!,
+        'ПЗ' => lessonColorToColor[
+            Provider.of<SettingsProvider>(context).practiceColor]!,
+        'Консультация' => lessonColorToColor[
+            Provider.of<SettingsProvider>(context).consultColor]!,
+        'Экзамен' =>
+          lessonColorToColor[Provider.of<SettingsProvider>(context).examColor]!,
+        _ => lessonColorToColor[
+            Provider.of<SettingsProvider>(context).unknownColor]!
+      };
 
   Widget getCard(
     BuildContext context,
@@ -326,57 +321,71 @@ class _TimeGradientWidget extends StatefulWidget {
 }
 
 class _TimeGradientWidgetState extends State<_TimeGradientWidget> {
+  final ValueNotifier<DateTime> _dateTime =
+      ValueNotifier<DateTime>(DateTime.now());
+
+  @override
+  void initState() {
+    super.initState();
+    Timer.periodic(const Duration(seconds: 15), (_) {
+      _dateTime.value = DateTime.now();
+    });
+  }
+
+  // @override
+  // void dispose() {
+  //   _dateTime.dispose();
+  //   super.dispose();
+  // }
+
   @override
   Widget build(BuildContext context) {
-    // const timeString = '11:00';
-    // List<String> parts = timeString.split(':');
-    // int hour = int.parse(parts[0]);
-    // int minute = int.parse(parts[1]);
+    return ValueListenableBuilder<DateTime>(
+      valueListenable: _dateTime,
+      builder: (context, currentTime, child) {
+        double progress = currentTime.difference(widget.startTime).inMinutes /
+            _TimeGradientWidget.lessonPeriodInMinutes;
 
-    // final now = DateTime.now();
-    // final currentTime = DateTime(now.year, now.month, now.day, hour, minute);
-    final currentTime = DateTime.now();
+        // print(
+        //     'progress in minutes: ${dateTime.difference(widget.startTime).inMinutes}');
+        // print('progress: $progress');
+        if (!widget.shouldShowGradiend ||
+            widget.startTime.isAfter(currentTime)) {
+          return Container(
+            width: 7,
+            decoration: BoxDecoration(
+              color: widget.color,
+              borderRadius: const BorderRadius.all(Radius.circular(4)),
+            ),
+          );
+        }
 
-    if (!widget.shouldShowGradiend || widget.startTime.isAfter(currentTime)) {
-      return Container(
-        width: 7,
-        decoration: BoxDecoration(
-          color: widget.color,
-          borderRadius: const BorderRadius.all(Radius.circular(4)),
-        ),
-      );
-    }
+        if (widget.endTime.isBefore(currentTime)) {
+          return Container(
+            width: 7,
+            decoration: const BoxDecoration(
+              color: Colors.grey,
+              borderRadius: BorderRadius.all(Radius.circular(4)),
+            ),
+          );
+        }
 
-    if (widget.endTime.isBefore(currentTime)) {
-      return Container(
-        width: 7,
-        decoration: const BoxDecoration(
-          color: Colors.grey,
-          borderRadius: BorderRadius.all(Radius.circular(4)),
-        ),
-      );
-    }
-
-    double progress = currentTime.difference(widget.startTime).inMinutes /
-        _TimeGradientWidget.lessonPeriodInMinutes;
-    // print(
-    //     'progress in minutes: ${currentTime.difference(widget.startTime).inMinutes}');
-    // print('progress: $progress');
-
-    return Container(
-      width: 7,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          stops: [progress, progress],
-          colors: [
-            Colors.grey,
-            widget.color,
-          ],
-        ),
-        borderRadius: const BorderRadius.all(Radius.circular(4)),
-      ),
+        return Container(
+          width: 7,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              stops: [progress, progress],
+              colors: [
+                Colors.grey,
+                widget.color,
+              ],
+            ),
+            borderRadius: const BorderRadius.all(Radius.circular(4)),
+          ),
+        );
+      },
     );
   }
 }

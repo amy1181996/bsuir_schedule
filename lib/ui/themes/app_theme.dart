@@ -43,6 +43,20 @@ abstract class AppTheme {
     ),
     radioTheme: RadioThemeData(
         fillColor: MaterialStateColor.resolveWith((states) => Colors.blue)),
+    menuTheme: MenuThemeData(
+      style: MenuStyle(
+        shape: MaterialStatePropertyAll<OutlinedBorder>(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+        ),
+      ),
+    ),
+    popupMenuTheme: PopupMenuThemeData(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+    ),
     extensions: const <ThemeExtension<dynamic>>{
       LessonCardStyle(
         backgroundColor: Color.fromARGB(255, 28, 28, 28),
@@ -179,6 +193,20 @@ abstract class AppTheme {
     ),
     radioTheme: RadioThemeData(
         fillColor: MaterialStateColor.resolveWith((states) => Colors.blue)),
+    menuTheme: MenuThemeData(
+      style: MenuStyle(
+        shape: MaterialStatePropertyAll<OutlinedBorder>(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+        ),
+      ),
+    ),
+    popupMenuTheme: PopupMenuThemeData(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+    ),
     extensions: <ThemeExtension<dynamic>>{
       LessonCardStyle(
         backgroundColor: Colors.grey[100]!,
