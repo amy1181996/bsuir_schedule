@@ -198,9 +198,7 @@ class _ScheduleScreenBodyWidgetState extends State<_ScheduleScreenBodyWidget> {
           getTabBar(schedule),
           const SizedBox(height: 15),
           LessonTimeBar(daySchedule: schedule.first),
-          const SizedBox(height: 10),
           getTabBarView(schedule),
-          const SizedBox(height: 20),
         ],
       );
 
@@ -224,7 +222,7 @@ class _ScheduleScreenBodyWidgetState extends State<_ScheduleScreenBodyWidget> {
           physics: const BouncingScrollPhysics(),
           children: schedule
               .map(
-                (e) => _LessonListWidget(
+                (e) => LessonListWidget(
                   daySchedule: e,
                   scheduleViewType: currentScheduleType!,
                   scheduleEntityType: widget.scheduleEntityType,
@@ -241,14 +239,14 @@ class _ScheduleScreenBodyWidgetState extends State<_ScheduleScreenBodyWidget> {
       );
 }
 
-class _LessonListWidget extends StatefulWidget {
+class LessonListWidget extends StatefulWidget {
   final ScheduleViewType scheduleViewType;
   final ScheduleEntityType? scheduleEntityType;
   final DaySchedule daySchedule;
   final DateTime startDate;
   final DateTime endDate;
 
-  const _LessonListWidget({
+  const LessonListWidget({
     Key? key,
     required this.scheduleViewType,
     required this.scheduleEntityType,
@@ -258,10 +256,10 @@ class _LessonListWidget extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<_LessonListWidget> createState() => _LessonListWidgetState();
+  State<LessonListWidget> createState() => _LessonListWidgetState();
 }
 
-class _LessonListWidgetState extends State<_LessonListWidget>
+class _LessonListWidgetState extends State<LessonListWidget>
     with AutomaticKeepAliveClientMixin {
   static final imageFactory = LecturerImageFactory();
 
@@ -358,7 +356,11 @@ class _LessonListWidgetState extends State<_LessonListWidget>
       physics: const BouncingScrollPhysics(),
       slivers: [
         SliverList(
-          delegate: SliverChildListDelegate(lessonCards),
+          delegate: SliverChildListDelegate([
+            const SizedBox(height: 10),
+            ...lessonCards,
+            const SizedBox(height: 15),
+          ]),
         )
       ],
     );
