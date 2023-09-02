@@ -38,6 +38,8 @@ class AppSettings {
   static const LessonColor defaultConsultColor = LessonColor.green;
   LessonColor examColor;
   static const LessonColor defaultExamColor = LessonColor.violet;
+  LessonColor announcementColor;
+  static const LessonColor defaultAnnouncementColor = LessonColor.blue;
   LessonColor unknownColor;
   static const LessonColor defaultUnknownColor = LessonColor.grey;
 
@@ -49,6 +51,7 @@ class AppSettings {
     this.laboratoryColor = defaultLaboratoryColor,
     this.consultColor = defaultConsultColor,
     this.examColor = defaultExamColor,
+    this.announcementColor = defaultAnnouncementColor,
     this.unknownColor = defaultUnknownColor,
   });
 
@@ -60,6 +63,7 @@ class AppSettings {
     laboratoryColor = defaultLaboratoryColor;
     consultColor = defaultConsultColor;
     examColor = defaultExamColor;
+    announcementColor = defaultAnnouncementColor;
     unknownColor = defaultUnknownColor;
   }
 }

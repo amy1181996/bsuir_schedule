@@ -2,6 +2,7 @@ enum ScheduleViewType {
   full,
   dayly,
   exams,
+  announcements,
 }
 
 enum ScheduleGroupType {
@@ -48,12 +49,4 @@ abstract class ScheduleWidgetConstants {
     'ЛР': 'Лабораторная работа',
     'ПЗ': 'Практическое занятие',
   };
-
-  // static const lessonColors = {
-  //   'ЛК': Colors.green,
-  //   'Консультация': Colors.green,
-  //   'ЛР': Colors.red,
-  //   'ПЗ': Colors.yellow,
-  //   'Экзамен': Color.fromARGB(255, 135, 8, 190),
-  // };
 }

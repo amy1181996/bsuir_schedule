@@ -64,6 +64,12 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                   context.select(
                       (ScheduleScreenViewModel viewModel) => viewModel.exams))
             ];
+            final List<DaySchedule> announcements = [
+              DaySchedule(
+                  DateTime.now(),
+                  context.select((ScheduleScreenViewModel viewModel) =>
+                      viewModel.announcements))
+            ];
 
             return _ScheduleScreenBodyWidget(
               fullScheduleAllGroup: fullScheduleAllGroup,
@@ -73,6 +79,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
               daylyScheduleFirstSubgroup: daylyScheduleFirstSubgroup,
               daylyScheduleSecondSubgroup: daylyScheduleSecondSubgroup,
               exams: exams,
+              announcements: announcements,
               scheduleEntityType: _currentScheduleEntityType,
             );
           } else {
@@ -105,6 +112,7 @@ class _ScheduleScreenBodyWidget extends StatefulWidget {
   final List<DaySchedule> daylyScheduleFirstSubgroup;
   final List<DaySchedule> daylyScheduleSecondSubgroup;
   final List<DaySchedule> exams;
+  final List<DaySchedule> announcements;
   final ScheduleEntityType? scheduleEntityType;
 
   const _ScheduleScreenBodyWidget({
@@ -116,6 +124,7 @@ class _ScheduleScreenBodyWidget extends StatefulWidget {
     required this.daylyScheduleFirstSubgroup,
     required this.daylyScheduleSecondSubgroup,
     required this.exams,
+    required this.announcements,
     required this.scheduleEntityType,
   }) : super(key: key);
 
@@ -172,6 +181,10 @@ class _ScheduleScreenBodyWidgetState extends State<_ScheduleScreenBodyWidget> {
           _schedule = widget.exams;
         }
         break;
+      case ScheduleViewType.announcements:
+        {
+          _schedule = widget.announcements;
+        }
     }
 
     return DefaultTabController(
@@ -197,7 +210,8 @@ class _ScheduleScreenBodyWidgetState extends State<_ScheduleScreenBodyWidget> {
         children: [
           getTabBar(schedule),
           const SizedBox(height: 15),
-          LessonTimeBar(daySchedule: schedule.first),
+          if (currentScheduleType == ScheduleViewType.dayly)
+            LessonTimeBar(daySchedule: schedule.first),
           getTabBarView(schedule),
         ],
       );

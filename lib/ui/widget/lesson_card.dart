@@ -82,6 +82,8 @@ class LessonCard extends StatelessWidget {
             Provider.of<SettingsProvider>(context).consultColor]!,
         'Экзамен' =>
           lessonColorToColor[Provider.of<SettingsProvider>(context).examColor]!,
+        'ОБ' => lessonColorToColor[
+            Provider.of<SettingsProvider>(context).announcementColor]!,
         _ => lessonColorToColor[
             Provider.of<SettingsProvider>(context).unknownColor]!
       };
@@ -109,15 +111,29 @@ class LessonCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              getLessonTitle(context, titleStyle, bodyStyle),
+              if (lesson.isAnnouncement)
+                getAnnouncmentTitle(context, titleStyle, bodyStyle)
+              else
+                getLessonTitle(context, titleStyle, bodyStyle),
               const SizedBox(
                 height: 5,
               ),
-              getLessonAdditionalInfo(bodyStyle),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  getAuditory(bodyStyle),
+                  if (lesson.weeks.isNotEmpty)
+                    getWeeks(bodyStyle)
+                  else
+                    getExamDate(bodyStyle),
+                ],
+              ),
               const SizedBox(
                 height: 5,
               ),
-              if (lesson.note != null && lesson.note!.isNotEmpty)
+              if (lesson.isAnnouncement == false &&
+                  lesson.note != null &&
+                  lesson.note!.isNotEmpty)
                 getNote(bodyStyle),
               if (scheduleEntityType == ScheduleEntityType.lecturer)
                 getGroupInfo(bodyStyle)
@@ -130,44 +146,11 @@ class LessonCard extends StatelessWidget {
     );
   }
 
-  Widget getLessonTime(TextStyle bodyStyle, TextStyle secondaryBodyStyle) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          lesson.startLessonTime,
-          style: bodyStyle,
-        ),
-        Text(
-          lesson.endLessonTime,
-          style: secondaryBodyStyle,
-        ),
-      ],
-    );
-  }
-
-  Widget getColoredLine({required Color color}) {
-    List<String> parts = lesson.startLessonTime.split(':');
-    int startHour = int.parse(parts[0]);
-    int startMinute = int.parse(parts[1]);
-
-    parts = lesson.endLessonTime.split(':');
-    int endHour = int.parse(parts[0]);
-    int endMinute = int.parse(parts[1]);
-
-    return _TimeGradientWidget(
-      color: color,
-      startTime: DateTime(currentTime.year, currentTime.month, currentTime.day,
-          startHour, startMinute),
-      endTime: DateTime(currentTime.year, currentTime.month, currentTime.day,
-          endHour, endMinute),
-      shouldShowGradiend: true,
-    );
-  }
-
   Widget getLessonTitle(
-          BuildContext context, TextStyle titleStyle, TextStyle bodyStyle) =>
+    BuildContext context,
+    TextStyle titleStyle,
+    TextStyle bodyStyle,
+  ) =>
       Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
@@ -187,16 +170,54 @@ class LessonCard extends StatelessWidget {
         ],
       );
 
-  Widget getLessonAdditionalInfo(TextStyle bodyStyle) => Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  Widget getLessonTime(TextStyle bodyStyle, TextStyle secondaryBodyStyle) =>
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          getAuditory(bodyStyle),
-          if (lesson.weeks.isNotEmpty)
-            getWeeks(bodyStyle)
-          else
-            getExamDate(bodyStyle),
+          Text(
+            lesson.startLessonTime,
+            style: bodyStyle,
+          ),
+          Text(
+            lesson.endLessonTime,
+            style: secondaryBodyStyle,
+          ),
         ],
       );
+
+  Widget getAnnouncmentTitle(
+    BuildContext context,
+    TextStyle titleStyle,
+    TextStyle bodyStyle,
+  ) =>
+      Text(
+        lesson.note!,
+        style: titleStyle.copyWith(
+          color: getLessonColor(context, lesson.lessonTypeAbbrev),
+        ),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      );
+
+  Widget getColoredLine({required Color color}) {
+    List<String> parts = lesson.startLessonTime.split(':');
+    int startHour = int.parse(parts[0]);
+    int startMinute = int.parse(parts[1]);
+
+    parts = lesson.endLessonTime.split(':');
+    int endHour = int.parse(parts[0]);
+    int endMinute = int.parse(parts[1]);
+
+    return _TimeGradientWidget(
+      color: color,
+      startTime: DateTime(currentTime.year, currentTime.month, currentTime.day,
+          startHour, startMinute),
+      endTime: DateTime(currentTime.year, currentTime.month, currentTime.day,
+          endHour, endMinute),
+      shouldShowGradiend: true,
+    );
+  }
 
   Widget getAuditory(TextStyle bodyStyle) =>
       lesson.auditories.where((element) => element.isNotEmpty).isNotEmpty

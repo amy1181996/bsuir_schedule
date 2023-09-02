@@ -29,13 +29,17 @@ class _ScheduleScreenAppBarState extends State<ScheduleScreenAppBar> {
             (ScheduleScreenViewModel viewModel) =>
                 viewModel.exams.isNotEmpty) ??
         false;
+    final bool hasAnnouncements = context.select(
+            (ScheduleScreenViewModel viewModel) =>
+                viewModel.announcements.isNotEmpty) ??
+        false;
 
     return SliverAppBar(
       expandedHeight: 30,
       floating: true,
       pinned: false,
       title: getTitle(DateTime.now(), currentWeek),
-      actions: getActions(isSessonPeriod),
+      actions: getActions(isSessonPeriod, hasAnnouncements),
     );
   }
 
@@ -62,7 +66,7 @@ class _ScheduleScreenAppBarState extends State<ScheduleScreenAppBar> {
         );
       });
 
-  List<Widget> getActions(bool isSessionPeriod) => [
+  List<Widget> getActions(bool isSessionPeriod, bool hasAnnouncements) => [
         if (_currentScheduleType != ScheduleViewType.exams) ...[
           PopupMenuButton(
             tooltip: 'Подгруппа',
@@ -124,6 +128,12 @@ class _ScheduleScreenAppBarState extends State<ScheduleScreenAppBar> {
               const PopupMenuItem(
                 value: ScheduleViewType.exams,
                 child: Text('Экзамены'),
+              ),
+            ],
+            if (hasAnnouncements) ...[
+              const PopupMenuItem(
+                value: ScheduleViewType.announcements,
+                child: Text('Объявления'),
               ),
             ],
           ],

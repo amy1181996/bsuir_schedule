@@ -237,6 +237,22 @@ class SettingsScreen extends StatelessWidget {
           ),
           _SettingsSwitcher<LessonColor>(
             leading: getColoredBox(lessonColorToColor[
+                Provider.of<SettingsProvider>(context).announcementColor]!),
+            title: Text(
+              'Объявление',
+              style: bodyStyle,
+            ),
+            items: colorSwitcherItems
+                .map((e) => e.copyWith(onPressed: () {
+                      Provider.of<SettingsProvider>(context, listen: false)
+                          .setAnnouncementColor(e.value);
+                    }))
+                .toList(),
+            currentValue:
+                Provider.of<SettingsProvider>(context).announcementColor,
+          ),
+          _SettingsSwitcher<LessonColor>(
+            leading: getColoredBox(lessonColorToColor[
                 Provider.of<SettingsProvider>(context).unknownColor]!),
             title: Text(
               'Неизвестно',
@@ -249,6 +265,20 @@ class SettingsScreen extends StatelessWidget {
                     }))
                 .toList(),
             currentValue: Provider.of<SettingsProvider>(context).unknownColor,
+          ),
+          SettingsItem(
+            onPressed: () =>
+                Provider.of<SettingsProvider>(context, listen: false)
+                    .resetLessonColors(),
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Text(
+                  'Сбросить',
+                  style: bodyStyle.copyWith(color: Colors.blue),
+                ),
+              ],
+            ),
           ),
         ],
       );
@@ -305,15 +335,16 @@ class SettingsScreen extends StatelessWidget {
                             : AppColorScheme.light,
                       );
                     }),
-                _SettingsSwitcherItem(
-                  name: 'По умолчанию',
-                  value: _AppTheme.byDefault,
-                  onPressed: () => {
-                    Provider.of<SettingsProvider>(context, listen: false)
-                        .setDefaultTheme(),
-                  },
-                ),
               ],
+            ),
+            SettingsItem(
+              onPressed: () =>
+                  Provider.of<SettingsProvider>(context, listen: false)
+                      .resetColorTheme(),
+              title: Text(
+                'Сбросить',
+                style: bodyStyle.copyWith(color: Colors.blue),
+              ),
             ),
             // _SettingsSwitcher<_AppIcon>(
             //   leading: const Icon(Icons.flag_outlined),
@@ -535,7 +566,7 @@ class SettingsItem extends StatelessWidget {
   const SettingsItem({
     Key? key,
     required this.onPressed,
-    required this.leading,
+    this.leading,
     required this.title,
     this.trailing,
   }) : super(key: key);

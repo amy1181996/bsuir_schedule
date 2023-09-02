@@ -18,6 +18,7 @@ class Lesson {
   final DateTime startLessonDate;
   final DateTime endLessonDate;
   final String? weekDay;
+  final bool isAnnouncement;
 
   @override
   int get hashCode =>
@@ -36,7 +37,8 @@ class Lesson {
       dateLesson.hashCode ^
       startLessonDate.hashCode ^
       endLessonDate.hashCode ^
-      weekDay.hashCode;
+      weekDay.hashCode ^
+      isAnnouncement.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -58,7 +60,8 @@ class Lesson {
           dateLesson == other.dateLesson &&
           startLessonDate == other.startLessonDate &&
           endLessonDate == other.endLessonDate &&
-          weekDay == other.weekDay;
+          weekDay == other.weekDay &&
+          isAnnouncement == other.isAnnouncement;
 
   Lesson({
     required this.id,
@@ -77,6 +80,7 @@ class Lesson {
     required this.startLessonDate,
     required this.endLessonDate,
     required this.weekDay,
+    required this.isAnnouncement,
   });
 
   Lesson copyWith({
@@ -96,6 +100,7 @@ class Lesson {
     DateTime? startLessonDate,
     DateTime? endLessonDate,
     String? weekDay,
+    bool? isAnnouncement,
   }) =>
       Lesson(
         id: id ?? this.id,
@@ -114,5 +119,6 @@ class Lesson {
         startLessonDate: startLessonDate ?? this.startLessonDate,
         endLessonDate: endLessonDate ?? this.endLessonDate,
         weekDay: weekDay ?? this.weekDay,
+        isAnnouncement: isAnnouncement ?? this.isAnnouncement,
       );
 }

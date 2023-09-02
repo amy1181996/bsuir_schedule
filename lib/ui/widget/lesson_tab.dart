@@ -36,6 +36,10 @@ class LessonTab extends StatelessWidget {
         height = 30;
         width = 400;
         break;
+      case ScheduleViewType.announcements:
+        height = 30;
+        width = 400;
+        break;
     }
 
     return SizedBox(
@@ -84,6 +88,13 @@ class LessonTab extends StatelessWidget {
         return Center(
           child: Text(
             'ЭКЗАМЕНЫ',
+            style: dateStyle,
+          ),
+        );
+      case ScheduleViewType.announcements:
+        return Center(
+          child: Text(
+            'АНОНСЫ',
             style: dateStyle,
           ),
         );

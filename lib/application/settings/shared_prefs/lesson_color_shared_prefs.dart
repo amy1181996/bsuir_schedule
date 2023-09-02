@@ -79,6 +79,20 @@ class LessonColorSharedPrefs {
     return LessonColor.values[colorIndex];
   }
 
+  Future<void> setAnnouncementColor(LessonColor color) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_examColorKey, color.index);
+  }
+
+  Future<LessonColor?> getAnnouncementColor() async {
+    final prefs = await SharedPreferences.getInstance();
+    final colorIndex = prefs.getInt(_examColorKey);
+    if (colorIndex == null) {
+      return null;
+    }
+    return LessonColor.values[colorIndex];
+  }
+
   Future<void> setUnknownColor(LessonColor color) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(_unknownColorKey, color.index);

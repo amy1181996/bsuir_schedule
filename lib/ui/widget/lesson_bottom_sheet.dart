@@ -41,7 +41,10 @@ class LessonBottomSheet extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          getSubjectName(titleStyle),
+          if (lesson.isAnnouncement)
+            getAnnouncement(titleStyle)
+          else
+            getSubjectName(titleStyle),
           const SizedBox(
             height: 7,
           ),
@@ -63,8 +66,10 @@ class LessonBottomSheet extends StatelessWidget {
                 getDateInfo(bodyStyle),
                 const SizedBox(height: 5),
                 getAuditoryInfo(bodyStyle),
-                const SizedBox(height: 5),
-                getNoteInfo(bodyStyle),
+                if (lesson.isAnnouncement == false) ...[
+                  const SizedBox(height: 5),
+                  getNoteInfo(bodyStyle),
+                ],
               ],
             ),
           ),
@@ -96,20 +101,31 @@ class LessonBottomSheet extends StatelessWidget {
             Provider.of<SettingsProvider>(context).consultColor]!,
         'Экзамен' =>
           lessonColorToColor[Provider.of<SettingsProvider>(context).examColor]!,
+        'ОБ' => lessonColorToColor[
+            Provider.of<SettingsProvider>(context).announcementColor]!,
         _ => lessonColorToColor[
             Provider.of<SettingsProvider>(context).unknownColor]!
       };
 
-  Widget getSubjectName(TextStyle titleStyle) => Builder(builder: (context) {
-        return Container(
-          margin: const EdgeInsets.all(10),
-          child: Text(
-            lesson.subjectFullName,
-            style: titleStyle.copyWith(
-                color: getLessonColor(context, lesson.lessonTypeAbbrev)),
-          ),
-        );
-      });
+  Widget getSubjectName(TextStyle titleStyle) => Builder(
+      builder: (context) => Container(
+            margin: const EdgeInsets.all(10),
+            child: Text(
+              lesson.subjectFullName,
+              style: titleStyle.copyWith(
+                  color: getLessonColor(context, lesson.lessonTypeAbbrev)),
+            ),
+          ));
+
+  Widget getAnnouncement(TextStyle titleStyle) => Builder(
+      builder: (context) => Container(
+            margin: const EdgeInsets.all(10),
+            child: Text(
+              lesson.note!,
+              style: titleStyle.copyWith(
+                  color: getLessonColor(context, lesson.lessonTypeAbbrev)),
+            ),
+          ));
 
   Widget getAuditoryInfo(TextStyle bodyStyle) =>
       lesson.auditories.where((element) => element.isNotEmpty).isNotEmpty
@@ -131,7 +147,7 @@ class LessonBottomSheet extends StatelessWidget {
       lesson.note != null && lesson.note!.isNotEmpty
           ? Row(
               children: [
-                const Icon(Icons.note_outlined),
+                const Icon(Icons.announcement_outlined),
                 const SizedBox(
                   width: 5,
                 ),

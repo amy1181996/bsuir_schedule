@@ -19,6 +19,7 @@ class SettingsProvider extends ChangeNotifier {
   LessonColor get laboratoryColor => _appSettings.laboratoryColor;
   LessonColor get consultColor => _appSettings.consultColor;
   LessonColor get examColor => _appSettings.examColor;
+  LessonColor get announcementColor => _appSettings.announcementColor;
   LessonColor get unknownColor => _appSettings.unknownColor;
 
   Future<bool> fetchData() async {
@@ -44,6 +45,31 @@ class SettingsProvider extends ChangeNotifier {
 
     // String appIconName = '/assets/images/app_icon_light.jpg';
     // await FlutterDynamicIcon.setAlternateIconName(appIconName);
+  }
+
+  Future<void> resetColorTheme() async {
+    _appSettings.appColorScheme = AppSettings.defaultAppColorScheme;
+    notifyListeners();
+    await _settingsService.setAppColorScheme(appColorScheme);
+  }
+
+  Future<void> resetLessonColors() async {
+    _appSettings.lectureColor = AppSettings.defaultLectureColor;
+    _appSettings.practiceColor = AppSettings.defaultPraciceColor;
+    _appSettings.laboratoryColor = AppSettings.defaultLaboratoryColor;
+    _appSettings.consultColor = AppSettings.defaultConsultColor;
+    _appSettings.examColor = AppSettings.defaultExamColor;
+    _appSettings.announcementColor = AppSettings.defaultAnnouncementColor;
+    _appSettings.unknownColor = AppSettings.defaultUnknownColor;
+    notifyListeners();
+
+    await _settingsService.setLectureColor(lectureColor);
+    await _settingsService.setPracticeColor(practiceColor);
+    await _settingsService.setLaboratoryColor(laboratoryColor);
+    await _settingsService.setConsultColor(consultColor);
+    await _settingsService.setExamColor(examColor);
+    await _settingsService.setAnnouncementColor(announcementColor);
+    await _settingsService.setUnknownColor(unknownColor);
   }
 
   Future<void> setLectureColor(LessonColor color) async {
@@ -74,6 +100,12 @@ class SettingsProvider extends ChangeNotifier {
     _appSettings.examColor = color;
     notifyListeners();
     await _settingsService.setExamColor(examColor);
+  }
+
+  Future<void> setAnnouncementColor(LessonColor color) async {
+    _appSettings.announcementColor = color;
+    notifyListeners();
+    await _settingsService.setAnnouncementColor(announcementColor);
   }
 
   Future<void> setUnknownColor(LessonColor color) async {
@@ -122,6 +154,12 @@ class SettingsProvider extends ChangeNotifier {
     _appSettings.examColor = AppSettings.defaultExamColor;
     notifyListeners();
     await _settingsService.setExamColor(examColor);
+  }
+
+  Future<void> setDefaultAnnouncementColor() async {
+    _appSettings.announcementColor = AppSettings.defaultAnnouncementColor;
+    notifyListeners();
+    await _settingsService.setAnnouncementColor(announcementColor);
   }
 
   Future<void> setDefaultUnknownColor() async {

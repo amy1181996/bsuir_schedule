@@ -18,6 +18,7 @@ class ApiLesson {
   final String? dateLesson;
   final String startLessonDate;
   final String endLessonDate;
+  final bool isAnnouncement;
 
   ApiLesson({
     required this.auditories,
@@ -34,13 +35,15 @@ class ApiLesson {
     required this.dateLesson,
     required this.startLessonDate,
     required this.endLessonDate,
+    required this.isAnnouncement,
   });
 
   factory ApiLesson.fromJson(Map<String, dynamic> json) => ApiLesson(
         auditories: List<String>.from(json['auditories'] ?? []),
         startLessonTime: json['startLessonTime'],
         endLessonTime: json['endLessonTime'],
-        lessonTypeAbbrev: json['lessonTypeAbbrev'],
+        lessonTypeAbbrev: json['lessonTypeAbbrev'] ??
+            (json['announcement'] ? 'ОБ' : 'unknown'),
         note: json['note'],
         numSubgroup: json['numSubgroup'],
         mappedGroups: List<Map<String, dynamic>>.from(
@@ -48,12 +51,13 @@ class ApiLesson {
         mappedLecturers: json['employees'] != null
             ? List<Map<String, dynamic>>.from(json['employees'])
             : null,
-        subject: json['subject'],
-        subjectFullName: json['subjectFullName'],
+        subject: json['subject'] ?? 'unknown',
+        subjectFullName: json['subjectFullName'] ?? 'unknown',
         weekNumber: List<int>.from(json['weekNumber'] ?? []),
         dateLesson: json['dateLesson'],
         startLessonDate: json['startLessonDate'],
         endLessonDate: json['endLessonDate'],
+        isAnnouncement: json['announcement'],
       );
 
   Lesson toLesson({
@@ -80,5 +84,6 @@ class ApiLesson {
         startLessonDate: DateFormat('dd.MM.yyyy').parse(startLessonDate),
         endLessonDate: DateFormat('dd.MM.yyyy').parse(endLessonDate),
         weekDay: weekDay,
+        isAnnouncement: isAnnouncement,
       );
 }

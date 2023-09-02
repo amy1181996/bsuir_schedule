@@ -29,6 +29,7 @@ class ScheduleScreenViewModel extends ChangeNotifier {
 
   List<Lesson> _lessons = [];
   List<Lesson> _exams = [];
+  List<Lesson> _announcements = [];
 
   List<DaySchedule> _fullScheduleAllGroup = [];
   List<DaySchedule> _fullScheduleFirstSubgroup = [];
@@ -52,6 +53,7 @@ class ScheduleScreenViewModel extends ChangeNotifier {
       _daylyScheduleSecondSubgroup;
 
   List<Lesson> get exams => _exams;
+  List<Lesson> get announcements => _announcements;
 
   int get currentWeek => _currentWeek ?? 1;
 
@@ -110,6 +112,10 @@ class ScheduleScreenViewModel extends ChangeNotifier {
       ));
     }
 
+    _lessons = [];
+    _exams = [];
+    _announcements = [];
+
     _startDate = null;
     _endDate = null;
   }
@@ -152,6 +158,9 @@ class ScheduleScreenViewModel extends ChangeNotifier {
     }
 
     _lessons = schedule.schedules;
+    _announcements = schedule.schedules
+        .where((element) => element.isAnnouncement == true)
+        .toList();
     _exams = schedule.exams;
     _startDate = schedule.startDate;
     _endDate = schedule.endDate;

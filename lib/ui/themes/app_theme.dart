@@ -32,14 +32,14 @@ abstract class AppTheme {
       foregroundColor: Colors.white,
     ),
     snackBarTheme: const SnackBarThemeData(
-      backgroundColor: Colors.grey,
       contentTextStyle: TextStyle(
-        color: Colors.white,
+        color: Colors.black,
         fontSize: 16,
       ),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(20)),
+        borderRadius: BorderRadius.all(Radius.circular(5)),
       ),
+      behavior: SnackBarBehavior.floating,
     ),
     radioTheme: RadioThemeData(
         fillColor: MaterialStateColor.resolveWith((states) => Colors.blue)),
@@ -172,14 +172,14 @@ abstract class AppTheme {
       backgroundColor: Colors.white,
     ),
     snackBarTheme: const SnackBarThemeData(
-      backgroundColor: Colors.grey,
       contentTextStyle: TextStyle(
-        color: Colors.white,
+        color: Colors.black,
         fontSize: 16,
       ),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(10)),
+        borderRadius: BorderRadius.all(Radius.circular(5)),
       ),
+      behavior: SnackBarBehavior.floating,
     ),
     iconTheme: const IconThemeData(
       color: Color.fromARGB(255, 28, 28, 28),

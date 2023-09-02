@@ -84,6 +84,10 @@ class SettingsService {
     await _lessonColorSharedPrefs.setExamColor(examColor);
   }
 
+  Future<void> setAnnouncementColor(LessonColor announcementColor) async {
+    await _lessonColorSharedPrefs.setAnnouncementColor(announcementColor);
+  }
+
   Future<void> setUnknownColor(LessonColor unknownColor) async {
     await _lessonColorSharedPrefs.setUnknownColor(unknownColor);
   }

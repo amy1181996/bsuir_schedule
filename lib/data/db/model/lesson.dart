@@ -17,6 +17,7 @@ class AddLesson extends BaseModel {
   final String startLessonDate;
   final String endLessonDate;
   final String? weekDay;
+  final bool isAnnouncement;
 
   @override
   int get hashCode =>
@@ -32,7 +33,8 @@ class AddLesson extends BaseModel {
       dateLesson.hashCode ^
       startLessonDate.hashCode ^
       endLessonDate.hashCode ^
-      weekDay.hashCode;
+      weekDay.hashCode ^
+      isAnnouncement.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -51,7 +53,8 @@ class AddLesson extends BaseModel {
           dateLesson == other.dateLesson &&
           startLessonDate == other.startLessonDate &&
           endLessonDate == other.endLessonDate &&
-          weekDay == other.weekDay;
+          weekDay == other.weekDay &&
+          isAnnouncement == other.isAnnouncement;
 
   AddLesson({
     required this.auditories,
@@ -67,6 +70,7 @@ class AddLesson extends BaseModel {
     required this.startLessonDate,
     required this.endLessonDate,
     required this.weekDay,
+    required this.isAnnouncement,
   });
 
   factory AddLesson.fromLesson(Lesson lesson) => AddLesson(
@@ -83,6 +87,7 @@ class AddLesson extends BaseModel {
         startLessonDate: lesson.startLessonDate.toIso8601String(),
         endLessonDate: lesson.endLessonDate.toIso8601String(),
         weekDay: lesson.weekDay,
+        isAnnouncement: lesson.isAnnouncement,
       );
 
   @override
@@ -101,6 +106,7 @@ class AddLesson extends BaseModel {
         'end_lesson_date': endLessonDate,
         'week_day': weekDay,
         'hash': hashCode,
+        'announcement': isAnnouncement,
       };
 }
 
@@ -121,6 +127,7 @@ class GetLesson extends BaseModel {
   final String startLessonDate;
   final String endLessonDate;
   final String? weekDay;
+  final bool isAnnouncement;
 
   GetLesson({
     required this.id,
@@ -137,6 +144,7 @@ class GetLesson extends BaseModel {
     required this.startLessonDate,
     required this.endLessonDate,
     required this.weekDay,
+    required this.isAnnouncement,
   });
 
   factory GetLesson.fromMap(Map<String, dynamic> map) => GetLesson(
@@ -154,6 +162,7 @@ class GetLesson extends BaseModel {
         startLessonDate: map['start_lesson_date'],
         endLessonDate: map['end_lesson_date'],
         weekDay: map['week_day'],
+        isAnnouncement: map['announcement'] != 0,
       );
 
   Lesson toLesson({
@@ -172,10 +181,13 @@ class GetLesson extends BaseModel {
         numSubgroup: numSubgroup,
         subject: subject,
         subjectFullName: subjectFullName,
-        weeks: weeks.split(',').map((e) => int.parse(e)).toList(),
+        weeks: weeks.isNotEmpty
+            ? weeks.split(',').map((e) => int.parse(e)).toList()
+            : [],
         dateLesson: dateLesson != null ? DateTime.parse(dateLesson!) : null,
         startLessonDate: DateTime.parse(startLessonDate),
         endLessonDate: DateTime.parse(endLessonDate),
         weekDay: weekDay,
+        isAnnouncement: isAnnouncement,
       );
 }
