@@ -6,6 +6,27 @@ class Group {
   final String specialityAbbrev;
   final int course;
 
+  @override
+  int get hashCode =>
+      id.hashCode ^
+      name.hashCode ^
+      facultyAbbrev.hashCode ^
+      specialityName.hashCode ^
+      specialityAbbrev.hashCode ^
+      course.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Group &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          name == other.name &&
+          facultyAbbrev == other.facultyAbbrev &&
+          specialityName == other.specialityName &&
+          specialityAbbrev == other.specialityAbbrev &&
+          course == other.course;
+
   Group({
     required this.id,
     required this.name,

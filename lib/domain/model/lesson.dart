@@ -19,6 +19,47 @@ class Lesson {
   final DateTime endLessonDate;
   final String? weekDay;
 
+  @override
+  int get hashCode =>
+      id.hashCode ^
+      auditories.hashCode ^
+      startLessonTime.hashCode ^
+      endLessonTime.hashCode ^
+      lessonTypeAbbrev.hashCode ^
+      note.hashCode ^
+      numSubgroup.hashCode ^
+      studentGroups.hashCode ^
+      lecturers.hashCode ^
+      subject.hashCode ^
+      subjectFullName.hashCode ^
+      weeks.hashCode ^
+      dateLesson.hashCode ^
+      startLessonDate.hashCode ^
+      endLessonDate.hashCode ^
+      weekDay.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Lesson &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          auditories == other.auditories &&
+          startLessonTime == other.startLessonTime &&
+          endLessonTime == other.endLessonTime &&
+          lessonTypeAbbrev == other.lessonTypeAbbrev &&
+          note == other.note &&
+          numSubgroup == other.numSubgroup &&
+          studentGroups == other.studentGroups &&
+          lecturers == other.lecturers &&
+          subject == other.subject &&
+          subjectFullName == other.subjectFullName &&
+          weeks == other.weeks &&
+          dateLesson == other.dateLesson &&
+          startLessonDate == other.startLessonDate &&
+          endLessonDate == other.endLessonDate &&
+          weekDay == other.weekDay;
+
   Lesson({
     required this.id,
     required this.auditories,

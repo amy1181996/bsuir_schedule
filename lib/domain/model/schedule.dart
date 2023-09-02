@@ -13,6 +13,33 @@ class Schedule {
   final List<Lesson> schedules;
   final List<Lesson> exams;
 
+  @override
+  int get hashCode =>
+      id.hashCode ^
+      startDate.hashCode ^
+      endDate.hashCode ^
+      startExamsDate.hashCode ^
+      endExamsDate.hashCode ^
+      lecturer.hashCode ^
+      group.hashCode ^
+      schedules.hashCode ^
+      exams.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Schedule &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          startDate == other.startDate &&
+          endDate == other.endDate &&
+          startExamsDate == other.startExamsDate &&
+          endExamsDate == other.endExamsDate &&
+          lecturer == other.lecturer &&
+          group == other.group &&
+          schedules == other.schedules &&
+          exams == other.exams;
+
   Schedule({
     required this.id,
     required this.startDate,

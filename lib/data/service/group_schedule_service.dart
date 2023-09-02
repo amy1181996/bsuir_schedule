@@ -31,25 +31,25 @@ class GroupScheduleService {
       return schedule;
     }
 
-    final lastUpdate = await _scheduleLastUpdateDb.getLastUpdate(db, schedule);
-    final actualLastUpdate =
-        await _groupScheduleLastUpdateApi.getGroupScheduleLastUpdate(group);
+    // final lastUpdate = await _scheduleLastUpdateDb.getLastUpdate(db, schedule);
+    // final actualLastUpdate =
+    //     await _groupScheduleLastUpdateApi.getGroupScheduleLastUpdate(group);
 
-    if (lastUpdate == null ||
-        schedule.schedules.isEmpty ||
-        actualLastUpdate == null ||
-        lastUpdate.isBefore(actualLastUpdate)) {
-      final apiSchedule = await _groupScheduleApi.getGroupSchedule(db, group);
+    // if (lastUpdate == null ||
+    //     schedule.schedules.isEmpty ||
+    //     actualLastUpdate == null ||
+    //     lastUpdate.isBefore(actualLastUpdate)) {
+    //   final apiSchedule = await _groupScheduleApi.getGroupSchedule(db, group);
 
-      if (apiSchedule != null) {
-        schedule = apiSchedule.copyWith(id: schedule.id);
-        await _groupScheduleDb.updateGroupSchedule(db, schedule);
-        await _scheduleLastUpdateDb.insertLastUpdate(
-            db, schedule, DateTime.now());
-      }
+    //   if (apiSchedule != null) {
+    //     schedule = apiSchedule.copyWith(id: schedule.id);
+    //     await _groupScheduleDb.updateGroupSchedule(db, schedule);
+    //     await _scheduleLastUpdateDb.insertLastUpdate(
+    //         db, schedule, DateTime.now());
+    //   }
 
-      return schedule;
-    }
+    //   return schedule;
+    // }
 
     return schedule;
   }
@@ -65,9 +65,36 @@ class GroupScheduleService {
     Schedule? schedule = await _groupScheduleApi.getGroupSchedule(db, group);
 
     if (schedule != null) {
-      return await _groupScheduleDb.updateGroupSchedule(db, schedule);
+      final int update =
+          await _groupScheduleDb.updateGroupSchedule(db, schedule);
+      await _scheduleLastUpdateDb.insertLastUpdate(
+          db, schedule, DateTime.now());
+      return update;
     } else {
       return 0;
     }
+  }
+
+  Future<bool> isGroupScheduleActual(DatabaseHelper db, Group group) async {
+    final schedule = await _groupScheduleDb.getGroupSchedule(db, group);
+
+    if (schedule == null) {
+      return false;
+    }
+
+    final lastUpdate = await _scheduleLastUpdateDb.getLastUpdate(db, schedule);
+
+    if (lastUpdate == null) {
+      return false;
+    }
+
+    final actualLastUpdate =
+        await _groupScheduleLastUpdateApi.getGroupScheduleLastUpdate(group);
+
+    if (actualLastUpdate == null) {
+      return false;
+    }
+
+    return lastUpdate.isAfter(actualLastUpdate);
   }
 }

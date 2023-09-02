@@ -56,4 +56,11 @@ class LecturerScreenViewModel extends ChangeNotifier {
       DatabaseHelper db, Lecturer lecturer) async {
     await _lecturerScheduleService.updateLecturerSchedule(db, lecturer);
   }
+
+  Future<void> updateLecturers(DatabaseHelper db) async {
+    await _lecturerService.updateLecturers(db);
+    _lecturers = await _lecturerService.getAllLecturers(db);
+    _shownLecturers = _lecturers;
+    notifyListeners();
+  }
 }

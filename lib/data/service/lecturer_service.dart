@@ -33,4 +33,12 @@ class LecturerService {
   Future<int> addLecturer(DatabaseHelper db, Lecturer lecturer) async {
     return await _lecturerDb.insertLecturer(db, lecturer);
   }
+
+  Future<void> updateLecturers(DatabaseHelper db) async {
+    final lecturers = await _lecturerApi.getAllLecturers() ?? [];
+
+    for (int i = 0; i < lecturers.length; i++) {
+      await _lecturerDb.insertLecturer(db, lecturers[i]);
+    }
+  }
 }

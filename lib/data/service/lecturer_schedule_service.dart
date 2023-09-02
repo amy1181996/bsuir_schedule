@@ -33,26 +33,26 @@ class LecturerScheduleService {
       return schedule;
     }
 
-    final lastUpdate = await _scheduleLastUpdateDb.getLastUpdate(db, schedule);
-    final actualLastUpdate =
-        await _lecturerScheduleLastUpdateApi.getLecturerLastUpdate(lecturer);
+    // final lastUpdate = await _scheduleLastUpdateDb.getLastUpdate(db, schedule);
+    // final actualLastUpdate =
+    //     await _lecturerScheduleLastUpdateApi.getLecturerLastUpdate(lecturer);
 
-    if (lastUpdate == null ||
-        schedule.schedules.isEmpty ||
-        actualLastUpdate == null ||
-        lastUpdate.isBefore(actualLastUpdate)) {
-      final apiSchedule =
-          await _lecturerScheduleApi.getLecturerSchedule(db, lecturer);
+    // if (lastUpdate == null ||
+    //     schedule.schedules.isEmpty ||
+    //     actualLastUpdate == null ||
+    //     lastUpdate.isBefore(actualLastUpdate)) {
+    //   final apiSchedule =
+    //       await _lecturerScheduleApi.getLecturerSchedule(db, lecturer);
 
-      if (apiSchedule != null) {
-        schedule = apiSchedule.copyWith(id: schedule.id);
-        await _lecturerScheduleDb.updateLecturerSchedule(db, schedule);
-        await _scheduleLastUpdateDb.insertLastUpdate(
-            db, schedule, DateTime.now());
-      }
+    //   if (apiSchedule != null) {
+    //     schedule = apiSchedule.copyWith(id: schedule.id);
+    //     await _lecturerScheduleDb.updateLecturerSchedule(db, schedule);
+    //     await _scheduleLastUpdateDb.insertLastUpdate(
+    //         db, schedule, DateTime.now());
+    //   }
 
-      return schedule;
-    }
+    //   return schedule;
+    // }
 
     return schedule;
   }
@@ -77,5 +77,30 @@ class LecturerScheduleService {
     } else {
       return 0;
     }
+  }
+
+  Future<bool> isLecturerScheduleActual(
+      DatabaseHelper db, Lecturer lecturer) async {
+    final schedule =
+        await _lecturerScheduleDb.getLecturerSchedule(db, lecturer);
+
+    if (schedule == null) {
+      return false;
+    }
+
+    final lastUpdate = await _scheduleLastUpdateDb.getLastUpdate(db, schedule);
+
+    if (lastUpdate == null) {
+      return false;
+    }
+
+    final actualLastUpdate =
+        await _lecturerScheduleLastUpdateApi.getLecturerLastUpdate(lecturer);
+
+    if (actualLastUpdate == null) {
+      return false;
+    }
+
+    return lastUpdate.isAfter(actualLastUpdate);
   }
 }

@@ -41,8 +41,11 @@ class _LecturerScreenState extends State<LecturerScreen> {
 }
 
 class _LecturerScreenBodyWidget extends StatelessWidget {
-  const _LecturerScreenBodyWidget({Key? key}) : super(key: key);
+  static const _cardKeyMixin = 'lecturer_screen_body_widget_card_key_';
+
   static final imageFactory = LecturerImageFactory();
+
+  const _LecturerScreenBodyWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -100,6 +103,11 @@ class _LecturerScreenBodyWidget extends StatelessWidget {
                         lecturer,
                       );
                 },
+                onRefresh: () async {
+                  await context
+                      .read<LecturerScreenViewModel>()
+                      .updateLecturers(context.read<RootScreenViewModel>().db);
+                },
               ),
             );
           },
@@ -131,6 +139,7 @@ class _LecturerScreenBodyWidget extends StatelessWidget {
       itemBuilder: (context, index) {
         final lecturer = starredLecturers[index];
         return LecturerCard(
+          key: ValueKey(lecturer.hashCode ^ _cardKeyMixin.hashCode),
           lecturer: lecturer,
           image: imageFactory.fetchImage(
             radius: 23,
@@ -144,22 +153,29 @@ class _LecturerScreenBodyWidget extends StatelessWidget {
                 .setSelectedLecturerId(lecturer.id);
           },
           onDelete: (Lecturer lecturer) {
-            context.read<LecturerScreenViewModel>().removeStarredLecturer(
-                  context.read<RootScreenViewModel>().db,
-                  lecturer,
-                );
+            final db = Provider.of<RootScreenViewModel>(context).db;
+
+            Provider.of<LecturerScreenViewModel>(context)
+                .removeStarredLecturer(db, lecturer);
+
             final selectedLecturerId =
-                context.read<RootScreenViewModel>().selectedLecturerId;
+                Provider.of<RootScreenViewModel>(context).selectedLecturerId;
+
             if (selectedLecturerId == lecturer.id) {
               Provider.of<RootScreenViewModel>(context)
                   .setSelectedLecturerId(null);
             }
           },
           onUpdate: (Lecturer lecturer) {
-            context.read<LecturerScreenViewModel>().updateStarredLecturer(
-                  context.read<RootScreenViewModel>().db,
-                  lecturer,
-                );
+            final db = Provider.of<RootScreenViewModel>(context).db;
+
+            Provider.of<LecturerScreenViewModel>(context)
+                .updateStarredLecturer(db, lecturer);
+
+            if (selectedLecturerId == lecturer.id) {
+              Provider.of<RootScreenViewModel>(context)
+                  .setSelectedLecturerId(lecturer.id);
+            }
           },
         );
       },
@@ -170,10 +186,15 @@ class _LecturerScreenBodyWidget extends StatelessWidget {
 class LecturerSearchDelegate extends SearchDelegate {
   final List<Lecturer> allLecturers;
   final Function(Lecturer) onSelected;
+  final Future<void> Function() onRefresh;
+
+  static const _cardKeyMixin = 'lecturer_search_delegate_card_key_';
 
   LecturerSearchDelegate({
     required this.allLecturers,
     required this.onSelected,
+    required this.onRefresh,
+    super.searchFieldLabel = 'Поиск',
   });
 
   @override
@@ -192,37 +213,7 @@ class LecturerSearchDelegate extends SearchDelegate {
 
   @override
   Widget buildResults(BuildContext context) {
-    query = query.toLowerCase();
-
-    final lecturers = allLecturers
-        .where((lecturer) =>
-            lecturer.firstName.toLowerCase().contains(query) ||
-            lecturer.middleName.toLowerCase().contains(query) ||
-            lecturer.lastName.toLowerCase().contains(query))
-        .toList();
-
-    return ListView.builder(
-      physics: const BouncingScrollPhysics(),
-      padding: const EdgeInsets.symmetric(vertical: 20),
-      itemCount: lecturers.length,
-      itemBuilder: (context, index) {
-        final lecturer = lecturers[index];
-        return LecturerCard(
-          lecturer: lecturer,
-          image: const Icon(Icons.person_outline),
-          isStarred: false,
-          onPressed: () {
-            onSelected(lecturer);
-            close(context, null);
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Добавляю расписание для ${lecturer.lastName}'),
-              ),
-            );
-          },
-        );
-      },
-    );
+    return buildSuggestions(context);
   }
 
   @override
@@ -236,27 +227,32 @@ class LecturerSearchDelegate extends SearchDelegate {
             lecturer.lastName.toLowerCase().contains(query))
         .toList();
 
-    return ListView.builder(
-      physics: const BouncingScrollPhysics(),
-      padding: const EdgeInsets.symmetric(vertical: 20),
-      itemCount: lecturers.length,
-      itemBuilder: (context, index) {
-        final lecturer = lecturers[index];
-        return LecturerCard(
-          lecturer: lecturer,
-          image: const Icon(Icons.person_outline),
-          isStarred: false,
-          onPressed: () {
-            onSelected(lecturer);
-            close(context, null);
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Добавляю расписание для ${lecturer.lastName}'),
-              ),
-            );
-          },
-        );
-      },
+    return RefreshIndicator(
+      onRefresh: onRefresh,
+      child: ListView.builder(
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.symmetric(vertical: 20),
+        itemCount: lecturers.length,
+        itemBuilder: (context, index) {
+          final lecturer = lecturers[index];
+
+          return LecturerCard(
+            key: ValueKey(lecturer.hashCode ^ _cardKeyMixin.hashCode),
+            lecturer: lecturer,
+            image: const Icon(Icons.person_outline),
+            isStarred: false,
+            onPressed: () {
+              onSelected(lecturer);
+              close(context, null);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Добавляю расписание для ${lecturer.lastName}'),
+                ),
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }

@@ -6,6 +6,27 @@ class Lecturer {
   final String photoPath;
   final String urlId;
 
+  @override
+  int get hashCode =>
+      id.hashCode ^
+      firstName.hashCode ^
+      lastName.hashCode ^
+      middleName.hashCode ^
+      photoPath.hashCode ^
+      urlId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Lecturer &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          firstName == other.firstName &&
+          lastName == other.lastName &&
+          middleName == other.middleName &&
+          photoPath == other.photoPath &&
+          urlId == other.urlId;
+
   Lecturer({
     required this.id,
     required this.firstName,

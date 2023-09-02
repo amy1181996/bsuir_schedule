@@ -12,6 +12,7 @@ class GroupService {
 
     if (groups.isEmpty) {
       groups = await _groupApi.getAllGroups() ?? [];
+
       for (int i = 0; i < groups.length; i++) {
         final groupId = await _groupDb.insertGroup(db, groups[i]);
         groups[i] = groups[i].copyWith(id: groupId);
@@ -27,5 +28,13 @@ class GroupService {
 
   Future<Group?> getGroupByName(DatabaseHelper db, String name) async {
     return await _groupDb.getGroupByName(db, name);
+  }
+
+  Future<void> updateGroups(DatabaseHelper db) async {
+    final groups = await _groupApi.getAllGroups() ?? [];
+
+    for (int i = 0; i < groups.length; i++) {
+      await _groupDb.insertGroup(db, groups[i]);
+    }
   }
 }

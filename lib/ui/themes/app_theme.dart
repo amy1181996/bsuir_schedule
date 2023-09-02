@@ -178,7 +178,7 @@ abstract class AppTheme {
         fontSize: 16,
       ),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(20)),
+        borderRadius: BorderRadius.all(Radius.circular(10)),
       ),
     ),
     iconTheme: const IconThemeData(

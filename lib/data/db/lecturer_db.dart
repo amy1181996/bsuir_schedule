@@ -2,6 +2,7 @@ import 'package:bsuir_schedule/data/db/db_helper/db_constants.dart';
 import 'package:bsuir_schedule/data/db/db_helper/db_helper.dart';
 import 'package:bsuir_schedule/data/db/model/lecturer.dart';
 import 'package:bsuir_schedule/domain/model/lecturer.dart';
+import 'package:sqflite/sqflite.dart';
 
 class LecturerDb {
   Future<List<Lecturer>> getAllLecturers(DatabaseHelper db) async {
@@ -33,8 +34,15 @@ class LecturerDb {
   }
 
   Future<int> insertLecturer(DatabaseHelper db, Lecturer lecturer) async {
-    return await db.insert(
-        DbTableName.lecturer, AddLecturer.fromLecturer(lecturer));
+    try {
+      return await db.insert(
+          DbTableName.lecturer, AddLecturer.fromLecturer(lecturer));
+    } on DatabaseException catch (e) {
+      if (e.isUniqueConstraintError()) {
+        return -1;
+      }
+      rethrow;
+    }
   }
 
   Future<int> updateLecturer(DatabaseHelper db, Lecturer lecturer) async {

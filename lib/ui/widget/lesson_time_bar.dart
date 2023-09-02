@@ -53,12 +53,18 @@ class _LessonTimeBarState extends State<LessonTimeBar> {
       ValueListenableBuilder<DateTime>(
         valueListenable: _dateTime,
         builder: (context, now, child) {
-          final startTime =
-              toDateTime(currentSchedule.lessons.first.startLessonTime);
-          final endTime =
-              toDateTime(currentSchedule.lessons.last.endLessonTime);
+          final lesson = currentSchedule.lessons.firstOrNull;
 
           String titleString = '';
+
+          if (lesson == null) {
+            titleString = 'Сегодня пар нет';
+            return _timeBar(titleString);
+          }
+
+          final startTime = toDateTime(lesson.startLessonTime);
+          final endTime =
+              toDateTime(currentSchedule.lessons.last.endLessonTime);
 
           debugPrint(now.toString());
 

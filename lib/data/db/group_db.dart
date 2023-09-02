@@ -2,6 +2,7 @@ import 'package:bsuir_schedule/data/db/db_helper/db_constants.dart';
 import 'package:bsuir_schedule/data/db/db_helper/db_helper.dart';
 import 'package:bsuir_schedule/data/db/model/group.dart';
 import 'package:bsuir_schedule/domain/model/group.dart';
+import 'package:sqflite/sqflite.dart';
 
 class GroupDb {
   Future<List<Group>> getAllGroups(DatabaseHelper db) async {
@@ -32,7 +33,14 @@ class GroupDb {
   }
 
   Future<int> insertGroup(DatabaseHelper db, Group group) async {
-    return await db.insert(DbTableName.group, AddGroup.fromGroup(group));
+    try {
+      return await db.insert(DbTableName.group, AddGroup.fromGroup(group));
+    } on DatabaseException catch (e) {
+      if (e.isUniqueConstraintError()) {
+        return -1;
+      }
+      rethrow;
+    }
   }
 
   Future<int> updateGroup(DatabaseHelper db, Group group) async {

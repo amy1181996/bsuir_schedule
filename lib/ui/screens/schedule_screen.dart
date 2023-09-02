@@ -274,6 +274,9 @@ class _LessonListWidgetState extends State<LessonListWidget>
   Widget build(BuildContext context) {
     super.build(context);
 
+    final cardKeyMixin =
+        'lesson_list_widget_card_key_${widget.daySchedule.date}}';
+
     final List<Widget> lessonCards =
         List.generate(widget.daySchedule.lessons.length, (index) {
       final lesson = widget.daySchedule.lessons[index];
@@ -281,6 +284,7 @@ class _LessonListWidgetState extends State<LessonListWidget>
           widget.scheduleViewType == ScheduleViewType.dayly ? true : false;
 
       return LessonCard(
+        key: ValueKey(lesson.hashCode ^ cardKeyMixin.hashCode),
         lesson: lesson,
         currentTime: widget.daySchedule.date,
         shouldShowTimeGradient: shouldShowTimeGradient,

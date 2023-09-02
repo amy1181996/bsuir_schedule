@@ -11,21 +11,50 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ScreenFactory {
-  Widget makeRootScreen() => ChangeNotifierProvider(
-        create: (_) => RootScreenViewModel(),
-        child: const RootScreen(),
-      );
-  Widget makeScheduleScreen() => ChangeNotifierProvider(
-        create: (_) => ScheduleScreenViewModel(),
-        child: const ScheduleScreen(),
-      );
-  Widget makeGroupScreen() => ChangeNotifierProvider(
-        create: (_) => GroupScreenViewModel(),
-        child: const GroupScreen(),
-      );
-  Widget makeLecturerScreen() => ChangeNotifierProvider(
-        create: (_) => LecturerScreenViewModel(),
-        child: const LecturerScreen(),
-      );
-  Widget makeSettingsScreen() => const SettingsScreen();
+  Widget makeRootScreen() => Builder(builder: (context) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+          child: ChangeNotifierProvider(
+            create: (_) => RootScreenViewModel(),
+            child: const RootScreen(),
+          ),
+        );
+      });
+
+  Widget makeScheduleScreen() => Builder(builder: (context) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+          child: ChangeNotifierProvider(
+            create: (_) => ScheduleScreenViewModel(),
+            child: const ScheduleScreen(),
+          ),
+        );
+      });
+
+  Widget makeGroupScreen() => Builder(builder: (context) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+          child: ChangeNotifierProvider(
+            create: (_) => GroupScreenViewModel(),
+            child: const GroupScreen(),
+          ),
+        );
+      });
+
+  Widget makeLecturerScreen() => Builder(builder: (context) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+          child: ChangeNotifierProvider(
+            create: (_) => LecturerScreenViewModel(),
+            child: const LecturerScreen(),
+          ),
+        );
+      });
+
+  Widget makeSettingsScreen() => Builder(builder: (context) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+          child: const SettingsScreen(),
+        );
+      });
 }

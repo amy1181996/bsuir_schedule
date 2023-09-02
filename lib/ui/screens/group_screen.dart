@@ -40,6 +40,8 @@ class _GroupScreenState extends State<GroupScreen> {
 }
 
 class _GroupScreenBodyWidget extends StatelessWidget {
+  static const _cardKeyMixin = 'group_screen_body_widget_card_key_';
+
   const _GroupScreenBodyWidget({Key? key}) : super(key: key);
 
   @override
@@ -97,6 +99,9 @@ class _GroupScreenBodyWidget extends StatelessWidget {
                       group,
                     );
               },
+              onRefresh: () => context
+                  .read<GroupScreenViewModel>()
+                  .updateGroups(context.read<RootScreenViewModel>().db),
             ),
           );
         },
@@ -129,6 +134,7 @@ class _GroupScreenBodyWidget extends StatelessWidget {
       itemBuilder: (context, index) {
         final group = starredGroups[index];
         return GroupCard(
+          key: ValueKey(group.hashCode ^ _cardKeyMixin.hashCode),
           group: group,
           isSelected: selectedGroupId == group.id,
           onPressed: (Group group) {
@@ -136,20 +142,28 @@ class _GroupScreenBodyWidget extends StatelessWidget {
           },
           onDelete: (Group group) {
             final db = context.read<RootScreenViewModel>().db;
-            context.read<GroupScreenViewModel>().removeStarredGroup(db, group);
+            Provider.of<GroupScreenViewModel>(context, listen: false)
+                .removeStarredGroup(db, group);
+
             final selectedGroupId =
-                context.read<RootScreenViewModel>().selectedGroupId;
+                Provider.of<RootScreenViewModel>(context, listen: false)
+                    .selectedGroupId;
+
             if (selectedGroupId == group.id) {
               Provider.of<RootScreenViewModel>(context, listen: false)
                   .setSelectedGroupId(null);
             }
           },
           onUpdate: (Group group) {
-            final db = context.read<RootScreenViewModel>().db;
-            context.read<GroupScreenViewModel>().updateStarredGroup(db, group);
+            final db =
+                Provider.of<RootScreenViewModel>(context, listen: false).db;
+
+            Provider.of<GroupScreenViewModel>(context, listen: false)
+                .updateStarredGroup(db, group);
 
             if (selectedGroupId == group.id) {
-              context.read<RootScreenViewModel>().setSelectedGroupId(group.id);
+              Provider.of<RootScreenViewModel>(context, listen: false)
+                  .setSelectedGroupId(group.id);
             }
           },
         );
@@ -161,10 +175,15 @@ class _GroupScreenBodyWidget extends StatelessWidget {
 class GroupSearchDelegate extends SearchDelegate {
   final List<Group> allGroups;
   final Function(Group) onSelected;
+  final Future<void> Function() onRefresh;
+
+  static const _cardKeyMixin = 'group_search_delegate_card_key_';
 
   GroupSearchDelegate({
     required this.allGroups,
     required this.onSelected,
+    required this.onRefresh,
+    super.searchFieldLabel = 'Поиск',
   });
 
   @override
@@ -187,33 +206,7 @@ class GroupSearchDelegate extends SearchDelegate {
 
   @override
   Widget buildResults(BuildContext context) {
-    query = query.toLowerCase();
-
-    final groups = allGroups
-        .where((group) =>
-            group.name.toLowerCase().contains(query) ||
-            group.facultyAbbrev.toLowerCase().contains(query) ||
-            group.specialityAbbrev.toLowerCase().contains(query) ||
-            group.specialityName.toString().contains(query))
-        .toList();
-
-    return ListView.builder(
-      physics: const BouncingScrollPhysics(),
-      padding: const EdgeInsets.symmetric(vertical: 20),
-      itemCount: groups.length,
-      itemBuilder: (context, index) {
-        return GroupCard(
-          group: groups[index],
-          isSelected: false,
-          onPressed: (Group group) {
-            onSelected(group);
-            close(context, null);
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text('Добавляю расписание для ${group.name}')));
-          },
-        );
-      },
-    );
+    return buildSuggestions(context);
   }
 
   @override
@@ -226,22 +219,28 @@ class GroupSearchDelegate extends SearchDelegate {
             group.specialityName.toString().contains(query))
         .toList();
 
-    return ListView.builder(
-      physics: const BouncingScrollPhysics(),
-      padding: const EdgeInsets.symmetric(vertical: 20),
-      itemCount: groups.length,
-      itemBuilder: (context, index) {
-        return GroupCard(
-          group: groups[index],
-          isSelected: false,
-          onPressed: (Group group) {
-            onSelected(group);
-            close(context, null);
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text('Добавляю расписание для ${group.name}')));
-          },
-        );
-      },
+    return RefreshIndicator(
+      onRefresh: onRefresh,
+      child: ListView.builder(
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.symmetric(vertical: 20),
+        itemCount: groups.length,
+        itemBuilder: (context, index) {
+          final group = groups[index];
+
+          return GroupCard(
+            key: ValueKey(group.hashCode ^ _cardKeyMixin.hashCode),
+            group: group,
+            isSelected: false,
+            onPressed: (Group group) {
+              onSelected(group);
+              close(context, null);
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text('Добавляю расписание для ${group.name}')));
+            },
+          );
+        },
+      ),
     );
   }
 }

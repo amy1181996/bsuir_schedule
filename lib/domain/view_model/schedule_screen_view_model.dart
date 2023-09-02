@@ -287,6 +287,28 @@ class ScheduleScreenViewModel extends ChangeNotifier {
             ))
         .toList();
   }
+
+  Future<bool> isLecturerScheduleActual(
+      DatabaseHelper db, int lecturerId) async {
+    final lecturer = await _lecturerService.getLecturerById(db, lecturerId);
+
+    if (lecturer == null) {
+      return false;
+    }
+
+    return await _lecturerScheduleService.isLecturerScheduleActual(
+        db, lecturer);
+  }
+
+  Future<bool> isGroupScheduleActual(DatabaseHelper db, int groupId) async {
+    final group = await _groupService.getGroupById(db, groupId);
+
+    if (group == null) {
+      return false;
+    }
+
+    return await _groupScheduleService.isGroupScheduleActual(db, group);
+  }
 }
 
 class DaySchedule {
