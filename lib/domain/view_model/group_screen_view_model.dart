@@ -48,8 +48,8 @@ class GroupScreenViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> updateStarredGroup(DatabaseHelper db, Group group) async {
-    await _groupScheduleService.updateGroupSchedule(db, group);
+  Future<int> updateStarredGroup(DatabaseHelper db, Group group) async {
+    return await _groupScheduleService.updateGroupSchedule(db, group);
   }
 
   Future<void> updateGroups(DatabaseHelper db) async {

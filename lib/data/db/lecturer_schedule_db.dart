@@ -105,13 +105,19 @@ class LecturerScheduleDb {
 
   Future<int> deleteLecturerSchedule(
       DatabaseHelper db, Schedule lecturerSchedule) async {
-    await Future.wait(lecturerSchedule.schedules.map((lesson) async {
-      await _lessonService.removeLesson(db, lesson);
-    }));
+    // await Future.wait(lecturerSchedule.schedules.map((lesson) async {
+    //   await _lessonService.removeLesson(db, lesson);
+    // }));
+    //
+    // await Future.wait(lecturerSchedule.exams.map((lesson) async {
+    //   await _lessonService.removeLesson(db, lesson);
+    // }));
 
-    await Future.wait(lecturerSchedule.exams.map((lesson) async {
-      await _lessonService.removeLesson(db, lesson);
-    }));
+    await db.deleteWhere(
+      DbTableName.lessonLecturerRelation,
+      'lecturer_id = ?',
+      [lecturerSchedule.group!.id],
+    );
 
     return await db.deleteWhere(
         DbTableName.groupSchedule, 'id = ?', [lecturerSchedule.id]);

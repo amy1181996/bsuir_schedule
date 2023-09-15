@@ -71,7 +71,7 @@ class GroupScheduleService {
           db, schedule, DateTime.now());
       return update;
     } else {
-      return 0;
+      return -1;
     }
   }
 
