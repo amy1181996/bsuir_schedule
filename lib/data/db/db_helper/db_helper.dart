@@ -8,7 +8,7 @@ import 'package:path_provider/path_provider.dart';
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper.internal();
   static const String _dbName = 'main.db';
-  static const int _dbVersion = 43;
+  static const int _dbVersion = 46;
 
   factory DatabaseHelper() => _instance;
 
@@ -105,10 +105,10 @@ class DatabaseHelper {
         subject_full_name TEXT NOT NULL,
         weeks TEXT NOT NULL,
         date_lesson TEXT,
-        start_lesson_date TEXT NOT NULL,
-        end_lesson_date TEXT NOT NULL,
-        week_day TEXT NOT NULL,
-        announcement BOOL NOT NULL,
+        start_lesson_date TEXT,
+        end_lesson_date TEXT,
+        lesson_type INTEGER NOT NULL,
+        weekday INTEGER,
         hash INTEGER NOT NULL UNIQUE
       )
     ''');

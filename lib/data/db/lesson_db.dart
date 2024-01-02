@@ -39,21 +39,67 @@ class LessonDb {
             db, relation['lecturer_id'] as int)));
 
     return getLesson.toLesson(
-        studentGroups: groups.whereType<Group>().toList(),
-        lecturers: lecturers.whereType<Lecturer>().toList());
+      studentGroups: groups.whereType<Group>().toList(),
+      lecturers: lecturers.whereType<Lecturer>().toList(),
+    );
   }
 
-  Future<int> insertLesson(DatabaseHelper db, Lesson lesson) async {
+  Future<GetLesson?> getRawLesson(DatabaseHelper db, int id) async {
+    final maps =
+        (await db.queryWhere(DbTableName.lesson, 'id = ?', [id])).firstOrNull;
+
+    if (maps == null) {
+      return null;
+    }
+
+    final getLesson = GetLesson.fromMap(maps);
+
+    final lessonGroupRelations = await db.queryWhere(
+        DbTableName.lessonGroupRelation, 'lesson_id = ?', [getLesson.id]);
+
+    final lessonLecturerRelations = await db.queryWhere(
+        DbTableName.lessonLecturerRelation, 'lesson_id = ?', [getLesson.id]);
+
+    final groups = await Future.wait(lessonGroupRelations.map((relation) =>
+        _groupService.getGroupById(db, relation['group_id'] as int)));
+
+    final lecturers = await Future.wait(lessonLecturerRelations.map(
+        (relation) => _lecturerService.getLecturerById(
+            db, relation['lecturer_id'] as int)));
+
+    getLesson.studentGroups = groups.whereType<Group>().toList();
+    getLesson.lecturers = lecturers.whereType<Lecturer>().toList();
+
+    return getLesson;
+  }
+
+  Future<int> insertLesson({
+    required DatabaseHelper db,
+    required Lesson lesson,
+    required LessonType lessonType,
+    int? weekday,
+  }) async {
     int lessonId;
     try {
-      lessonId =
-          await db.insert(DbTableName.lesson, AddLesson.fromLesson(lesson));
+      lessonId = await db.insert(
+          DbTableName.lesson,
+          AddLesson.fromLesson(
+            lesson: lesson,
+            lessonType: lessonType,
+            weekday: weekday,
+          ));
     } on DatabaseException catch (e) {
       if (e.isUniqueConstraintError()) {
         lessonId = (await db.queryWhere(
           DbTableName.lesson,
           'hash = ?',
-          [AddLesson.fromLesson(lesson).hashCode],
+          [
+            AddLesson.fromLesson(
+              lesson: lesson,
+              lessonType: lessonType,
+              weekday: weekday,
+            ).hashCode
+          ],
         ))
             .first['id'] as int;
       } else {
@@ -127,7 +173,13 @@ class LessonDb {
       );
     }));
 
-    return await db.update(DbTableName.lesson, AddLesson.fromLesson(lesson));
+    return await db.update(
+        DbTableName.lesson,
+        AddLesson.fromLesson(
+          lesson: lesson,
+          weekday: null,
+          lessonType: LessonType.lesson,
+        ));
   }
 
   Future<int> deleteLesson(DatabaseHelper db, Lesson lesson) async {
@@ -145,6 +197,12 @@ class LessonDb {
       [lessonId],
     );
 
-    return await db.delete(DbTableName.lesson, AddLesson.fromLesson(lesson));
+    return await db.delete(
+        DbTableName.lesson,
+        AddLesson.fromLesson(
+          lesson: lesson,
+          weekday: null,
+          lessonType: LessonType.lesson,
+        ));
   }
 }

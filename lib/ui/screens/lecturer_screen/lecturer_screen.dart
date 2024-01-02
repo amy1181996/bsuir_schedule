@@ -1,4 +1,37 @@
+// import 'package:bsuir_schedule/domain/model/lecturer.dart';
+// import 'package:bsuir_schedule/domain/view_model/lecturer_screen_view_model.dart';
+// import 'package:bsuir_schedule/domain/view_model/root_screen_view_model.dart';
+// import 'package:bsuir_schedule/ui/screens/starred_screen/starred_screen.dart';
+// import 'package:flutter/material.dart';
+//
+// class LecturerScreen extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return StarredScreen<Lecturer>(
+//       fetchData: (context, viewModel) =>
+//           viewModel<LecturerScreenViewModel>().fetchData(
+//         viewModel<RootScreenViewModel>().db,
+//       ),
+//       buildBody: (context, starredItems, selectedItem) =>
+//           const StarredScreenBodyWidget<Lecturer>(),
+//       onPressed: (context, lecturer) {
+//         // Handle onPressed for Lecturer
+//       },
+//       onDelete: (context, lecturer) {
+//         // Handle onDelete for Lecturer
+//       },
+//       onUpdate: (context, lecturer, selectedLecturerId) async {
+//         // Handle onUpdate for Lecturer
+//       },
+//       onSearch: (context) {
+//         // Handle onSearch for Lecturer
+//       },
+//     );
+//   }
+// }
+
 import 'package:bsuir_schedule/domain/model/lecturer.dart';
+import 'package:bsuir_schedule/domain/model/schedule_descriptor.dart';
 import 'package:bsuir_schedule/domain/view_model/lecturer_screen_view_model.dart';
 import 'package:bsuir_schedule/domain/view_model/root_screen_view_model.dart';
 import 'package:bsuir_schedule/ui/themes/app_text_theme.dart';
@@ -51,8 +84,7 @@ class _LecturerScreenBodyWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final starredLecturers =
         Provider.of<LecturerScreenViewModel>(context).starredLecturers;
-    final selectedLecturerId =
-        Provider.of<RootScreenViewModel>(context).selectedLecturerId;
+    final rootScreenViewModel = context.watch<RootScreenViewModel>();
 
     return Scaffold(
         body: NestedScrollView(
@@ -88,7 +120,11 @@ class _LecturerScreenBodyWidget extends StatelessWidget {
               ),
             ),
           ],
-          body: getBody(context, starredLecturers, selectedLecturerId),
+          body: getBody(
+            rootScreenViewModel,
+            starredLecturers,
+            rootScreenViewModel.currentScheduleDescriptor?.entityId,
+          ),
         ),
         floatingActionButton: FloatingActionButton(
           heroTag: 'lecturer_screen_floating_action_button',
@@ -115,72 +151,125 @@ class _LecturerScreenBodyWidget extends StatelessWidget {
         ));
   }
 
-  Widget getBody(
-    BuildContext context,
-    List<Lecturer> starredLecturers,
-    int? selectedLecturerId,
-  ) {
-    if (starredLecturers.isEmpty) {
-      final textTheme = Theme.of(context).extension<AppTextTheme>()!;
-      final textStyle = textTheme.bodyStyle;
+  void _onPressed(RootScreenViewModel rootScreenViewModel, Lecturer lecturer) {
+    rootScreenViewModel
+        .setSchedule(rootScreenViewModel.currentScheduleDescriptor?.copyWith(
+      scheduleEntityType: ScheduleEntityType.lecturer,
+      entityId: lecturer.id,
+    ));
+  }
 
-      return Center(
-        child: Text(
-          'Тут пока что пусто...',
-          style: textStyle,
-        ),
-      );
+  void _onDelete(
+    RootScreenViewModel rootScreenViewModel,
+    LecturerScreenViewModel lecturerScreenViewModel,
+    Lecturer lecturer,
+  ) {
+    final db = rootScreenViewModel.db;
+
+    lecturerScreenViewModel.removeStarredLecturer(db, lecturer);
+
+    final selectedLecturerId =
+        rootScreenViewModel.currentScheduleDescriptor!.entityId;
+
+    if (selectedLecturerId == lecturer.id) {
+      rootScreenViewModel.setSchedule(null);
+    }
+  }
+
+  Future<bool> _onUpdate(
+    RootScreenViewModel rootScreenViewModel,
+    LecturerScreenViewModel lecturerScreenViewModel,
+    Lecturer lecturer,
+    int selectedLecturerId,
+  ) async {
+    final db = rootScreenViewModel.db;
+
+    final update =
+        await lecturerScreenViewModel.updateStarredLecturer(db, lecturer);
+
+    if (update == -1) {
+      return false;
     }
 
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(vertical: 20),
-      physics: const BouncingScrollPhysics(),
-      itemCount: starredLecturers.length,
-      itemBuilder: (context, index) {
-        final lecturer = starredLecturers[index];
-        return LecturerCard(
-          key: ValueKey(lecturer.hashCode ^ _cardKeyMixin.hashCode),
-          lecturer: lecturer,
-          image: imageFactory.fetchImage(
-            radius: 23,
-            borderSize: 0,
-            lecturer: lecturer,
-          ),
-          isStarred: selectedLecturerId == lecturer.id,
-          onPressed: () {
-            context
-                .read<RootScreenViewModel>()
-                .setSelectedLecturerId(lecturer.id);
-          },
-          onDelete: (Lecturer lecturer) {
-            final db = Provider.of<RootScreenViewModel>(context).db;
+    if (selectedLecturerId == lecturer.id) {
+      await rootScreenViewModel
+          .setSchedule(rootScreenViewModel.currentScheduleDescriptor!.copyWith(
+        scheduleEntityType: ScheduleEntityType.lecturer,
+        entityId: lecturer.id,
+      ));
+    }
 
-            Provider.of<LecturerScreenViewModel>(context)
-                .removeStarredLecturer(db, lecturer);
+    return true;
+  }
 
-            final selectedLecturerId =
-                Provider.of<RootScreenViewModel>(context).selectedLecturerId;
+  Widget getBody(
+    RootScreenViewModel rootScreenViewModel,
+    List<Lecturer> starredLecturers,
+    int? selectedLecturerId,
+  ) =>
+      Builder(builder: (context) {
+        if (starredLecturers.isEmpty) {
+          final textTheme = Theme.of(context).extension<AppTextTheme>()!;
+          final textStyle = textTheme.bodyStyle;
 
-            if (selectedLecturerId == lecturer.id) {
-              Provider.of<RootScreenViewModel>(context)
-                  .setSelectedLecturerId(null);
-            }
-          },
-          onUpdate: (Lecturer lecturer) {
-            final db = Provider.of<RootScreenViewModel>(context).db;
+          return Center(
+            child: Text(
+              'Тут пока что пусто...',
+              style: textStyle,
+            ),
+          );
+        }
 
-            Provider.of<LecturerScreenViewModel>(context)
-                .updateStarredLecturer(db, lecturer);
+        return ListView.builder(
+          padding: const EdgeInsets.symmetric(vertical: 20),
+          physics: const BouncingScrollPhysics(),
+          itemCount: starredLecturers.length,
+          itemBuilder: (context, index) {
+            final lecturer = starredLecturers[index];
+            return LecturerCard(
+              key: ValueKey(lecturer.hashCode ^ _cardKeyMixin.hashCode),
+              lecturer: lecturer,
+              image: imageFactory.fetchImage(
+                radius: 23,
+                borderSize: 0,
+                lecturer: lecturer,
+              ),
+              isStarred: selectedLecturerId == lecturer.id,
+              onPressed: () {
+                _onPressed(rootScreenViewModel, lecturer);
+              },
+              onDelete: (Lecturer lecturer) {
+                _onDelete(
+                  rootScreenViewModel,
+                  context.read<LecturerScreenViewModel>(),
+                  lecturer,
+                );
+              },
+              onUpdate: (Lecturer lecturer) async {
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content:
+                      Text('Обновляю расписание для ${lecturer.firstName}'),
+                ));
 
-            if (selectedLecturerId == lecturer.id) {
-              Provider.of<RootScreenViewModel>(context)
-                  .setSelectedLecturerId(lecturer.id);
-            }
+                final update = await _onUpdate(
+                  rootScreenViewModel,
+                  context.read<LecturerScreenViewModel>(),
+                  lecturer,
+                  selectedLecturerId!,
+                );
+
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text(update
+                        ? 'Расписание обновлено'
+                        : 'Не удалось обновить расписание для ${lecturer.firstName}'),
+                  ));
+                }
+              },
+            );
           },
         );
-      },
-    );
-  }
+      });
 }
 
 class LecturerSearchDelegate extends SearchDelegate {

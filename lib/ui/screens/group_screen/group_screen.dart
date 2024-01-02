@@ -1,4 +1,5 @@
 import 'package:bsuir_schedule/domain/model/group.dart';
+import 'package:bsuir_schedule/domain/model/schedule_descriptor.dart';
 import 'package:bsuir_schedule/domain/view_model/group_screen_view_model.dart';
 import 'package:bsuir_schedule/domain/view_model/root_screen_view_model.dart';
 import 'package:bsuir_schedule/ui/themes/app_text_theme.dart';
@@ -46,10 +47,10 @@ class _GroupScreenBodyWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final starredGroups =
-        Provider.of<GroupScreenViewModel>(context).starredGroups;
-    final selectedGroupId =
-        Provider.of<RootScreenViewModel>(context).selectedGroupId;
+    final rootViewModel = context.watch<RootScreenViewModel>();
+    final viewModel = context.watch<GroupScreenViewModel>();
+    final starredGroups = viewModel.starredGroups;
+    final selectedGroupId = rootViewModel.currentScheduleDescriptor?.entityId;
 
     return Scaffold(
       body: NestedScrollView(
@@ -84,7 +85,7 @@ class _GroupScreenBodyWidget extends StatelessWidget {
                 ),
               )),
         ],
-        body: getStarred(context, starredGroups, selectedGroupId),
+        body: getStarred(rootViewModel, starredGroups, selectedGroupId),
       ),
       floatingActionButton: FloatingActionButton(
         heroTag: 'group_screen_floating_action_button',
@@ -110,66 +111,119 @@ class _GroupScreenBodyWidget extends StatelessWidget {
     );
   }
 
-  Widget getStarred(
-    BuildContext context,
-    List<Group> starredGroups,
-    int? selectedGroupId,
+  void _onPressed(
+    RootScreenViewModel rootScreenViewModel,
+    Group group,
   ) {
-    if (starredGroups.isEmpty) {
-      final textTheme = Theme.of(context).extension<AppTextTheme>()!;
-      final textStyle = textTheme.bodyStyle;
+    rootScreenViewModel
+        .setSchedule(rootScreenViewModel.currentScheduleDescriptor!.copyWith(
+      scheduleEntityType: ScheduleEntityType.group,
+      entityId: group.id,
+    ));
+  }
 
-      return Center(
-        child: Text(
-          'Тут пока что пусто...',
-          style: textStyle,
-        ),
-      );
+  void _onDelete(
+    RootScreenViewModel rootScreenViewModel,
+    GroupScreenViewModel groupScreenViewModel,
+    Group group,
+  ) {
+    final db = rootScreenViewModel.db;
+    groupScreenViewModel.removeStarredGroup(db, group);
+
+    final selectedGroupId =
+        rootScreenViewModel.currentScheduleDescriptor!.entityId;
+
+    if (selectedGroupId == group.id) {
+      rootScreenViewModel.setSchedule(null);
+    }
+  }
+
+  Future<bool> _onUpdate(
+      RootScreenViewModel rootScreenViewModel,
+      GroupScreenViewModel groupScreenViewModel,
+      Group group,
+      int? selectedGroupId) async {
+    final db = rootScreenViewModel.db;
+
+    final update = await groupScreenViewModel.updateStarredGroup(db, group);
+
+    if (update == -1) {
+      return false;
     }
 
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(vertical: 20),
-      physics: const BouncingScrollPhysics(),
-      itemCount: starredGroups.length,
-      itemBuilder: (context, index) {
-        final group = starredGroups[index];
-        return GroupCard(
-          key: ValueKey(group.hashCode ^ _cardKeyMixin.hashCode),
-          group: group,
-          isSelected: selectedGroupId == group.id,
-          onPressed: (Group group) {
-            context.read<RootScreenViewModel>().setSelectedGroupId(group.id);
-          },
-          onDelete: (Group group) {
-            final db = context.read<RootScreenViewModel>().db;
-            Provider.of<GroupScreenViewModel>(context, listen: false)
-                .removeStarredGroup(db, group);
+    if (selectedGroupId == group.id) {
+      await rootScreenViewModel
+          .setSchedule(rootScreenViewModel.currentScheduleDescriptor!.copyWith(
+        scheduleEntityType: ScheduleEntityType.group,
+        entityId: group.id,
+      ));
+    }
 
-            final selectedGroupId =
-                Provider.of<RootScreenViewModel>(context, listen: false)
-                    .selectedGroupId;
+    return true;
+  }
 
-            if (selectedGroupId == group.id) {
-              Provider.of<RootScreenViewModel>(context, listen: false)
-                  .setSelectedGroupId(null);
-            }
-          },
-          onUpdate: (Group group) {
-            final db =
-                Provider.of<RootScreenViewModel>(context, listen: false).db;
+  Widget getStarred(
+    RootScreenViewModel rootScreenViewModel,
+    List<Group> starredGroups,
+    int? selectedGroupId,
+  ) =>
+      Builder(builder: (context) {
+        if (starredGroups.isEmpty) {
+          final textTheme = Theme.of(context).extension<AppTextTheme>()!;
+          final textStyle = textTheme.bodyStyle;
 
-            Provider.of<GroupScreenViewModel>(context, listen: false)
-                .updateStarredGroup(db, group);
+          return Center(
+            child: Text(
+              'Тут пока что пусто...',
+              style: textStyle,
+            ),
+          );
+        }
 
-            if (selectedGroupId == group.id) {
-              Provider.of<RootScreenViewModel>(context, listen: false)
-                  .setSelectedGroupId(group.id);
-            }
+        return ListView.builder(
+          padding: const EdgeInsets.symmetric(vertical: 20),
+          physics: const BouncingScrollPhysics(),
+          itemCount: starredGroups.length,
+          itemBuilder: (context, index) {
+            final group = starredGroups[index];
+            return GroupCard(
+              key: ValueKey(group.hashCode ^ _cardKeyMixin.hashCode),
+              group: group,
+              isSelected: selectedGroupId == group.id,
+              onPressed: (Group group) {
+                _onPressed(rootScreenViewModel, group);
+              },
+              onDelete: (Group group) {
+                _onDelete(
+                  rootScreenViewModel,
+                  context.read<GroupScreenViewModel>(),
+                  group,
+                );
+              },
+              onUpdate: (Group group) async {
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text('Обновляю расписание для ${group.name}'),
+                ));
+
+                final update = await _onUpdate(
+                  rootScreenViewModel,
+                  context.watch<GroupScreenViewModel>(),
+                  group,
+                  selectedGroupId,
+                );
+
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text(update
+                        ? 'Расписание обновлено'
+                        : 'Не удалось обновить расписание для ${group.name}'),
+                  ));
+                }
+              },
+            );
           },
         );
-      },
-    );
-  }
+      });
 }
 
 class GroupSearchDelegate extends SearchDelegate {

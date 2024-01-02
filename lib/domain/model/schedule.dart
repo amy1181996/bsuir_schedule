@@ -10,8 +10,9 @@ class Schedule {
   final DateTime? endExamsDate;
   final Lecturer? lecturer;
   final Group? group;
-  final List<Lesson> schedules;
+  final Map<int, List<Lesson>> schedules;
   final List<Lesson> exams;
+  final List<Lesson> announcements;
 
   @override
   int get hashCode =>
@@ -23,6 +24,7 @@ class Schedule {
       lecturer.hashCode ^
       group.hashCode ^
       schedules.hashCode ^
+      announcements.hashCode ^
       exams.hashCode;
 
   @override
@@ -38,7 +40,8 @@ class Schedule {
           lecturer == other.lecturer &&
           group == other.group &&
           schedules == other.schedules &&
-          exams == other.exams;
+          exams == other.exams &&
+          announcements == other.announcements;
 
   Schedule({
     required this.id,
@@ -50,6 +53,7 @@ class Schedule {
     required this.group,
     required this.schedules,
     required this.exams,
+    required this.announcements,
   });
 
   Schedule copyWith({
@@ -59,8 +63,9 @@ class Schedule {
     DateTime? startExamsDate,
     Lecturer? lecturer,
     Group? group,
-    List<Lesson>? schedules,
+    Map<int, List<Lesson>>? schedules,
     List<Lesson>? exams,
+    List<Lesson>? announcements,
   }) =>
       Schedule(
         id: id ?? this.id,
@@ -72,5 +77,6 @@ class Schedule {
         group: group ?? this.group,
         schedules: schedules ?? this.schedules,
         exams: exams ?? this.exams,
+        announcements: announcements ?? this.announcements,
       );
 }

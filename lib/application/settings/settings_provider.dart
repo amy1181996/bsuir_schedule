@@ -21,6 +21,7 @@ class SettingsProvider extends ChangeNotifier {
   LessonColor get examColor => _appSettings.examColor;
   LessonColor get announcementColor => _appSettings.announcementColor;
   LessonColor get unknownColor => _appSettings.unknownColor;
+  bool get useMaterial3 => _appSettings.useMaterial3;
 
   Future<bool> fetchData() async {
     final appSettings = await _settingsService.getSettings();
@@ -45,6 +46,12 @@ class SettingsProvider extends ChangeNotifier {
 
     // String appIconName = '/assets/images/app_icon_light.jpg';
     // await FlutterDynamicIcon.setAlternateIconName(appIconName);
+  }
+
+  Future<void> setUseMaterial3(bool useMaterial3) async {
+    _appSettings.useMaterial3 = useMaterial3;
+    notifyListeners();
+    await _settingsService.setUseMaterial3(useMaterial3);
   }
 
   Future<void> resetColorTheme() async {

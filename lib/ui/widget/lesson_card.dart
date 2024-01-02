@@ -9,6 +9,8 @@ import 'package:bsuir_schedule/ui/screens/view_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../domain/model/schedule_descriptor.dart';
+
 class LessonCard extends StatelessWidget {
   final LessonCardStyle? style;
 
@@ -111,9 +113,9 @@ class LessonCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (lesson.isAnnouncement)
-                getAnnouncmentTitle(context, titleStyle, bodyStyle)
-              else
+              // if (lesson.isAnnouncement)
+              //   getAnnouncmentTitle(context, titleStyle, bodyStyle)
+              // else
                 getLessonTitle(context, titleStyle, bodyStyle),
               const SizedBox(
                 height: 5,
@@ -122,7 +124,7 @@ class LessonCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   getAuditory(bodyStyle),
-                  if (lesson.weeks.isNotEmpty)
+                  if (lesson.dateLesson != null && lesson.weeks.isNotEmpty)
                     getWeeks(bodyStyle)
                   else
                     getExamDate(bodyStyle),
@@ -131,10 +133,12 @@ class LessonCard extends StatelessWidget {
               const SizedBox(
                 height: 5,
               ),
-              if (lesson.isAnnouncement == false &&
-                  lesson.note != null &&
-                  lesson.note!.isNotEmpty)
-                getNote(bodyStyle),
+              // if (lesson.isAnnouncement == false &&
+              //     lesson.note != null &&
+              //     lesson.note!.isNotEmpty)
+  // ScheduleEntityType? _currentScheduleEntityType;
+
+              //   getNote(bodyStyle),
               if (scheduleEntityType == ScheduleEntityType.lecturer)
                 getGroupInfo(bodyStyle)
               else
@@ -215,7 +219,7 @@ class LessonCard extends StatelessWidget {
           startHour, startMinute),
       endTime: DateTime(currentTime.year, currentTime.month, currentTime.day,
           endHour, endMinute),
-      shouldShowGradiend: true,
+      shouldShowGradient: true,
     );
   }
 
@@ -325,7 +329,7 @@ class _TimeGradientWidget extends StatefulWidget {
   final DateTime startTime;
   final DateTime endTime;
   final Color color;
-  final bool shouldShowGradiend;
+  final bool shouldShowGradient;
 
   static const lessonPeriodInMinutes = 80;
 
@@ -334,7 +338,7 @@ class _TimeGradientWidget extends StatefulWidget {
     required this.startTime,
     required this.endTime,
     required this.color,
-    required this.shouldShowGradiend,
+    required this.shouldShowGradient,
   }) : super(key: key);
 
   @override
@@ -370,7 +374,7 @@ class _TimeGradientWidgetState extends State<_TimeGradientWidget> {
         // print(
         //     'progress in minutes: ${dateTime.difference(widget.startTime).inMinutes}');
         // print('progress: $progress');
-        if (!widget.shouldShowGradiend ||
+        if (!widget.shouldShowGradient ||
             widget.startTime.isAfter(currentTime)) {
           return Container(
             width: 7,
@@ -409,4 +413,20 @@ class _TimeGradientWidgetState extends State<_TimeGradientWidget> {
       },
     );
   }
+}
+
+class LessonMultiChildLayoutDelegate extends MultiChildLayoutDelegate {
+  @override
+  Size getSize(BoxConstraints constraints) => constraints.smallest;
+
+  @override
+  void performLayout(Size size) {
+    // TODO: implement performLayout
+  }
+
+  @override
+  bool shouldRelayout(covariant MultiChildLayoutDelegate oldDelegate) {
+    return true;
+  }
+  
 }

@@ -1,0 +1,18 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/LittleWidget"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/relativeLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="8dp"
+    android:padding="10dp"
+    app:layoutDescription="@xml/logo_homescreen_widget_scene">
+
+    <TextView
+        android:id="@+id/LittleWidget.Title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="251001"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+</RelativeLayout>

@@ -28,7 +28,6 @@ class GroupCardStyle extends ThemeExtension<GroupCardStyle> {
     TextStyle? titleStyle,
     TextStyle? subtitleStyle,
     Color? backgroundColor,
-    IconThemeData? iconTheme,
   }) =>
       GroupCardStyle(
         borderRadius: borderRadius ?? this.borderRadius,

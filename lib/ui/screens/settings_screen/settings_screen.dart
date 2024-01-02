@@ -5,6 +5,8 @@ import 'package:bsuir_schedule/ui/themes/settings_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../widget/settings_helpers.dart';
+
 enum _AppTheme {
   light,
   dark,
@@ -105,43 +107,43 @@ class SettingsScreen extends StatelessWidget {
       LessonColor.grey: Colors.grey,
     };
 
-    final colorSwitcherItems = <_SettingsSwitcherItem<LessonColor>>[
-      _SettingsSwitcherItem(
+    final colorSwitcherItems = <SettingsSelectorItem<LessonColor>>[
+      SettingsSelectorItem(
         name: 'Красный',
         value: LessonColor.red,
         trailing: getColoredBox(Colors.red),
       ),
-      _SettingsSwitcherItem(
+      SettingsSelectorItem(
         name: 'Янтарный',
         value: LessonColor.amber,
         trailing: getColoredBox(Colors.amber),
       ),
-      _SettingsSwitcherItem(
+      SettingsSelectorItem(
         name: 'Желтый',
         value: LessonColor.yellowAccent,
         trailing: getColoredBox(Colors.yellowAccent),
       ),
-      _SettingsSwitcherItem(
+      SettingsSelectorItem(
         name: 'Зеленый',
         value: LessonColor.green,
         trailing: getColoredBox(Colors.green),
       ),
-      _SettingsSwitcherItem(
+      SettingsSelectorItem(
         name: 'Голубой',
         value: LessonColor.blue,
         trailing: getColoredBox(Colors.blue),
       ),
-      _SettingsSwitcherItem(
+      SettingsSelectorItem(
         name: 'Пурпурный',
         value: LessonColor.purple,
         trailing: getColoredBox(Colors.purple),
       ),
-      _SettingsSwitcherItem(
+      SettingsSelectorItem(
         name: 'Фиолетовый',
         value: LessonColor.violet,
         trailing: getColoredBox(const Color.fromARGB(255, 135, 8, 190)),
       ),
-      _SettingsSwitcherItem(
+      SettingsSelectorItem(
         name: 'Серый',
         value: LessonColor.grey,
         trailing: getColoredBox(Colors.grey),
@@ -159,7 +161,7 @@ class SettingsScreen extends StatelessWidget {
           ),
         ),
         items: [
-          _SettingsSwitcher<LessonColor>(
+          SettingsSelector<LessonColor>(
             leading: getColoredBox(lessonColorToColor[
                 Provider.of<SettingsProvider>(context).lectureColor]!),
             title: Text(
@@ -174,7 +176,7 @@ class SettingsScreen extends StatelessWidget {
                 .toList(),
             currentValue: Provider.of<SettingsProvider>(context).lectureColor,
           ),
-          _SettingsSwitcher<LessonColor>(
+          SettingsSelector<LessonColor>(
             leading: getColoredBox(lessonColorToColor[
                 Provider.of<SettingsProvider>(context).practiceColor]!),
             title: Text(
@@ -189,7 +191,7 @@ class SettingsScreen extends StatelessWidget {
                 .toList(),
             currentValue: Provider.of<SettingsProvider>(context).practiceColor,
           ),
-          _SettingsSwitcher<LessonColor>(
+          SettingsSelector<LessonColor>(
             leading: getColoredBox(lessonColorToColor[
                 Provider.of<SettingsProvider>(context).laboratoryColor]!),
             title: Text(
@@ -205,7 +207,7 @@ class SettingsScreen extends StatelessWidget {
             currentValue:
                 Provider.of<SettingsProvider>(context).laboratoryColor,
           ),
-          _SettingsSwitcher<LessonColor>(
+          SettingsSelector<LessonColor>(
             leading: getColoredBox(lessonColorToColor[
                 Provider.of<SettingsProvider>(context).consultColor]!),
             title: Text(
@@ -220,7 +222,7 @@ class SettingsScreen extends StatelessWidget {
                 .toList(),
             currentValue: Provider.of<SettingsProvider>(context).consultColor,
           ),
-          _SettingsSwitcher<LessonColor>(
+          SettingsSelector<LessonColor>(
             leading: getColoredBox(lessonColorToColor[
                 Provider.of<SettingsProvider>(context).examColor]!),
             title: Text(
@@ -235,7 +237,7 @@ class SettingsScreen extends StatelessWidget {
                 .toList(),
             currentValue: Provider.of<SettingsProvider>(context).examColor,
           ),
-          _SettingsSwitcher<LessonColor>(
+          SettingsSelector<LessonColor>(
             leading: getColoredBox(lessonColorToColor[
                 Provider.of<SettingsProvider>(context).announcementColor]!),
             title: Text(
@@ -251,7 +253,7 @@ class SettingsScreen extends StatelessWidget {
             currentValue:
                 Provider.of<SettingsProvider>(context).announcementColor,
           ),
-          _SettingsSwitcher<LessonColor>(
+          SettingsSelector<LessonColor>(
             leading: getColoredBox(lessonColorToColor[
                 Provider.of<SettingsProvider>(context).unknownColor]!),
             title: Text(
@@ -286,42 +288,45 @@ class SettingsScreen extends StatelessWidget {
   }
 
   Widget getThemeSettings(TextStyle bodyStyle, Color backgroundColor) =>
-      Builder(builder: (context) {
-        return SettingsBlock(
-          backgroundColor: backgroundColor,
-          title: Text(
-            'Внешний вид',
-            style: bodyStyle.copyWith(
-              color: Colors.grey,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          items: [
-            _SettingsSwitcher<_AppTheme>(
-              leading: const Icon(Icons.palette_outlined),
-              currentValue: _AppTheme.byDefault,
-              title: Text(
-                'Тема приложения',
-                style: bodyStyle,
+      Builder(
+        builder: (context) {
+          return SettingsBlock(
+            backgroundColor: backgroundColor,
+            title: Text(
+              'Внешний вид',
+              style: bodyStyle.copyWith(
+                color: Colors.grey,
+                fontWeight: FontWeight.w500,
               ),
-              items: [
-                _SettingsSwitcherItem(
+            ),
+            items: <Widget>[
+              SettingsSelector<_AppTheme>(
+                leading: const Icon(Icons.palette_outlined),
+                currentValue: _AppTheme.byDefault,
+                title: Text(
+                  'Тема приложения',
+                  style: bodyStyle,
+                ),
+                items: [
+                  SettingsSelectorItem(
                     name: 'Тёмная',
                     value: _AppTheme.dark,
                     trailing: const Icon(Icons.dark_mode_outlined),
                     onPressed: () => {
-                          Provider.of<SettingsProvider>(context, listen: false)
-                              .setTheme(AppColorScheme.dark),
-                        }),
-                _SettingsSwitcherItem(
+                      Provider.of<SettingsProvider>(context, listen: false)
+                          .setTheme(AppColorScheme.dark),
+                    },
+                  ),
+                  SettingsSelectorItem(
                     name: 'Светлая',
                     value: _AppTheme.light,
                     trailing: const Icon(Icons.light_mode_outlined),
                     onPressed: () => {
-                          Provider.of<SettingsProvider>(context, listen: false)
-                              .setTheme(AppColorScheme.light),
-                        }),
-                _SettingsSwitcherItem(
+                      Provider.of<SettingsProvider>(context, listen: false)
+                          .setTheme(AppColorScheme.light),
+                    },
+                  ),
+                  SettingsSelectorItem(
                     name: 'Как в системе',
                     value: _AppTheme.system,
                     trailing: const Icon(Icons.auto_mode_outlined),
@@ -334,272 +339,73 @@ class SettingsScreen extends StatelessWidget {
                             ? AppColorScheme.dark
                             : AppColorScheme.light,
                       );
-                    }),
-              ],
-            ),
-            SettingsItem(
-              onPressed: () =>
-                  Provider.of<SettingsProvider>(context, listen: false)
-                      .resetColorTheme(),
-              title: Text(
-                'Сбросить',
-                style: bodyStyle.copyWith(color: Colors.blue),
-              ),
-            ),
-            // _SettingsSwitcher<_AppIcon>(
-            //   leading: const Icon(Icons.flag_outlined),
-            //   title: Text(
-            //     'Иконка приложения',
-            //     style: bodyStyle,
-            //   ),
-            //   items: [
-            //     _SettingsSwitcherItem(
-            //       name: 'Тёмная',
-            //       value: _AppIcon.dark,
-            //       onPressed: () => {
-            //         Provider.of<SettingsProvider>(context, listen: false)
-            //             .setAppIcon(AppIcon.dark),
-            //       },
-            //     ),
-            //     _SettingsSwitcherItem(
-            //       name: 'Светлая',
-            //       value: _AppIcon.light,
-            //       onPressed: () => {
-            //         Provider.of<SettingsProvider>(context, listen: false)
-            //             .setAppIcon(AppIcon.light),
-            //       },
-            //     ),
-            //     _SettingsSwitcherItem(
-            //       name: 'Pride',
-            //       value: _AppIcon.pride,
-            //       onPressed: () => {
-            //         Provider.of<SettingsProvider>(context, listen: false)
-            //             .setAppIcon(AppIcon.pride),
-            //       },
-            //     ),
-            //     _SettingsSwitcherItem(
-            //       name: 'По умолчанию',
-            //       value: _AppIcon.byDefault,
-            //       onPressed: () => {
-            //         Provider.of<SettingsProvider>(context, listen: false)
-            //             .setDefaultAppIcon(),
-            //       },
-            //     ),
-            //   ],
-            // ),
-          ],
-        );
-      });
-}
-
-class SettingsBlock extends StatelessWidget {
-  final Widget title;
-  final List<Widget> items;
-  final Color backgroundColor;
-
-  const SettingsBlock({
-    Key? key,
-    required this.title,
-    required this.items,
-    required this.backgroundColor,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: backgroundColor,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 10, left: 20),
-            child: title,
-          ),
-          ...items,
-        ],
-      ),
-    );
-  }
-}
-
-class _SettingsSwitcher<T> extends StatefulWidget {
-  final Widget? leading;
-  final Widget title;
-  final List<_SettingsSwitcherItem<T>> items;
-  final T? currentValue;
-
-  const _SettingsSwitcher({
-    super.key,
-    required this.leading,
-    required this.title,
-    required this.items,
-    this.currentValue,
-  });
-
-  @override
-  State<_SettingsSwitcher<T>> createState() => _SettingsSwitcherState<T>();
-}
-
-class _SettingsSwitcherState<T> extends State<_SettingsSwitcher<T>> {
-  _SettingsSwitcherItem<T>? _currentRecord;
-
-  @override
-  Widget build(BuildContext context) {
-    _currentRecord ??= widget.items
-        .where(
-          (element) => element.value == widget.currentValue,
-        )
-        .firstOrNull;
-
-    return SettingsItem(
-      onPressed: () => showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(
-            top: Radius.circular(20),
-          ),
-        ),
-        builder: (context) => Padding(
-          padding: const EdgeInsets.only(top: 20, bottom: 5),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: List.generate(
-              widget.items.length,
-              (index) => Row(
-                children: [
-                  Radio(
-                    value: widget.items[index].value,
-                    groupValue: _currentRecord!.value,
-                    onChanged: (value) {
-                      if (widget.items[index].onPressed != null) {
-                        widget.items[index].onPressed!();
-                      }
-
-                      setState(() {
-                        _currentRecord = widget.items[index];
-                      });
-
-                      Navigator.of(context).pop();
                     },
-                  ),
-                  Expanded(
-                    child: Container(
-                      margin:
-                          const EdgeInsets.only(right: 20, top: 5, bottom: 5),
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                          color: Theme.of(context)
-                              .extension<SettingsTheme>()!
-                              .menuColor,
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(15))),
-                      child: Row(
-                        children: [
-                          Text(
-                            widget.items[index].name,
-                            style: Theme.of(context)
-                                .extension<AppTextTheme>()!
-                                .bodyStyle,
-                          ),
-                          if (widget.items[index].trailing != null) ...[
-                            const Spacer(),
-                            widget.items[index].trailing!,
-                          ],
-                        ],
-                      ),
-                    ),
                   ),
                 ],
               ),
-            ),
-          ),
-        ),
-      ),
-      leading: widget.leading,
-      title: widget.title,
-      trailing: _currentRecord != null
-          ? Text(
-              _currentRecord!.name,
-              style: Theme.of(context).extension<AppTextTheme>()!.bodyStyle,
-            )
-          : null,
-    );
-  }
-}
-
-class _SettingsSwitcherItem<T> {
-  final Widget? trailing;
-  final String name;
-  final T value;
-  final VoidCallback? onPressed;
-
-  _SettingsSwitcherItem({
-    this.trailing,
-    required this.name,
-    required this.value,
-    this.onPressed,
-  });
-
-  _SettingsSwitcherItem<T> copyWith({
-    Widget? trailing,
-    String? name,
-    T? value,
-    VoidCallback? onPressed,
-  }) {
-    return _SettingsSwitcherItem<T>(
-      name: name ?? this.name,
-      value: value ?? this.value,
-      trailing: trailing ?? this.trailing,
-      onPressed: onPressed ?? this.onPressed,
-    );
-  }
-}
-
-class SettingsItem extends StatelessWidget {
-  final VoidCallback onPressed;
-  final Widget? leading;
-  final Widget title;
-  final Widget? trailing;
-
-  const SettingsItem({
-    Key? key,
-    required this.onPressed,
-    this.leading,
-    required this.title,
-    this.trailing,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.translucent,
-      onTap: onPressed,
-      child: SizedBox(
-        height: 50,
-        child: Row(
-          children: [
-            const SizedBox(
-              width: 15,
-            ),
-            if (leading != null) ...[
-              leading!,
-              const SizedBox(
-                width: 10,
+              SettingsSwitch(
+                onChanged: (bool value) {
+                  context.read<SettingsProvider>().setUseMaterial3(value);
+                  print(value);
+                },
+                value: Provider.of<SettingsProvider>(context).useMaterial3,
+                title: Text(
+                  'Использовать Material тему?',
+                  style: bodyStyle,
+                ),
               ),
+              SettingsItem(
+                onPressed: () =>
+                    Provider.of<SettingsProvider>(context, listen: false)
+                        .resetColorTheme(),
+                title: Text(
+                  'Сбросить',
+                  style: bodyStyle.copyWith(color: Colors.blue),
+                ),
+              ),
+              // _SettingsSwitcher<_AppIcon>(
+              //   leading: const Icon(Icons.flag_outlined),
+              //   title: Text(
+              //     'Иконка приложения',
+              //     style: bodyStyle,
+              //   ),
+              //   items: [
+              //     _SettingsSwitcherItem(
+              //       name: 'Тёмная',
+              //       value: _AppIcon.dark,
+              //       onPressed: () => {
+              //         Provider.of<SettingsProvider>(context, listen: false)
+              //             .setAppIcon(AppIcon.dark),
+              //       },
+              //     ),
+              //     _SettingsSwitcherItem(
+              //       name: 'Светлая',
+              //       value: _AppIcon.light,
+              //       onPressed: () => {
+              //         Provider.of<SettingsProvider>(context, listen: false)
+              //             .setAppIcon(AppIcon.light),
+              //       },
+              //     ),
+              //     _SettingsSwitcherItem(
+              //       name: 'Pride',
+              //       value: _AppIcon.pride,
+              //       onPressed: () => {
+              //         Provider.of<SettingsProvider>(context, listen: false)
+              //             .setAppIcon(AppIcon.pride),
+              //       },
+              //     ),
+              //     _SettingsSwitcherItem(
+              //       name: 'По умолчанию',
+              //       value: _AppIcon.byDefault,
+              //       onPressed: () => {
+              //         Provider.of<SettingsProvider>(context, listen: false)
+              //             .setDefaultAppIcon(),
+              //       },
+              //     ),
+              //   ],
+              // ),
             ],
-            title,
-            if (trailing != null) ...[
-              const Spacer(),
-              trailing!,
-              const SizedBox(
-                width: 15,
-              ),
-            ]
-          ],
-        ),
-      ),
-    );
-  }
+          );
+        },
+      );
 }

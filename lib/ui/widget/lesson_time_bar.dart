@@ -1,14 +1,18 @@
 import 'dart:async';
 
 import 'package:bsuir_schedule/domain/view_model/schedule_screen_view_model.dart';
-import 'package:bsuir_schedule/ui/themes/app_text_theme.dart';
+import 'package:bsuir_schedule/ui/themes/lesson_time_bar_style.dart';
 import 'package:flutter/material.dart';
 
+import '../../domain/model/schedule_factory.dart';
+
 class LessonTimeBar extends StatefulWidget {
-  final DaySchedule daySchedule;
+  final LessonTimeBarStyle? style;
+  final DaySchedule? daySchedule;
 
   const LessonTimeBar({
     super.key,
+    this.style,
     required this.daySchedule,
   });
 
@@ -30,7 +34,7 @@ class _LessonTimeBarState extends State<LessonTimeBar> {
 
   @override
   Widget build(BuildContext context) {
-    return getTimeWidget(widget.daySchedule);
+    return widget.daySchedule == null ? _timeBar('Сегодня пар нет') : getTimeWidget(widget.daySchedule!);
   }
 
   DateTime toDateTime(String time) {
@@ -104,11 +108,13 @@ class _LessonTimeBarState extends State<LessonTimeBar> {
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          color: Theme.of(context).primaryColor,
+          color: widget.style?.backgroundColor ??
+              Theme.of(context).extension<LessonTimeBarStyle>()!.backgroundColor,
         ),
         child: Text(
           titleString,
-          style: Theme.of(context).extension<AppTextTheme>()!.bodyStyle,
+          style: widget.style?.textStyle ??
+              Theme.of(context).extension<LessonTimeBarStyle>()!.textStyle,
         ),
       );
 }

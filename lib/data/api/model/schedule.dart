@@ -33,12 +33,6 @@ class ApiSchedule {
         endDate: json['endDate'],
         startExamsDate: json['startExamsDate'],
         endExamsDate: json['endExamsDate'],
-        // employeeDto: json['employeeDto'] != null
-        //     ? ApiLecturer.fromJson(json['employeeDto'])
-        //     : null,
-        // studentGroupDto: json['studentGroupDto'] != null
-        //     ? ApiGroup.fromJson(json['studentGroupDto'])
-        //     : null,
         employeeDto: json['employeeDto'],
         studentGroupDto: json['studentGroupDto'],
         schedules: Map<String, List<ApiLesson>>.from(
@@ -60,8 +54,9 @@ class ApiSchedule {
   Schedule toSchedule({
     required Lecturer? lecturer,
     required Group? group,
-    required List<Lesson> schedules,
+    required Map<int, List<Lesson>> schedules,
     required List<Lesson> exams,
+    required List<Lesson> announcements,
   }) =>
       Schedule(
         id: 0,
@@ -77,5 +72,6 @@ class ApiSchedule {
         group: group,
         schedules: schedules,
         exams: exams,
+        announcements: announcements,
       );
 }

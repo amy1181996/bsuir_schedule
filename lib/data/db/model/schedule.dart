@@ -75,8 +75,9 @@ class GetSchedule extends BaseModel {
   Schedule toSchedule({
     required Group? group,
     required Lecturer? lecturer,
-    required List<Lesson> schedules,
+    required Map<int, List<Lesson>> schedules,
     required List<Lesson> exams,
+    required List<Lesson> announcements,
   }) =>
       Schedule(
         id: id!,
@@ -90,5 +91,6 @@ class GetSchedule extends BaseModel {
         group: group,
         schedules: schedules,
         exams: exams,
+        announcements: announcements,
       );
 }

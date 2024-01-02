@@ -1,7 +1,14 @@
+import 'package:bsuir_schedule/data/api/model/lesson.dart';
 import 'package:bsuir_schedule/data/db/model/base_model.dart';
 import 'package:bsuir_schedule/domain/model/group.dart';
 import 'package:bsuir_schedule/domain/model/lecturer.dart';
 import 'package:bsuir_schedule/domain/model/lesson.dart';
+
+enum LessonType {
+  lesson,
+  exam,
+  announcement,
+}
 
 class AddLesson extends BaseModel {
   final String auditories;
@@ -14,10 +21,10 @@ class AddLesson extends BaseModel {
   final String subjectFullName;
   final String weeks;
   final String? dateLesson;
-  final String startLessonDate;
-  final String endLessonDate;
-  final String? weekDay;
-  final bool isAnnouncement;
+  final String? startLessonDate;
+  final String? endLessonDate;
+  final LessonType lessonType;
+  final int? weekday;
 
   @override
   int get hashCode =>
@@ -33,8 +40,8 @@ class AddLesson extends BaseModel {
       dateLesson.hashCode ^
       startLessonDate.hashCode ^
       endLessonDate.hashCode ^
-      weekDay.hashCode ^
-      isAnnouncement.hashCode;
+      lessonType.hashCode ^
+      weekday.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -53,8 +60,8 @@ class AddLesson extends BaseModel {
           dateLesson == other.dateLesson &&
           startLessonDate == other.startLessonDate &&
           endLessonDate == other.endLessonDate &&
-          weekDay == other.weekDay &&
-          isAnnouncement == other.isAnnouncement;
+          lessonType == other.lessonType &&
+          weekday == other.weekday;
 
   AddLesson({
     required this.auditories,
@@ -69,11 +76,16 @@ class AddLesson extends BaseModel {
     required this.dateLesson,
     required this.startLessonDate,
     required this.endLessonDate,
-    required this.weekDay,
-    required this.isAnnouncement,
+    required this.lessonType,
+    this.weekday,
   });
 
-  factory AddLesson.fromLesson(Lesson lesson) => AddLesson(
+  factory AddLesson.fromLesson({
+    required Lesson lesson,
+    required LessonType lessonType,
+    int? weekday,
+  }) =>
+      AddLesson(
         auditories: lesson.auditories.join(','),
         startLessonTime: lesson.startLessonTime,
         endLessonTime: lesson.endLessonTime,
@@ -84,10 +96,10 @@ class AddLesson extends BaseModel {
         subjectFullName: lesson.subjectFullName,
         weeks: lesson.weeks.join(','),
         dateLesson: lesson.dateLesson?.toIso8601String(),
-        startLessonDate: lesson.startLessonDate.toIso8601String(),
-        endLessonDate: lesson.endLessonDate.toIso8601String(),
-        weekDay: lesson.weekDay,
-        isAnnouncement: lesson.isAnnouncement,
+        startLessonDate: lesson.startLessonDate?.toIso8601String(),
+        endLessonDate: lesson.endLessonDate?.toIso8601String(),
+        lessonType: lessonType,
+        weekday: weekday,
       );
 
   @override
@@ -104,9 +116,9 @@ class AddLesson extends BaseModel {
         'date_lesson': dateLesson,
         'start_lesson_date': startLessonDate,
         'end_lesson_date': endLessonDate,
-        'week_day': weekDay,
+        'lesson_type': lessonType.index,
+        'weekday': weekday,
         'hash': hashCode,
-        'announcement': isAnnouncement,
       };
 }
 
@@ -124,10 +136,12 @@ class GetLesson extends BaseModel {
   final String subjectFullName;
   final String weeks;
   final String? dateLesson;
-  final String startLessonDate;
-  final String endLessonDate;
-  final String? weekDay;
-  final bool isAnnouncement;
+  final String? startLessonDate;
+  final String? endLessonDate;
+  final LessonType lessonType;
+  final int? weekday;
+  List<Group>? studentGroups;
+  List<Lecturer>? lecturers;
 
   GetLesson({
     required this.id,
@@ -143,8 +157,10 @@ class GetLesson extends BaseModel {
     required this.dateLesson,
     required this.startLessonDate,
     required this.endLessonDate,
-    required this.weekDay,
-    required this.isAnnouncement,
+    required this.lessonType,
+    this.weekday,
+    this.studentGroups,
+    this.lecturers,
   });
 
   factory GetLesson.fromMap(Map<String, dynamic> map) => GetLesson(
@@ -161,8 +177,8 @@ class GetLesson extends BaseModel {
         dateLesson: map['date_lesson'],
         startLessonDate: map['start_lesson_date'],
         endLessonDate: map['end_lesson_date'],
-        weekDay: map['week_day'],
-        isAnnouncement: map['announcement'] != 0,
+        lessonType: LessonType.values[map['lesson_type']],
+        weekday: map['weekday'],
       );
 
   Lesson toLesson({
@@ -185,9 +201,7 @@ class GetLesson extends BaseModel {
             ? weeks.split(',').map((e) => int.parse(e)).toList()
             : [],
         dateLesson: dateLesson != null ? DateTime.parse(dateLesson!) : null,
-        startLessonDate: DateTime.parse(startLessonDate),
-        endLessonDate: DateTime.parse(endLessonDate),
-        weekDay: weekDay,
-        isAnnouncement: isAnnouncement,
+        startLessonDate: startLessonDate != null ? DateTime.parse(startLessonDate!) : null,
+        endLessonDate: endLessonDate != null ? DateTime.parse(endLessonDate!) : null,
       );
 }

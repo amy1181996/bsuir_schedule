@@ -7,6 +7,8 @@ import 'package:bsuir_schedule/ui/themes/lesson_bottom_sheet_style.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../domain/model/schedule_descriptor.dart';
+
 class LessonBottomSheet extends StatelessWidget {
   final LessonBottomSheetStyle? style;
   final ScheduleEntityType? scheduleEntityType;
@@ -41,9 +43,9 @@ class LessonBottomSheet extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (lesson.isAnnouncement)
-            getAnnouncement(titleStyle)
-          else
+          // if (lesson.isAnnouncement)
+          //   getAnnouncement(titleStyle)
+          // else
             getSubjectName(titleStyle),
           const SizedBox(
             height: 7,
@@ -66,10 +68,10 @@ class LessonBottomSheet extends StatelessWidget {
                 getDateInfo(bodyStyle),
                 const SizedBox(height: 5),
                 getAuditoryInfo(bodyStyle),
-                if (lesson.isAnnouncement == false) ...[
-                  const SizedBox(height: 5),
-                  getNoteInfo(bodyStyle),
-                ],
+                // if (lesson.isAnnouncement == false) ...[
+                //   const SizedBox(height: 5),
+                //   getNoteInfo(bodyStyle),
+                // ],
               ],
             ),
           ),
@@ -196,10 +198,22 @@ class LessonBottomSheet extends StatelessWidget {
           const SizedBox(
             width: 5,
           ),
-          Text(
-            'с ${_convertDate(lesson.startLessonDate)} по ${_convertDate(lesson.endLessonDate)}',
-            style: bodyStyle,
-          ),
+          if (lesson.dateLesson != null) ...[
+            Text(
+              _convertDate(lesson.dateLesson!),
+              style: bodyStyle,
+            ),
+          ] else if (lesson.startLessonDate == lesson.endLessonDate && lesson.startLessonDate != null) ...[
+            Text(
+              _convertDate(lesson.startLessonDate!),
+              style: bodyStyle,
+            ),
+          ] else if (lesson.startLessonDate != null && lesson.endLessonDate != null)...[
+            Text(
+              'с ${_convertDate(lesson.startLessonDate!)} по ${_convertDate(lesson.endLessonDate!)}',
+              style: bodyStyle,
+            ),
+          ],
           Expanded(child: Container()),
           if (lesson.weeks.isNotEmpty)
             Text(
@@ -238,7 +252,6 @@ class LessonBottomSheet extends StatelessWidget {
               );
             }),
         child: Container(
-          height: 75,
           margin: const EdgeInsets.symmetric(vertical: 8),
           padding: const EdgeInsets.all(15),
           decoration: BoxDecoration(
@@ -292,7 +305,6 @@ class LessonBottomSheet extends StatelessWidget {
     }
 
     return Container(
-      height: 75,
       margin: const EdgeInsets.symmetric(vertical: 8),
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(

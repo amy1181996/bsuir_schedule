@@ -4,6 +4,7 @@ import 'package:bsuir_schedule/ui/themes/lecturer_card_style.dart';
 import 'package:bsuir_schedule/ui/themes/lesson_bottom_sheet_style.dart';
 import 'package:bsuir_schedule/ui/themes/lesson_card_style.dart';
 import 'package:bsuir_schedule/ui/themes/lesson_tab_style.dart';
+import 'package:bsuir_schedule/ui/themes/lesson_time_bar_style.dart';
 import 'package:bsuir_schedule/ui/themes/settings_theme.dart';
 import 'package:flutter/material.dart';
 
@@ -139,6 +140,13 @@ abstract class AppTheme {
         scaffoldColor: Colors.black,
         menuColor: Color.fromARGB(255, 28, 28, 28),
       ),
+      LessonTimeBarStyle(
+        backgroundColor: Colors.blue,
+        textStyle: TextStyle(
+          color: Colors.white,
+          fontSize: 16,
+        ),
+      )
     },
   );
 
@@ -256,7 +264,183 @@ abstract class AppTheme {
       SettingsTheme(
         scaffoldColor: Colors.grey[400]!,
         menuColor: Colors.white,
+      ),
+      const LessonTimeBarStyle(
+        backgroundColor: Colors.blue,
+        textStyle: TextStyle(
+          color: Color.fromARGB(255, 28, 28, 28),
+          fontSize: 16,
+        ),
+      ),
+    },
+  );
+
+  static final _baseDarkMaterial = ThemeData(
+    useMaterial3: true,
+    brightness: Brightness.dark,
+  );
+
+  static final darkMaterial = ThemeData(
+    useMaterial3: true,
+    brightness: Brightness.dark,
+    extensions: <ThemeExtension<dynamic>>{
+      LessonCardStyle(
+        backgroundColor: _baseDarkMaterial.colorScheme.secondaryContainer,
+        titleStyle: TextStyle(
+          color: _baseDarkMaterial.colorScheme.onSecondaryContainer,
+          fontSize: 19,
+          fontWeight: FontWeight.bold,
+        ),
+        bodyStyle: TextStyle(
+          color: _baseDarkMaterial.colorScheme.onSecondaryContainer,
+          fontSize: 16,
+        ),
+        secondayBodyStyle: TextStyle(
+          color: _baseDarkMaterial.colorScheme.onSecondaryContainer,
+          fontSize: 15,
+        ),
+        borderRadius: 20,
+      ),
+      GroupCardStyle(
+        backgroundColor:  _baseDarkMaterial.colorScheme.secondaryContainer,
+        borderRadius: 20,
+        titleStyle: TextStyle(
+          color:_baseDarkMaterial.colorScheme.onSecondaryContainer,
+          fontSize: 17,
+          fontWeight: FontWeight.bold,
+        ),
+        subtitleStyle: const TextStyle(
+          color: Colors.grey,
+          fontSize: 15,
+        ),
+
+      ),
+      LecturerCardStyle(
+        backgroundColor:  _baseDarkMaterial.colorScheme.secondaryContainer,
+        borderRadius: 20,
+        titleStyle: TextStyle(
+          color:_baseDarkMaterial.colorScheme.onSecondaryContainer,
+          fontSize: 17,
+          fontWeight: FontWeight.bold,
+        ),
+        subtitleStyle: TextStyle(
+          color: _baseDarkMaterial.colorScheme.onSecondaryContainer,
+          fontSize: 15,
+        ),
+      ),
+      LessonBottomSheetStyle(
+        titleStyle: TextStyle(
+          color: _baseDarkMaterial.colorScheme.onSecondaryContainer,
+          fontSize: 19,
+          fontWeight: FontWeight.bold,
+        ),
+        bodyStyle: TextStyle(
+          color: _baseDarkMaterial.colorScheme.onSecondaryContainer,
+          fontSize: 16,
+        ),
+        cardColor:  _baseDarkMaterial.colorScheme.secondaryContainer,
+      ),
+      LessonTabStyle(
+        weekdayStyle: const TextStyle(
+          color: Colors.grey,
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+        ),
+        dateStyle: TextStyle(
+          color: _baseDarkMaterial.colorScheme.onSecondaryContainer,
+          fontSize: 16,
+        ),
+      ),
+      AppTextTheme(
+        titleStyle: TextStyle(
+          color: _baseDarkMaterial.colorScheme.onSecondaryContainer,
+          fontSize: 19,
+          fontWeight: FontWeight.bold,
+        ),
+        bodyStyle: TextStyle(
+          color:_baseDarkMaterial.colorScheme.onSecondaryContainer,
+          fontSize: 16,
+        ),
+      ),
+      SettingsTheme(
+        scaffoldColor: _baseDarkMaterial.colorScheme.surface,
+        menuColor:  _baseDarkMaterial.colorScheme.surface,
+      ),
+      LessonTimeBarStyle(
+        backgroundColor: _baseDarkMaterial.colorScheme.secondaryContainer,
+        textStyle: TextStyle(
+          color: _baseDarkMaterial.colorScheme.onSecondaryContainer,
+          fontSize: 16,
+        ),
       )
+    },
+  );
+
+  static final _baseLightMaterial = ThemeData(
+    useMaterial3: true,
+    brightness: Brightness.light,
+  );
+
+  static final lightMaterial = ThemeData(
+    useMaterial3: true,
+    brightness: Brightness.light,
+    extensions: <ThemeExtension<dynamic>>{
+      LessonCardStyle(
+        backgroundColor: _baseLightMaterial.primaryColor,
+        titleStyle: const TextStyle(
+          color: Color.fromARGB(255, 28, 28, 28),
+          fontSize: 19,
+          fontWeight: FontWeight.bold,
+        ),
+        bodyStyle: const TextStyle(
+          color: Color.fromARGB(255, 28, 28, 28),
+          fontSize: 16,
+        ),
+        secondayBodyStyle: const TextStyle(
+          color: Color.fromARGB(255, 28, 28, 28),
+          fontSize: 16,
+        ),
+      ),
+      GroupCardStyle(
+        backgroundColor: _baseLightMaterial.primaryColor,
+        titleStyle: const TextStyle(
+          color: Color.fromARGB(255, 28, 28, 28),
+          fontSize: 19,
+          fontWeight: FontWeight.bold,
+        ),
+        subtitleStyle: const TextStyle(
+          color: Color.fromARGB(255, 28, 28, 28),
+          fontSize: 16,
+        ),
+      ),
+      LecturerCardStyle(
+        backgroundColor: _baseLightMaterial.primaryColor,
+        titleStyle: const TextStyle(
+          color: Color.fromARGB(255, 28, 28, 28),
+          fontSize: 17,
+          fontWeight: FontWeight.bold,
+        ),
+        subtitleStyle: const TextStyle(
+          color: Color.fromARGB(255, 28, 28, 28),
+          fontSize: 15,
+        ),
+      ),
+      LessonBottomSheetStyle(
+        cardColor: _baseLightMaterial.primaryColor,
+      ),
+      const LessonTabStyle(),
+      const AppTextTheme(),
+      SettingsTheme(
+        scaffoldColor: Colors.grey[400]!,
+        menuColor: _baseLightMaterial.primaryColor,
+      ),
+      LessonTimeBarStyle(
+        backgroundColor: _baseLightMaterial.primaryColor,
+        textStyle: const TextStyle(
+          color: Color.fromARGB(255, 28, 28, 28),
+          fontSize: 16,
+        ),
+      ),
     },
   );
 }

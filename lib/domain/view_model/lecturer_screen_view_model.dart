@@ -52,9 +52,9 @@ class LecturerScreenViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> updateStarredLecturer(
+  Future<int> updateStarredLecturer(
       DatabaseHelper db, Lecturer lecturer) async {
-    await _lecturerScheduleService.updateLecturerSchedule(db, lecturer);
+    return await _lecturerScheduleService.updateLecturerSchedule(db, lecturer);
   }
 
   Future<void> updateLecturers(DatabaseHelper db) async {

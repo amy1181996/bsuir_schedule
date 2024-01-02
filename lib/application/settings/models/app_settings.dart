@@ -43,6 +43,9 @@ class AppSettings {
   LessonColor unknownColor;
   static const LessonColor defaultUnknownColor = LessonColor.grey;
 
+  bool useMaterial3;
+  static const bool defaultUseMaterial3 = false;
+
   AppSettings({
     this.appColorScheme = defaultAppColorScheme,
     this.appIcon = defaultAppIcon,
@@ -53,6 +56,7 @@ class AppSettings {
     this.examColor = defaultExamColor,
     this.announcementColor = defaultAnnouncementColor,
     this.unknownColor = defaultUnknownColor,
+    this.useMaterial3 = defaultUseMaterial3,
   });
 
   void reset() {
@@ -65,5 +69,6 @@ class AppSettings {
     examColor = defaultExamColor;
     announcementColor = defaultAnnouncementColor;
     unknownColor = defaultUnknownColor;
+    useMaterial3 = defaultUseMaterial3;
   }
 }

@@ -1,4 +1,4 @@
-import 'package:bsuir_schedule/ui/screens/view_constants.dart';
+import 'package:bsuir_schedule/domain/model/schedule_descriptor.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SchedulePresentationSharedPrefs {

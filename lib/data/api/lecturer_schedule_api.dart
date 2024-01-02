@@ -16,6 +16,16 @@ class LecturerScheduleApi with SharedApi {
   static final GroupService _groupService = GroupService();
   static final LecturerService _lecturerService = LecturerService();
 
+  static const Map<String, int> strDayToIntDay = {
+    'Понедельник': 0,
+    'Вторник': 1,
+    'Среда': 2,
+    'Четверг': 3,
+    'Пятница': 4,
+    'Суббота': 5,
+    'Воскресенье': 6,
+  };
+
   Future<Schedule?> getLecturerSchedule(
       DatabaseHelper db, Lecturer lecturer) async {
     final String localPath = 'employees/schedule/${lecturer.urlId}';
@@ -37,8 +47,17 @@ class LecturerScheduleApi with SharedApi {
       jsonDecode(await response.transform(utf8.decoder).join()),
     );
 
-    final List<Lesson> schedules = [];
+    final Map<int, List<Lesson>> schedules = {
+      0: [],
+      1: [],
+      2: [],
+      3: [],
+      4: [],
+      5: [],
+      6: [],
+    };
     final List<Lesson> exams = [];
+    final List<Lesson> announcements = [];
 
     for (final entry in apiSchedule.schedules.entries) {
       for (final apiLesson in entry.value) {
@@ -64,9 +83,13 @@ class LecturerScheduleApi with SharedApi {
         lecturers.insert(0, lecturer);
 
         final Lesson lesson = apiLesson.toLesson(
-            weekDay: entry.key, studentGroups: groups, lecturers: lecturers);
+            weekDay: entry.key, studentGroups: groups, lecturers: lecturers,);
 
-        schedules.add(lesson);
+        if (apiLesson.isAnnouncement) {
+          announcements.add(lesson);
+        } else {
+          schedules[strDayToIntDay[entry.key]]!.add(lesson);
+        }
       }
     }
 
@@ -102,6 +125,7 @@ class LecturerScheduleApi with SharedApi {
       group: null,
       schedules: schedules,
       exams: exams,
+      announcements: announcements,
     );
   }
 }

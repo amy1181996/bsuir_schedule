@@ -19,6 +19,7 @@ class SettingsService {
     final consultColor = await _lessonColorSharedPrefs.getConsultationColor();
     final examColor = await _lessonColorSharedPrefs.getExamColor();
     final unknownColor = await _lessonColorSharedPrefs.getUnknownColor();
+    final useMaterial3 = await _appColorSchemeSharedPrefs.getUseMaterial3();
 
     if (appColorScheme == null ||
         appIcon == null ||
@@ -27,7 +28,8 @@ class SettingsService {
         laboratoryColor == null ||
         consultColor == null ||
         examColor == null ||
-        unknownColor == null) {
+        unknownColor == null ||
+        useMaterial3 == null) {
       return null;
     }
 
@@ -40,6 +42,7 @@ class SettingsService {
       consultColor: consultColor,
       examColor: examColor,
       unknownColor: unknownColor,
+      useMaterial3: useMaterial3,
     );
   }
 
@@ -54,6 +57,7 @@ class SettingsService {
         .setConsultationColor(appSettings.consultColor);
     await _lessonColorSharedPrefs.setExamColor(appSettings.examColor);
     await _lessonColorSharedPrefs.setUnknownColor(appSettings.unknownColor);
+    await _appColorSchemeSharedPrefs.setUseMaterial3(appSettings.useMaterial3);
   }
 
   Future<void> setAppColorScheme(AppColorScheme appColorScheme) async {
@@ -90,5 +94,9 @@ class SettingsService {
 
   Future<void> setUnknownColor(LessonColor unknownColor) async {
     await _lessonColorSharedPrefs.setUnknownColor(unknownColor);
+  }
+
+  Future<void> setUseMaterial3(bool useMaterial3) async {
+    await _appColorSchemeSharedPrefs.setUseMaterial3(useMaterial3);
   }
 }

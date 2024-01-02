@@ -1,3 +1,4 @@
+import 'package:bsuir_schedule/domain/model/schedule_descriptor.dart';
 import 'package:bsuir_schedule/ui/themes/lesson_tab_style.dart';
 import 'package:bsuir_schedule/ui/screens/view_constants.dart';
 import 'package:flutter/material.dart';
@@ -23,31 +24,31 @@ class LessonTab extends StatelessWidget {
 
     final double height, width;
 
+    width = 25;
+
     switch (scheduleType) {
       case ScheduleViewType.dayly:
-        height = 60;
-        width = 25;
+        height = 69;
+        // width = 25;
         break;
       case ScheduleViewType.full:
         height = 30;
-        width = 95;
+        // width = 95;
         break;
       case ScheduleViewType.exams:
         height = 30;
-        width = 400;
+        // width = 400;
         break;
       case ScheduleViewType.announcements:
         height = 30;
-        width = 400;
+        // width = 400;
         break;
     }
 
     return SizedBox(
       height: height,
       width: width,
-      child: Tab(
-        child: getChild(weekdayStyle, dateStyle),
-      ),
+      child: getChild(weekdayStyle, dateStyle,),
     );
   }
 

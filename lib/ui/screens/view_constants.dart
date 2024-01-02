@@ -1,21 +1,3 @@
-enum ScheduleViewType {
-  full,
-  dayly,
-  exams,
-  announcements,
-}
-
-enum ScheduleGroupType {
-  allGroup,
-  firstSubgroup,
-  secondSubgroup,
-}
-
-enum ScheduleEntityType {
-  group,
-  lecturer,
-}
-
 abstract class ScheduleWidgetConstants {
   static const monthesList = [
     'января',

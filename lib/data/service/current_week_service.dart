@@ -1,6 +1,9 @@
 class CurrentWeekService {
-  Future<int?> getCurrentWeek() async {
-    final now = DateTime.now();
+  int getCurrentWeek() {
+    return getWeekNumberFor(DateTime.now());
+  }
+
+  int getWeekNumberFor(DateTime now) {
     final initialDate = DateTime(now.year, 9, 1);
 
     int difference = now.difference(initialDate).inDays;

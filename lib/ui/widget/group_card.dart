@@ -118,7 +118,7 @@ class GroupCard extends StatelessWidget {
               ),
               Icon(
                 Icons.remove_red_eye_outlined,
-                color: Theme.of(context).primaryColor,
+                color: Theme.of(context).colorScheme.primary,
               ),
             ]
           ],

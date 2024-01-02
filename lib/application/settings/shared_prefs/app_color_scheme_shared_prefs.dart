@@ -11,10 +11,23 @@ class AppColorSchemeSharedPrefs {
 
   Future<AppColorScheme?> getAppColorScheme() async {
     final prefs = await SharedPreferences.getInstance();
+
     final appColorSchemeIndex = prefs.getInt(_appColorSchemeKey);
+
     if (appColorSchemeIndex == null) {
       return null;
     }
+
     return AppColorScheme.values[appColorSchemeIndex];
+  }
+
+  Future<void> setUseMaterial3(bool useMaterial3) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('use_material_3', useMaterial3);
+  }
+
+  Future<bool?> getUseMaterial3() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('use_material_3');
   }
 }

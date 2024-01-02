@@ -15,10 +15,8 @@ class Lesson {
   final String subjectFullName;
   final List<int> weeks;
   final DateTime? dateLesson;
-  final DateTime startLessonDate;
-  final DateTime endLessonDate;
-  final String? weekDay;
-  final bool isAnnouncement;
+  final DateTime? startLessonDate;
+  final DateTime? endLessonDate;
 
   @override
   int get hashCode =>
@@ -36,9 +34,9 @@ class Lesson {
       weeks.hashCode ^
       dateLesson.hashCode ^
       startLessonDate.hashCode ^
-      endLessonDate.hashCode ^
-      weekDay.hashCode ^
-      isAnnouncement.hashCode;
+      endLessonDate.hashCode;
+      // weekDay.hashCode ^
+      // isAnnouncement.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -59,9 +57,9 @@ class Lesson {
           weeks == other.weeks &&
           dateLesson == other.dateLesson &&
           startLessonDate == other.startLessonDate &&
-          endLessonDate == other.endLessonDate &&
-          weekDay == other.weekDay &&
-          isAnnouncement == other.isAnnouncement;
+          endLessonDate == other.endLessonDate;
+          // weekDay == other.weekDay &&
+          // isAnnouncement == other.isAnnouncement;
 
   Lesson({
     required this.id,
@@ -79,8 +77,8 @@ class Lesson {
     required this.dateLesson,
     required this.startLessonDate,
     required this.endLessonDate,
-    required this.weekDay,
-    required this.isAnnouncement,
+    // required this.weekDay,
+    // required this.isAnnouncement,
   });
 
   Lesson copyWith({
@@ -99,8 +97,8 @@ class Lesson {
     DateTime? dateLesson,
     DateTime? startLessonDate,
     DateTime? endLessonDate,
-    String? weekDay,
-    bool? isAnnouncement,
+    // String? weekDay,
+    // bool? isAnnouncement,
   }) =>
       Lesson(
         id: id ?? this.id,
@@ -118,7 +116,7 @@ class Lesson {
         dateLesson: dateLesson ?? this.dateLesson,
         startLessonDate: startLessonDate ?? this.startLessonDate,
         endLessonDate: endLessonDate ?? this.endLessonDate,
-        weekDay: weekDay ?? this.weekDay,
-        isAnnouncement: isAnnouncement ?? this.isAnnouncement,
+        // weekDay: weekDay ?? this.weekDay,
+        // isAnnouncement: isAnnouncement ?? this.isAnnouncement,
       );
 }

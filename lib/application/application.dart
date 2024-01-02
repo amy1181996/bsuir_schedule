@@ -44,12 +44,12 @@ class _AppDataLoaderState extends State<_AppDataLoader> {
         if (snapshot.connectionState == ConnectionState.done) {
           final currentTheme =
               Provider.of<SettingsProvider>(context).appColorScheme;
+          final useMaterial3 =
+              Provider.of<SettingsProvider>(context).useMaterial3;
 
           return MaterialApp(
             title: 'BSUIR Schedule',
-            theme: currentTheme == AppColorScheme.dark
-                ? AppTheme.dark
-                : AppTheme.light,
+            theme: getThemeData(currentTheme, useMaterial3),
             routes: mainNavigation.routes,
             onGenerateRoute: mainNavigation.onGenerateRoute,
           );
@@ -61,4 +61,13 @@ class _AppDataLoaderState extends State<_AppDataLoader> {
       },
     );
   }
+
+  ThemeData getThemeData(AppColorScheme colorScheme, bool useMaterial3) =>
+      colorScheme == AppColorScheme.dark
+          ? useMaterial3
+              ? AppTheme.darkMaterial
+              : AppTheme.dark
+          : useMaterial3
+              ? AppTheme.lightMaterial
+              : AppTheme.light;
 }

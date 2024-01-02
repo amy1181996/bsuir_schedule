@@ -43,27 +43,23 @@ class _RootScreenBodyState extends State<_RootScreenBody> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: Consumer<RootScreenViewModel>(
-          builder: (context, viewModel, child) {
-            return FutureBuilder(
-              future: _dataFetched,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.done) {
-                  return IndexedStack(
-                    index: _currentIndex,
-                    children: [
-                      _screenFactory.makeScheduleScreen(),
-                      _screenFactory.makeLecturerScreen(),
-                      _screenFactory.makeGroupScreen(),
-                    ],
-                  );
-                } else {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-              },
-            );
+        body: FutureBuilder(
+          future: _dataFetched,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              return IndexedStack(
+                index: _currentIndex,
+                children: [
+                  _screenFactory.makeScheduleScreen(),
+                  _screenFactory.makeLecturerScreen(),
+                  _screenFactory.makeGroupScreen(),
+                ],
+              );
+            } else {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
           },
         ),
         bottomNavigationBar: BottomNavigationBar(

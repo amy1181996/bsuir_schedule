@@ -16,8 +16,8 @@ class ApiLesson {
   final String subjectFullName;
   final List<int> weekNumber;
   final String? dateLesson;
-  final String startLessonDate;
-  final String endLessonDate;
+  final String? startLessonDate;
+  final String? endLessonDate;
   final bool isAnnouncement;
 
   ApiLesson({
@@ -81,9 +81,7 @@ class ApiLesson {
         dateLesson: dateLesson != null
             ? DateFormat('dd.MM.yyyy').parse(dateLesson!)
             : null,
-        startLessonDate: DateFormat('dd.MM.yyyy').parse(startLessonDate),
-        endLessonDate: DateFormat('dd.MM.yyyy').parse(endLessonDate),
-        weekDay: weekDay,
-        isAnnouncement: isAnnouncement,
+        startLessonDate: startLessonDate != null ? DateFormat('dd.MM.yyyy').parse(startLessonDate!) : null,
+        endLessonDate: endLessonDate != null ? DateFormat('dd.MM.yyyy').parse(endLessonDate!) : null,
       );
 }
